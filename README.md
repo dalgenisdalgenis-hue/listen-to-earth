@@ -18,8 +18,10 @@ Tone simulados. **Pendientes: navegador, audio real, NVDA/VoiceOver y pruebas
 con voluntarios.** No se afirma validación con usuarios.
 
 Siguiente: barrido automático; después selector de aerosoles y tecla R con
-el aviso final. También faltan las preferencias de accesibilidad descritas
-en el SPEC. Las pistas 2 y 3 esperan el JSON real de MERRA-2.
+el aviso final. La configuración del modo sin mirar la pantalla y las pruebas
+con lectores de pantalla se reservan para la última etapa, según la nueva
+instrucción del usuario registrada en REGISTRO_CAMBIOS.md. Se mantienen las
+etiquetas y el teclado existentes. Las pistas 2 y 3 esperan el JSON real de MERRA-2.
 
 - [Especificación del equipo](SPEC.md), conservada íntegra.
 - [Registro de avances, decisiones y pendientes](REGISTRO_CAMBIOS.md).
