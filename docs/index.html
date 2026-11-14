@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Listen to Earth</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="preload" as="image" href="assets/aerosols_5669_1920x1080.png">
+  <script defer src="js/strings.es.js"></script>
+  <script defer src="js/config.js"></script>
+  <script defer src="js/image-data.js"></script>
+  <script defer src="js/decomposition.js"></script>
+  <script defer src="vendor/tone.js"></script>
+  <script defer src="js/audio.js"></script>
+  <script defer src="js/grid.js"></script>
+  <script defer src="js/app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#content" data-text="skip"></a>
+  <header><p class="brand" data-text="title"></p></header>
+  <main id="content" tabindex="-1">
+    <h1 data-text="heading"></h1>
+    <p class="intro" data-text="introduction"></p>
+    <p id="status" role="status" aria-live="polite" aria-atomic="true"></p>
+    <button id="retry" type="button" data-text="retry"></button>
+
+    <section aria-labelledby="grid-title">
+      <h2 id="grid-title" data-text="gridTitle"></h2>
+      <p id="grid-help" data-text="gridHelp"></p>
+      <fieldset id="audio-controls" disabled>
+        <legend data-text="soundControls"></legend>
+        <button id="activate" type="button" data-text="activate"></button>
+        <label for="volume" data-text="volumeLabel"></label>
+        <input id="volume" type="range" min="0" max="100" step="1" value="50">
+        <output id="volume-value" for="volume"></output>
+        <button id="mute" type="button" aria-pressed="false" data-text="mute"></button>
+        <button id="stop" type="button" data-text="stop"></button>
+      </fieldset>
+      <p id="audio-state"></p>
+
+      <figure id="image-panel" aria-busy="true">
+        <div class="map-view">
+          <canvas id="map" width="1920" height="1080" role="img"
+            aria-describedby="map-description" hidden><span data-text="canvasFallback"></span></canvas>
+          <div id="grid" role="grid" aria-labelledby="grid-title"
+            aria-describedby="grid-help" aria-rowcount="8" aria-colcount="12" hidden></div>
+        </div>
+        <figcaption id="map-description" data-text="description"></figcaption>
+      </figure>
+
+      <section id="current" aria-labelledby="current-title" hidden>
+        <h3 id="current-title" data-text="currentTitle"></h3>
+        <p id="readout"></p>
+      </section>
+      <fieldset id="direction-controls" disabled>
+        <legend data-text="directions"></legend>
+        <div class="directions">
+          <button id="up" type="button" aria-controls="grid" data-text="up"></button>
+          <button id="left" type="button" aria-controls="grid" data-text="left"></button>
+          <button id="replay" type="button" aria-controls="grid" data-text="replay"></button>
+          <button id="right" type="button" aria-controls="grid" data-text="right"></button>
+          <button id="down" type="button" aria-controls="grid" data-text="down"></button>
+        </div>
+      </fieldset>
+      <p data-text="shortcuts"></p>
+      <img class="colorbar" src="assets/aerosols_5669_colorbar.png"
+        width="1500" height="300" loading="lazy" decoding="async" data-alt="legendAlt" alt="">
+
+      <details id="grid-table" hidden>
+        <summary data-text="tableSummary"></summary>
+        <div class="table-scroll" role="region" aria-labelledby="grid-caption" tabindex="0">
+          <table>
+            <caption id="grid-caption" data-text="gridCaption"></caption>
+            <thead><tr>
+              <th scope="col" data-text="position"></th>
+              <th scope="col" data-text="coordinatesHeading"></th>
+              <th scope="col" data-text="dust"></th>
+              <th scope="col" data-text="residual"></th>
+              <th scope="col" data-text="soundHeading"></th>
+            </tr></thead>
+            <tbody id="grid-rows"></tbody>
+          </table>
+        </div>
+      </details>
+    </section>
+
+    <details id="diagnostics">
+      <summary data-text="diagnostics"></summary>
+      <section id="checks" aria-labelledby="checks-title" hidden>
+        <h2 id="checks-title" data-text="checksTitle"></h2>
+        <p data-text="guardDescription"></p>
+        <div class="table-scroll" role="region" aria-labelledby="checks-title" tabindex="0">
+          <table>
+            <caption data-text="tableCaption"></caption>
+            <thead><tr>
+              <th scope="col" data-text="zone"></th>
+              <th scope="col" data-text="blackCarbon"></th>
+              <th scope="col" data-text="dust"></th>
+              <th scope="col" data-text="seaSalt"></th>
+              <th scope="col" data-text="sulfate"></th>
+              <th scope="col" data-text="residual"></th>
+              <th scope="col" data-text="candidate"></th>
+              <th scope="col" data-text="result"></th>
+            </tr></thead>
+            <tbody id="check-rows"></tbody>
+          </table>
+        </div>
+      </section>
+    </details>
+    <p data-text="limitation"></p>
+    <p data-text="uncertainty"></p>
+    <p class="development" data-text="stageLimit"></p>
+    <noscript>Activa JavaScript para explorar la imagen y generar sonido. La aplicación usa archivos locales y no requiere cuentas.</noscript>
+  </main>
+  <footer><p data-text="footer"></p></footer>
+</body>
+</html>

@@ -39,7 +39,9 @@ Viven en la misma página para que cambiar de pista **no corte el audio**: así 
 
 La imagen pinta cada tipo de aerosol de un color distinto. Para cada punto hacemos una **descomposición no negativa** del color sobre los cuatro colores de la leyenda oficial: se calcula cuánto hay de cada tipo **a la vez**, así que donde se mezclan dos aerosoles suenan dos instrumentos.
 
-Verificado contra la imagen real: el error de reconstrucción es del **1 al 5 %** en zonas de aerosol fuerte (polvo sobre el Sáhara: 0,885 de polvo, 1,1 % de error).
+Con el procedimiento actual de `scripts/medir_imagen.py`, la consulta puntual usa **RGB promedio de 3×3 antes de descomponer**: sobre el Sáhara da 0,874 de polvo y 1,9 % de residuo. Cada paso del barrido promedia una columna de 9 píxeles de ancho en la franja elegida. Una nota requiere peso de al menos 0,05 y residuo de hasta 0,10; un residuo bajo tampoco garantiza que el reparto entre aerosoles sea único.
+
+En la pista 1 el mapeo de intensidad relativa a las 15 notas es **lineal**, con la fórmula del SPEC. El mapeo logarítmico corresponde a MERRA-2 en las pistas 2 y 3.
 
 **Se descartó** el método más simple —asignar cada punto al color más parecido— porque **pierde componentes**: con una mezcla mitad polvo mitad sal marina responde «polvo» y borra la sal, lo que haría mentir al selector de contaminantes.
 
@@ -80,6 +82,8 @@ Verificado contra la imagen real: el error de reconstrucción es del **1 al 5 %*
 - **No es una herramienta de salud ni de alerta,** y no mide indicadores de los ODS.
 
 ## Validación
+
+**Estado de esta entrega:** implementados canvas, descomposición y cuadrícula con sonificación del polvo. Se ejecutaron comparaciones numéricas de 341 muestras y pruebas de controladores con DOM/Tone simulados. Las pruebas en navegador, de audio real y con lectores de pantalla siguen pendientes. Ver [REGISTRO_CAMBIOS.md](REGISTRO_CAMBIOS.md) y [PRUEBAS.md](PRUEBAS.md).
 
 Al menos 5 voluntarios exploran ~5 minutos y cuentan qué sintieron y entendieron. Con consentimiento; sin nombres, voces ni imágenes; autorización de tutores si hay menores. Si no participan personas ciegas o con baja visión, esa validación se declara pendiente. **No se afirman efectos educativos y no se presenta la plataforma como «validada con usuarios» mientras las pruebas no se hayan hecho.**
 

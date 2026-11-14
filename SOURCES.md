@@ -31,7 +31,9 @@ x = (longitud + 180) / 360 * 1920
 y = (90 - latitud)  / 180 * 1080
 ```
 
-Verificado contra Cabo Agulhas (34,8°S 20°E): predicho (1067, 749), observado (1063, 742). Un píxel ≈ 20 × 18 km a la latitud de RD, que cae en el píxel (587, 429) y ocupa 33 × 15 píxeles.
+Verificado contra Cabo Agulhas (34,8°S 20°E): predicho (1067, 749), observado (1063, 742). Un píxel ≈ 20 × 18 km a la latitud de RD, que cae en el píxel (587, 429). La Española ocupa unos 33 × 15 píxeles.
+
+El muestreo reproducible se define en `scripts/medir_imagen.py`: promedio RGB 3×3 para consultas puntuales y columnas de 9 píxeles para el barrido. Las limitaciones del fondo y de la separación de colores siguen vigentes.
 
 **Qué miden estos colores, y qué no.** Son **intensidad relativa por tipo**, no concentración en µg/m³, y representan **toda la columna de aire**, no lo que se respira a nivel del suelo. La imagen lleva debajo un mapa base de la Tierra con luces de ciudad, así que sobre tierra y zonas urbanas la lectura del color está contaminada por ese fondo; sobre mar es limpia.
 
@@ -68,6 +70,13 @@ Referencias del conjunto de datos:
 
 ---
 
-## Reglas del evento
+## Biblioteca de audio
+
+**Tone.js 15.1.22**, de Yotam Mann, licencia MIT. Distribución local obtenida del paquete npm `tone@15.1.22`; integridad del archivo tarball comprobada con el hash publicado por npm. El navegador carga `docs/vendor/tone.js`, sin CDN. Se conservan `docs/vendor/Tone.js.LICENSE.txt` y `docs/vendor/tone-LICENSE.md`.
+
+- Proyecto: https://github.com/Tonejs/Tone.js
+- Paquete: https://www.npmjs.com/package/tone/v/15.1.22
+
+## Términos del evento
 
 Términos de participación (7-ago-2026): material de terceros de uso libre o código abierto; Apache 2.0 por defecto para contenido original sin licencia OSI declarada. https://www.spaceappschallenge.org/legal/
