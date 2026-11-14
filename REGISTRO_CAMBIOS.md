@@ -42,6 +42,20 @@ equipo está en [SPEC.md](SPEC.md); no se ha modificado su contenido.
   base; los originales del ZIP y las versiones de SPEC recibidas se guardan
   en [historial/](historial/).
 
+## Cambio de orden solicitado por el usuario — 14-nov-2026
+
+La configuración del modo de uso sin mirar la pantalla y las pruebas con
+lector de pantalla se dejan para la última etapa, por instrucción posterior
+del usuario. Este acuerdo cambia el orden de trabajo indicado inicialmente
+en el SPEC; el archivo de especificación se conserva íntegro.
+
+Se mantienen las etiquetas, el foco móvil y el teclado ya implementados.
+NVDA y VoiceOver son lectores externos: no se encienden desde la página.
+El modo de uso de la página agrupará las preferencias correspondientes; su
+voz propia opcional seguirá apagada por defecto, como establece el SPEC.
+Las pruebas normales de cálculo, navegador y sonido continúan durante el
+desarrollo. La validación específica con lectores de pantalla queda al final.
+
 ## Pruebas ejecutadas
 
 - El script original del equipo pasa sus cuatro comprobaciones sobre el PNG
