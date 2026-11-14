@@ -115,8 +115,14 @@ La imagen global convertida en sonido.
 **Barrido automático** (es lo principal): una línea cruza la imagen de **este a oeste**, siguiendo el polvo de África hacia el Caribe, en **~30 pasos** y **unos 15 segundos**. Se puede pausar, repetir e ir más lento.
 
 Dos modos, que se cambian con una tecla:
-- **«El viaje del polvo»** (por defecto): franja tropical **12°N a 22°N**, de **20°E a 75°O**. Es la banda por donde realmente cruza el polvo y donde está RD. En cada paso se promedia la columna de píxeles de esa franja.
+- **«El viaje del polvo»** (por defecto): franja tropical **12°N a 22°N**, de **20°E a 69,9°O**. Es la banda por donde realmente cruza el polvo, y termina en la **longitud de RD**. En cada paso se promedia la columna de píxeles de esa franja.
 - **«El mundo entero»**: barre todo el planeta.
+
+⚠️ **El final del barrido y la tecla R son dos lugares distintos, y hay que decirlo.**
+- El **último paso del barrido** es el **promedio de la franja 12°N–22°N** en la longitud 69,9°O. Allí: polvo **0,000**, sal marina **0,300**.
+- La **tecla R** da el **valor puntual** del píxel de RD (587, 429), que está a 18,47°N. Allí: polvo **0,000**, sal marina **0,478**.
+
+Los dos dicen que ese día no hubo polvo, pero son números distintos porque uno es un promedio de una banda de 10 grados de alto y el otro es un punto. **El aviso debe distinguirlos**: no presentar el valor de la franja como si fuera «el dato de RD».
 
 **Exploración libre:** con las flechas se mueve un cursor por una cuadrícula de **8 × 12** y suena el aerosol de donde está. La resolución es distinta a propósito: el barrido es una melodía y necesita detalle; las flechas necesitan casillas grandes para no perderse.
 
@@ -130,12 +136,12 @@ Medido sobre la imagen real, el perfil del polvo en la franja tropical:
 
 | Punto | Longitud | Polvo |
 |---|---|---|
-| Máximo, saliendo de África | 17°E | **0,881** |
-| Valle en el Atlántico medio | 39°O | 0,047 |
-| Segundo máximo, cerca del Caribe | 55°O | 0,565 |
-| Desde aquí al oeste | 65°O en adelante | **0,000** |
+| Máximo, saliendo de África | 16,9°E | **0,879** |
+| Valle en el Atlántico medio | ~43°O | 0,052 |
+| Repuntes cerca del Caribe | 36°O y 25°O | 0,556 y 0,570 |
+| Últimos dos pasos | 66°O y 69,9°O | **0,000** |
 
-**En el píxel de RD: polvo 0,000 y sal marina 0,478.** Ese día el polvo no llegó al país.
+**Ese día el polvo no llegó al país.** Ni en el promedio de la franja (0,000) ni en el píxel de RD (0,000, con sal marina 0,478).
 
 El barrido **llega igual hasta RD y el polvo se apaga de verdad**. No queda un bache de audio, porque una zona sin partículas suena como **clic suave** y el texto dice «polvo: nada».
 
@@ -143,17 +149,19 @@ El barrido **llega igual hasta RD y el polvo se apaga de verdad**. No queda un b
 
 **No acortar el barrido para que termine en un pico.** Elegir una franja de la imagen es una cosa; elegir el final para que los datos digan otra cosa es distinto, y el reto premia la fidelidad.
 
-Perfil completo medido, 30 pasos de 20°E a 75°O (polvo):
+**Perfil completo medido, 30 pasos de 20°E a 69,9°O**, franja 12°N–22°N. Sirve para verificar que tu lectura de la imagen da lo mismo.
+
+Polvo:
 ```
-0.846 0.881 0.854 0.860 0.806 0.713 0.711 0.698 0.640 0.527
-0.781 0.737 0.633 0.605 0.629 0.548 0.371 0.163 0.047 0.149
-0.551 0.270 0.346 0.565 0.408 0.280 0.016 0.000 0.000 0.000
+0.846 0.879 0.848 0.867 0.823 0.740 0.703 0.714 0.666 0.602
+0.655 0.783 0.684 0.627 0.589 0.631 0.510 0.364 0.156 0.052
+0.127 0.556 0.302 0.297 0.570 0.510 0.298 0.105 0.000 0.000
 ```
 Sal marina en los mismos pasos:
 ```
-0.012 0.000 0.019 0.000 0.000 0.020 0.008 0.029 0.114 0.185
-0.000 0.011 0.093 0.061 0.074 0.069 0.157 0.316 0.461 0.421
-0.059 0.143 0.064 0.000 0.024 0.103 0.300 0.320 0.209 0.118
+0.012 0.001 0.019 0.006 0.000 0.000 0.019 0.000 0.072 0.156
+0.100 0.000 0.070 0.072 0.069 0.068 0.088 0.164 0.322 0.457
+0.427 0.069 0.133 0.088 0.000 0.000 0.074 0.224 0.291 0.300
 ```
 
 ### Pista 2 — «Compara años»
@@ -171,12 +179,62 @@ Cada nota es un mes, de 1980 a 2024 (540 notas, unos 45 segundos). Golpe grave e
 
 - **Un instrumento por tipo de aerosol**, para distinguirlos sin mirar. Polvo (cuerdas), carbono negro (tambor), sulfatos (campanas), sal marina (oleaje) — son sugerencias, lo que importa es que se distingan.
 - **Más cantidad → nota más aguda.**
-- **Escala pentatónica mayor**, tres octavas (15 notas) desde **Sol3 (196 Hz)**. Así nunca desafina.
-  ⚠️ **Mayor es PROVISIONAL.** El equipo quiere escucharla con datos reales antes de darla por buena; puede cambiar a menor. Dejar el modo de escala en una constante fácil de cambiar.
-- En las pistas 2 y 3: valor → altura con **escala logarítmica de 0,02 a 13 µg/m³**. Entre el mes más limpio y el más cargado hay más de 600 veces de diferencia; con escala lineal todos los meses bajos sonarían iguales. Además el oído percibe la altura de forma proporcional.
-- **La misma regla para todos los años.** Al comparar, solo cambia el timbre. Si la regla cambiara, lo que se oye no sería una diferencia real.
-- **Zona sin partículas = clic suave**, para saber que el cursor se movió. Umbral ~0,05.
+- **Zona sin partículas = clic suave**, para saber que el cursor se movió. **Umbral 0,05.**
 - Control de volumen por instrumento y de tempo.
+
+### Las 15 notas
+
+Pentatónica **mayor**, tres octavas desde **Sol3**. Frecuencias exactas, ya calculadas:
+
+```js
+// índice 0 = más grave = menos aerosol
+const NOTAS_HZ = [196.00, 220.00, 246.94, 293.67, 329.63,
+                  392.00, 440.01, 493.89, 587.34, 659.26,
+                  784.00, 880.01, 987.78, 1174.67, 1318.53];
+// Sol3 La3 Si3 Re4 Mi4 | Sol4 La4 Si4 Re5 Mi5 | Sol5 La5 Si5 Re6 Mi6
+// Semitonos desde Sol3: 0 2 4 7 9 12 14 16 19 21 24 26 28 31 33
+```
+
+⚠️ **Mayor es PROVISIONAL.** El equipo quiere escucharla con datos reales antes de darla por buena; puede cambiar a menor. **Deja la escala en una constante fácil de cambiar** (pentatónica menor serían los semitonos `0 3 5 7 10`).
+
+### De valor a nota: dos mapeos distintos, y por qué
+
+**Pista 1 (intensidad relativa de la imagen, 0 a 1): LINEAL.**
+
+```js
+const UMBRAL = 0.05;
+function notaDeIntensidad(i) {
+  if (i < UMBRAL) return null;              // clic suave
+  const t = (i - UMBRAL) / (1 - UMBRAL);
+  return Math.round(Math.min(Math.max(t,0),1) * 14);
+}
+```
+
+**Pistas 2 y 3 (MERRA-2, µg/m³): LOGARÍTMICA entre 0,02 y 13.**
+
+```js
+function notaDeMicrogramos(v) {
+  const MIN = 0.02, MAX = 13;
+  const t = (Math.log(v) - Math.log(MIN)) / (Math.log(MAX) - Math.log(MIN));
+  return Math.round(Math.min(Math.max(t,0),1) * 14);
+}
+```
+
+**Por qué no el mismo mapeo en las dos.** Los dos conjuntos de datos tienen formas opuestas:
+
+- En **MERRA-2** los valores se amontonan abajo: entre el mes más limpio y el más cargado hay más de **600 veces** de diferencia. Con escala lineal, todos los meses bajos darían la misma nota. Hace falta logarítmica.
+- En **la imagen** la intensidad relativa se amontona arriba: el polvo del barrido va sobre todo entre 0,3 y 0,88. Con logarítmica esos valores se comprimen y la melodía se aplana.
+
+Comprobado sobre el barrido real. Las 16 primeras notas, la travesía del Atlántico:
+
+```
+lineal: 12 12 12 12 11 10 10 10  9  8  9 11  9  9  8  9   <- tiene forma
+log:    13 13 13 13 13 13 12 12 12 12 12 13 12 12 12 12   <- casi plana
+```
+
+En todo el barrido: lineal usa **11 notas distintas**, logarítmica solo **9**.
+
+Lo que se mantiene constante es el principio: **la misma regla para todo lo que se compara entre sí.** Dentro de la pista 1, la misma para todos los puntos y todos los aerosoles. En las pistas 2 y 3, la misma para todos los años, de modo que al comparar solo cambie el timbre y lo que se oiga sea una diferencia real.
 
 ## 6. Accesibilidad (es tema central del reto, no un extra)
 
@@ -199,6 +257,12 @@ Cada nota es un mes, de 1980 a 2024 (540 notas, unos 45 segundos). Golpe grave e
 | V | cambiar modo de barrido (viaje del polvo / mundo entero) |
 | **R** | ir a República Dominicana |
 | 1 / 2 / 3 | cambiar de pista |
+| **4** | polvo: encender / apagar |
+| **5** | carbono negro: encender / apagar |
+| **6** | sulfatos: encender / apagar |
+| **7** | sal marina: encender / apagar |
+| **8** | todos los aerosoles / solo el polvo (alternar) |
+| **N** | narración: voz propia de la página, encender / apagar |
 | C | comparar mes a mes |
 | K | comparar picos |
 | S o Esc | detener |
@@ -206,6 +270,10 @@ Cada nota es un mes, de 1980 a 2024 (540 notas, unos 45 segundos). Golpe grave e
 | M | silenciar |
 | + / − | tempo |
 | H o ? | ayuda |
+
+Los aerosoles van en **4-7** porque siguen a las pistas (1-3) en la misma fila de números: quien no ve encuentra la fila de números por tacto y solo tiene que contar. **8** es el atajo para volver al estado por defecto (solo polvo) o abrirlo todo. **N** es de *narración*.
+
+**Cada cambio de estado se anuncia** por `aria-live` y por la voz propia si está encendida: «polvo encendido», «sal marina apagada», «narración encendida».
 
 ## 7. Estructura de archivos
 
@@ -216,7 +284,7 @@ docs/
   js/
   data/        merra2_rd.json  (falta generarlo)
   assets/      aerosols_5669_1920x1080.png, aerosols_5669_colorbar.png
-  vendor/      tone.min.js + su licencia
+  vendor/      tone.js (v15.1.22) + Tone.js.LICENSE.txt + tone-LICENSE.md
 scripts/       preparación de datos con Python (Pillow + NumPy + SciPy)
 work/raw/      originales NASA (excluido de Git)
 ```
@@ -230,6 +298,8 @@ work/raw/      originales NASA (excluido de Git)
 - No usar el método del color más parecido.
 - No acortar el barrido para que termine en un pico de polvo.
 - No encender la voz propia por defecto.
+- No presentar el último paso del barrido (promedio de la franja) como si fuera el valor de RD (valor puntual). Son dos números distintos.
+- No usar el mapeo logarítmico en la pista 1: aplana la melodía. Ver §5.
 - No afirmar que la plataforma está «validada con usuarios» mientras las pruebas no se hayan hecho.
 - No afirmar que esto demuestra cambio climático.
 - No presentar los valores como concentraciones en µg/m³ ni compararlos con las guías de la OMS: la imagen da intensidad relativa, y la serie de MERRA-2 es solo polvo fino.
