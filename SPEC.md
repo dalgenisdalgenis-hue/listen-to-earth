@@ -72,6 +72,27 @@ Valores conocidos para verificar: junio promedio 7,8 µg/m³; diciembre 0,16. M�
 
 ## 3. El algoritmo central: de color a cantidad
 
+> **El script que produce todos los números de esta sección está en el repositorio: `scripts/medir_imagen.py`.** Ejecútalo para reproducirlos y para comprobar que tu implementación en JavaScript da lo mismo. Trae cuatro comprobaciones que deben pasar.
+
+### 3.0 La ventana de muestreo (leer esto primero)
+
+**Un número sin su ventana de muestreo no significa nada.** Sobre el mismo píxel de RD (587, 429):
+
+| Ventana | RGB promedio | Polvo | Sal marina |
+|---|---|---|---|
+| 1×1 | (102, 128, 133) | 0,046 | **0,714** |
+| **3×3** ← la que usa el SPEC | (79, 104, 104) | 0,000 | **0,608** |
+| 5×5 | (61, 85, 83) | 0,000 | 0,478 |
+| 7×7 | (54, 78, 75) | 0,000 | 0,424 |
+| 9×9 | (50, 73, 70) | 0,000 | 0,393 |
+
+Todas son correctas; miden cosas distintas. **El SPEC fija estas dos reglas:**
+
+- **Consulta puntual** (tecla R, cursor con flechas): **promedio de 3×3** centrado en el píxel. Cubre unos 60 × 54 km a la latitud de RD, parecido a una celda de MERRA-2 (55 × 65 km), que es lo que suena en las pistas 2 y 3. Un píxel suelto es ruidoso; de 5×5 en adelante se sale de La Española, que mide 33 × 15 px.
+- **Cada paso del barrido:** promedio de una **columna de 9 píxeles de ancho**, alta desde el borde sur hasta el borde norte de la franja.
+
+### 3.1 El método
+
 Para cada punto de la imagen hay que sacar cuánto hay de cada aerosol. **Se usa descomposición no negativa**, no «el color más parecido».
 
 ```
@@ -94,13 +115,41 @@ En JavaScript: 4 incógnitas, 3 ecuaciones, con restricción de no negatividad. 
 | Polvo en el Atlántico N (25°N 35°O) | 0,738 de polvo | 3,5 % |
 | Carbono negro, sur de África (10°S 22°E) | 0,674 | 3,8 % |
 
-### Limitaciones del método (hay que declararlas en la página)
+### 3.2 Las dos guardas para que algo suene
+
+**Hacen falta las dos. Con una sola, el océano vacío produce notas falsas.**
+
+```js
+const UMBRAL = 0.05;        // peso mínimo
+const MAX_RESIDUO = 0.10;   // error de reconstrucción máximo
+
+function suena(peso, residuo) {
+  return peso >= UMBRAL && residuo <= MAX_RESIDUO;
+}
+// residuo = || M·w − p || / || p ||
+```
+
+**Por qué la segunda.** El sistema está subdeterminado (cuatro aerosoles, tres canales de color), así que en píxeles oscuros encuentra repartos que ajustan mal. Ejemplo real: el océano limpio del Pacífico sur da sal marina **0,089**, que pasaría el umbral, pero con **20,5 % de residuo**. Las zonas de aerosol real tienen entre **1 % y 4 %**. El residuo es la señal de que no hay que fiarse.
+
+Si no pasa las dos guardas: **clic suave**, nada de nota.
+
+### 3.3 Limitaciones del método (hay que declararlas en la página)
 
 1. **Leemos una imagen de los datos, no los datos.** Devolver un color a un número tiene error.
-2. **El sistema está subdeterminado:** cuatro aerosoles y solo tres canales de color. La solución no es única. Funciona bien porque los píxeles reales suelen estar dominados por uno o dos tipos, pero **en píxeles oscuros o muy mezclados el reparto es poco fiable**. De ahí el umbral del punto 4.
+2. **El sistema está subdeterminado:** cuatro aerosoles y solo tres canales de color. La solución no es única. Funciona bien porque los píxeles reales suelen estar dominados por uno o dos tipos, pero en píxeles oscuros o muy mezclados el reparto no es fiable. De ahí la guarda del residuo.
 3. **Polvo y sal marina son el par difícil:** sus colores están a solo **10,9°** de separación. Con ruido realista, una mezcla mitad y mitad se estima en 0,55 ± 0,12 y 0,41 ± 0,18. Sirve para saber qué domina, no para una cifra fina.
-4. **Usar un umbral:** por debajo de ~0,05 de intensidad no suena nada (solo el clic suave). Evita que el ruido de píxeles oscuros produzca notas falsas.
-5. **El fondo contamina sobre tierra.** La imagen lleva debajo un mapa de la Tierra con luces de ciudad: 15,8 % de los píxeles son gris neutro (tierra/hielo) y 0,23 % son luces casi blancas. Sobre mar —que es donde ocurre el viaje del polvo— la lectura es limpia (océano limpio ≈ RGB 9, 27, 17).
+4. **El fondo contamina sobre tierra.** La imagen lleva debajo un mapa de la Tierra con luces de ciudad: 15,8 % de los píxeles son gris neutro (tierra/hielo) y 0,23 % son luces casi blancas. Sobre mar —que es donde ocurre el viaje del polvo— la lectura es limpia (océano limpio ≈ RGB 9, 27, 17).
+
+### 3.4 Comprobaciones que tu implementación debe pasar
+
+Con ventana 3×3 y las dos guardas (`scripts/medir_imagen.py` las ejecuta):
+
+| Zona | lat, lon | Debe dominar | Peso | Residuo |
+|---|---|---|---|---|
+| Polvo sobre el Sáhara | 22°N, 5°E | polvo | 0,874 | 1,9 % |
+| Sulfato sobre India | 25°N, 78°E | sulfatos | 0,880 | 1,0 % |
+| Carbono negro, sur de África | 10°S, 22°E | carbono negro | 0,701 | 3,9 % |
+| Océano limpio, Pacífico sur | 45°S, 130°O | **nada (silencio)** | 0,089 | 20,5 % |
 
 ## 4. Las tres pistas
 
@@ -119,10 +168,10 @@ Dos modos, que se cambian con una tecla:
 - **«El mundo entero»**: barre todo el planeta.
 
 ⚠️ **El final del barrido y la tecla R son dos lugares distintos, y hay que decirlo.**
-- El **último paso del barrido** es el **promedio de la franja 12°N–22°N** en la longitud 69,9°O. Allí: polvo **0,000**, sal marina **0,300**.
-- La **tecla R** da el **valor puntual** del píxel de RD (587, 429), que está a 18,47°N. Allí: polvo **0,000**, sal marina **0,478**.
+- El **último paso del barrido** es el **promedio de la franja 12°N–22°N** (columna de 9 px) en la longitud 69,9°O. Allí: polvo **0,000**, sal marina **0,300**.
+- La **tecla R** da el **valor puntual** del píxel de RD (587, 429), a 18,47°N, con ventana 3×3. Allí: polvo **0,000**, sal marina **0,608**.
 
-Los dos dicen que ese día no hubo polvo, pero son números distintos porque uno es un promedio de una banda de 10 grados de alto y el otro es un punto. **El aviso debe distinguirlos**: no presentar el valor de la franja como si fuera «el dato de RD».
+Los dos dicen que ese día no hubo polvo, pero son números distintos porque uno promedia una banda de 10 grados de alto y el otro es un punto. **El aviso debe distinguirlos**: no presentar el valor de la franja como si fuera «el dato de RD».
 
 **Exploración libre:** con las flechas se mueve un cursor por una cuadrícula de **8 × 12** y suena el aerosol de donde está. La resolución es distinta a propósito: el barrido es una melodía y necesita detalle; las flechas necesitan casillas grandes para no perderse.
 
@@ -141,7 +190,7 @@ Medido sobre la imagen real, el perfil del polvo en la franja tropical:
 | Repuntes cerca del Caribe | 36°O y 25°O | 0,556 y 0,570 |
 | Últimos dos pasos | 66°O y 69,9°O | **0,000** |
 
-**Ese día el polvo no llegó al país.** Ni en el promedio de la franja (0,000) ni en el píxel de RD (0,000, con sal marina 0,478).
+**Ese día el polvo no llegó al país.** Ni en el promedio de la franja (0,000) ni en el punto de RD (0,000, con sal marina 0,608 en ventana 3×3).
 
 El barrido **llega igual hasta RD y el polvo se apaga de verdad**. No queda un bache de audio, porque una zona sin partículas suena como **clic suave** y el texto dice «polvo: nada».
 
