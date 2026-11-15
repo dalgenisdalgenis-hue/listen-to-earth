@@ -2,7 +2,7 @@
 
 (() => {
   const app = window.ListenToEarth;
-  const number = new Intl.NumberFormat('es-DO', { maximumFractionDigits: 3 });
+  const number = new Intl.NumberFormat(app.locale || 'es-DO', { maximumFractionDigits: 3 });
 
   app.noteFromIntensity = function (intensity) {
     if (intensity < app.config.minWeight) return null;

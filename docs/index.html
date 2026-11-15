@@ -6,38 +6,42 @@
   <meta name="description" content="Escucha una visualización oficial de aerosoles de la NASA convertida en sonido.">
   <meta name="theme-color" content="#07131c">
   <title>Listen to Earth</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/styles.css">
   <link rel="preload" as="image" href="assets/aerosols_5669_1920x1080.png">
+  <script defer src="js/strings.es.js"></script>
+  <script defer src="js/strings.en.js"></script>
+  <script defer src="js/i18n.js"></script>
   <script defer src="vendor/tone.js"></script>
   <script defer src="js/ambient.js"></script>
 </head>
-<body class="landing-page simple-landing">
-  <a class="skip" href="#hero-title">Ir al contenido</a>
+<body class="landing-page simple-landing" data-page-title="pageTitleHome" data-meta-description="metaHome">
+  <a class="skip" href="#hero-title" data-text="skip">Ir al contenido</a>
   <header class="site-header">
     <a class="brand" href="index.html">Listen to Earth</a>
-    <nav aria-label="Navegación principal">
-      <a href="experiencias.html">Experiencias</a>
-      <a href="guia.html">Guía de uso</a>
-      <a href="creditos.html">Créditos y fuentes</a>
+    <nav aria-label="Navegación principal" data-label="navLabel">
+      <a href="experiencias.html" data-text="navExperiences">Experiencias</a>
+      <a href="guia.html" data-text="navGuide">Guía de uso</a>
+      <a href="creditos.html" data-text="creditsNav">Créditos y fuentes</a>
     </nav>
   </header>
   <main>
     <section class="hero landing-hero" aria-labelledby="hero-title">
       <div class="hero-content">
         <p class="eyebrow">Listen to Earth</p>
-        <h1 id="hero-title"><span>El planeta tiene una voz.</span><span>Y todos merecemos escucharla.</span></h1>
-        <p class="hero-lead">Tres experiencias transforman una visualización oficial de aerosoles de la NASA en sonido. Elige cómo quieres escuchar la Tierra.</p>
+        <h1 id="hero-title"><span data-text="heroTitleFirst">El planeta tiene una voz.</span><span data-text="heroTitleSecond">Y todos merecemos escucharla.</span></h1>
+        <p class="hero-lead" data-text="heroLead">Tres experiencias transforman una visualización oficial de aerosoles de la NASA en sonido. Elige cómo quieres escuchar la Tierra.</p>
         <div class="hero-actions landing-actions">
-          <a class="button primary" href="experiencias.html">Elegir una experiencia <span aria-hidden="true">→</span></a>
-          <button id="ambient-toggle" class="button sound-button" type="button" aria-pressed="false"><span aria-hidden="true">♪</span> Activar ambientación</button>
+          <a class="button primary" href="experiencias.html"><span data-text="landingChoose">Elegir una experiencia</span> <span aria-hidden="true">→</span></a>
+          <button id="ambient-toggle" class="button sound-button" type="button" aria-pressed="false"><span aria-hidden="true">♪</span> <span data-text="ambientStart">Activar ambientación</span></button>
         </div>
-        <p id="ambient-status" class="ambient-status" role="status" aria-live="polite">Ambientación artística opcional; no representa datos de aerosoles.</p>
+        <p id="ambient-status" class="ambient-status" role="status" aria-live="polite" data-text="ambientOptional">Ambientación artística opcional; no representa datos de aerosoles.</p>
       </div>
     </section>
   </main>
   <footer>
-    <div><p class="footer-brand">Listen to Earth</p><p>Liceo Científico Dr. Miguel Canela Lázaro · República Dominicana</p></div>
-    <div class="footer-actions"><a href="guia.html">Guía de uso</a><a class="button ghost" href="creditos.html">Créditos y fuentes</a></div>
+    <div><p class="footer-brand">Listen to Earth</p><p data-text="footer">Liceo Científico Dr. Miguel Canela Lázaro · República Dominicana</p></div>
+    <div class="footer-actions"><a href="guia.html" data-text="navGuide">Guía de uso</a><a class="button ghost" href="creditos.html" data-text="creditsNav">Créditos y fuentes</a></div>
   </footer>
 </body>
 </html>

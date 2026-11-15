@@ -24,12 +24,13 @@
   const status = byId('status');
   const audio = app.createAudio();
   app.audio = audio;
-  const number = new Intl.NumberFormat('es-DO', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
-  const percent = new Intl.NumberFormat('es-DO', { style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const number = new Intl.NumberFormat(app.locale || 'es-DO', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+  const percent = new Intl.NumberFormat(app.locale || 'es-DO', { style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1 });
   let loading = false, activating = false, controller, currentCell, announcement;
   let scanner, profiles, previousScanState = 'idle', audioRequest = 0;
   let lastSource = null, lastScanStep = null, rdPoint = null;
   let mixEnabled = false;
+  const localizedHref = href => app.language === 'en' ? `${href}?lang=en` : href;
 
   const pageCopy = pageMode === 'planeta' ? {
     eyebrow: app.text.worldPageEyebrow, title: app.text.modeWorldTitle,
@@ -48,7 +49,7 @@
   byId('experience-page-title').textContent = pageCopy.title;
   byId('experience-page-description').textContent = pageCopy.description;
   byId('alternate-experience').textContent = pageCopy.alternate;
-  byId('alternate-experience').href = pageCopy.href;
+  byId('alternate-experience').href = localizedHref(pageCopy.href);
   document.title = pageCopy.title + ' · ' + app.text.title;
   byId('scan-mode').value = scanModeForPage;
   if (pageMode !== 'explorar') {
@@ -193,7 +194,7 @@
     byId('tempo').value = tempo;
     const label = app.format('tempoValue', {
       value: tempo,
-      seconds: new Intl.NumberFormat('es-DO', { maximumFractionDigits: 1 })
+      seconds: new Intl.NumberFormat(app.locale || 'es-DO', { maximumFractionDigits: 1 })
         .format(steps * app.config.scan.stepMs / 1000 * 100 / tempo)
     });
     byId('tempo-value').textContent = label;
@@ -545,7 +546,7 @@
     if (event.key.toLowerCase() === 'v' && scanner) {
       event.preventDefault();
       if (fixedPageMode && pageMode !== 'explorar') {
-        window.location.href = pageMode === 'planeta' ? 'viaje-del-polvo.html' : 'planeta-completo.html';
+        window.location.href = localizedHref(pageMode === 'planeta' ? 'viaje-del-polvo.html' : 'planeta-completo.html');
       } else if (pageMode !== 'explorar') changeMode(byId('scan-mode').value === 'journey' ? 'world' : 'journey');
     }
     if (['+', '-', '−'].includes(event.key) && scanner) {

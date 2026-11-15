@@ -2,8 +2,8 @@
 
 (() => {
   const app = window.ListenToEarth;
-  const degrees = new Intl.NumberFormat('es-DO', { maximumFractionDigits: 2 });
-  const percent = new Intl.NumberFormat('es-DO', { style: 'percent', maximumFractionDigits: 1 });
+  const degrees = new Intl.NumberFormat(app.locale || 'es-DO', { maximumFractionDigits: 2 });
+  const percent = new Intl.NumberFormat(app.locale || 'es-DO', { style: 'percent', maximumFractionDigits: 1 });
 
   app.gridPosition = (row, col, dr, dc) => ({
     row: Math.max(0, Math.min(app.config.rows - 1, row + dr)),

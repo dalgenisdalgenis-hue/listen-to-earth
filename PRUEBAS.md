@@ -3,8 +3,9 @@
 ## Pruebas automatizadas de desarrollo
 
 > **Estado del 15-nov-2026:** la revisión por 12/5 bandas está implementada.
-> Pasan las comparaciones JavaScript/SciPy y las pruebas simuladas. La escucha
-> en navegador real y altavoz mono continúa pendiente.
+> Pasan las comparaciones JavaScript/SciPy, las pruebas simuladas y la paridad
+> de 384 textos ES/EN. El equipo probó controles y sonidos en teléfono y
+> computadora; la validación específica con lectores de pantalla sigue pendiente.
 
 Python y Node se usan únicamente para comprobar el código. El navegador del
 jurado no los necesita y la web no tiene proceso de compilación.
@@ -18,6 +19,7 @@ node scripts/verificar_teclado.cjs
 node scripts/verificar_audio.cjs
 node scripts/verificar_barrido.cjs
 node scripts/verificar_ambientacion.cjs
+node scripts/verificar_idiomas.cjs
 python scripts/verificar_archivos.py
 ```
 
@@ -55,7 +57,12 @@ la precisión temporal ni el sonido de un navegador real.
 crea audio al cargar, que la primera pulsación inicia la composición y que
 puede pausarse. No acredita el timbre ni el volumen percibido.
 
-## Prueba manual pendiente en navegador
+`verificar_idiomas.cjs` comprueba que los diccionarios español e inglés tienen
+las mismas 384 claves y los mismos marcadores dinámicos, que todas las claves
+usadas por el HTML existen y que las siete páginas visibles cargan los dos
+diccionarios antes del traductor.
+
+## Lista de regresión manual en navegador
 
 ```bash
 python -m http.server 8000 --bind 127.0.0.1 --directory docs
@@ -80,7 +87,7 @@ puede impedir leer el canvas.
 9. Escuchar en altavoz mono. Comparar claridad de las notas, volumen cómodo
    y escala mayor provisional con el equipo.
 
-## Prueba manual pendiente del barrido
+## Lista de regresión manual del barrido
 
 1. Recargar: no debe arrancar audio ni barrido automáticamente.
 2. Abrir Viaje del polvo y Planeta completo desde sus páginas propias. El
@@ -134,13 +141,13 @@ puede impedir leer el canvas.
    detener u ocultar la pestaña y ausencia de notas atascadas.
 8. **Aprobado:** texto y tablas muestran intensidad y cobertura, incluido “zonas activas
    de zonas totales”, sin llamarlas concentraciones.
-9. **Pendiente humano:** escuchar carbono negro, polvo, sulfato y sal marina por separado y juntos
-   en un navegador real y altavoz mono. Ajustar la curva de volumen solo con
-   resultados anotados; las pruebas simuladas no acreditan percepción.
+9. **Aprobado por el equipo para esta versión:** se probaron controles y
+   sonidos en teléfono y computadora. Una evaluación estructurada con más
+   participantes sigue siendo útil, pero no bloquea esta primera publicación.
 10. **Aprobado documentalmente:** guía, créditos y comportamiento describen la
     misma regla. La publicación no sustituye la prueba acústica pendiente.
 
-## Prueba manual pendiente de presentación, guía y créditos
+## Lista de regresión de presentación, guía y créditos
 
 1. Confirmar que la portada muestra exactamente el título, explicación y
    botón para elegir una experiencia, sin etiquetas de pista o competencia.
@@ -162,7 +169,7 @@ puede impedir leer el canvas.
     recibe el foco. En escritorio, selector, controles y mapa deben quedar
     próximos sin obligar a recorrer una página larga.
 
-## Prueba manual pendiente del selector
+## Lista de regresión del selector
 
 1. Recargar: solo debe estar marcado polvo, con volumen 50 %. Antes de
    activar audio, usar casillas y teclas 4–8: no deben crearse sonidos.
@@ -209,5 +216,6 @@ NVDA/VoiceOver son programas externos. La voz propia de la página es otra
 opción y debe seguir apagada por defecto para evitar dos narraciones.
 
 Anotar navegador, dispositivo, lector de pantalla, fecha, resultado e incidencias.
-No marcar estas pruebas como aprobadas hasta realizarlas. La lentitud de red
-y las pruebas con voluntarios también están pendientes.
+No marcar estas pruebas como aprobadas hasta realizarlas. La red lenta, los
+lectores de pantalla y las pruebas estructuradas con voluntarios continúan
+pendientes.

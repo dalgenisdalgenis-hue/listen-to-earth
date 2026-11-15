@@ -28,11 +28,16 @@ experiencias: **Viaje del polvo**, **Planeta completo** y **Exploración manual*
 Cada experiencia tiene una URL propia. Guía y créditos también son páginas
 independientes. La portada ofrece una ambientación artística opcional,
 sintetizada localmente y separada de los sonidos de los datos.
+Toda la interfaz está disponible en español e inglés mediante el selector
+**ES / EN** del encabezado. La elección se conserva al cambiar de página y
+la versión inglesa también puede abrirse directamente con `?lang=en`.
 
 Ejecutados: 311 muestras puntuales y **870 bandas de recorrido** comparadas
 entre JavaScript y SciPy, además de pruebas de controladores con DOM,
-Tone y reloj simulados. **Pendientes: navegador, audio real, NVDA/VoiceOver y pruebas
-con voluntarios.** No se afirma validación con usuarios.
+Tone y reloj simulados. El equipo probó controles y sonidos en teléfono y
+computadora; también se comprobó la navegación ES/EN en Chromium de escritorio
+y a 390 px. **Pendientes: NVDA/VoiceOver, red lenta y pruebas estructuradas con
+voluntarios.** No se afirma validación con usuarios ciegos o con baja visión.
 
 **Revisión científica implementada:** cada paso se divide antes de descomponer
 el color: 12 bandas en Planeta completo y 5 en Viaje del polvo. La intensidad
@@ -120,15 +125,18 @@ node scripts/verificar_teclado.cjs
 node scripts/verificar_audio.cjs
 node scripts/verificar_barrido.cjs
 node scripts/verificar_ambientacion.cjs
+node scripts/verificar_idiomas.cjs
 python scripts/verificar_archivos.py
 ```
 
-Ver [PRUEBAS.md](PRUEBAS.md) para la prueba manual pendiente.
+Ver [PRUEBAS.md](PRUEBAS.md) para repetir la comprobación manual y consultar
+las pruebas de lector de pantalla aún pendientes.
 
 El comando de comparación también prueba las 16 combinaciones del selector
 y los eventos de app.js sobre DOM/Tone/reloj simulados. No es una prueba de
-navegador ni de sonido real. La identidad de los cuatro timbres y la mezcla
-en altavoz mono siguen pendientes de evaluación por el equipo.
+navegador ni de sonido real. La identidad de los cuatro timbres, la mezcla y
+los controles fueron escuchados por el equipo en teléfono y computadora; las
+pruebas estructuradas con más personas siguen pendientes.
 
 ## Qué representa el sonido
 
@@ -151,8 +159,8 @@ siendo audible sin sonar como si cubriera todo el planeta. Las notas automática
 duran 0,45 s dentro de cada paso de 0,50 s.
 
 La intensidad relativa se convierte linealmente en una de las 15 notas
-pentatónicas del SPEC. La escala mayor y el timbre son provisionales para que
-el equipo los evalúe escuchando. Los pesos de una imagen no son µg/m³ ni una
+pentatónicas del SPEC. La escala y los timbres se conservaron para esta versión
+después de la escucha del equipo. Los pesos de una imagen no son µg/m³ ni una
 medida de lo que se respira; el mapa de fondo y las mezclas añaden error.
 
 Cada aerosol usa la misma regla de nota y su propio timbre: cuerda sintetizada
@@ -186,6 +194,9 @@ reutilizar su audio.
 La primera versión de la pista 1 está publicada en:
 
 **https://dalgenisdalgenis-hue.github.io/listen-to-earth/**
+
+Versión inglesa directa:
+**https://dalgenisdalgenis-hue.github.io/listen-to-earth/?lang=en**
 
 GitHub Pages despliega desde `main` → `/docs`. El enlace no depende de un
 entorno de IA y puede compartirse directamente con el jurado.

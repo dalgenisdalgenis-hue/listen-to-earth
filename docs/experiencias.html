@@ -6,23 +6,27 @@
   <meta name="description" content="Elige una de tres formas de escuchar la visualización de aerosoles de la NASA.">
   <meta name="theme-color" content="#07131c">
   <title>Elige una experiencia · Listen to Earth</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/styles.css">
+  <script defer src="js/strings.es.js"></script>
+  <script defer src="js/strings.en.js"></script>
+  <script defer src="js/i18n.js"></script>
 </head>
-<body class="static-page experiences-page">
-  <a class="skip" href="#experiences">Ir al contenido</a>
+<body class="static-page experiences-page" data-page-title="pageTitleExperiences" data-meta-description="metaExperiences">
+  <a class="skip" href="#experiences" data-text="skip">Ir al contenido</a>
   <header class="site-header">
     <a class="brand" href="index.html">Listen to Earth</a>
-    <nav aria-label="Navegación principal"><a href="index.html">Inicio</a><a href="guia.html">Guía de uso</a><a href="creditos.html">Créditos y fuentes</a></nav>
+    <nav aria-label="Navegación principal" data-label="navLabel"><a href="index.html" data-text="navHome">Inicio</a><a href="guia.html" data-text="navGuide">Guía de uso</a><a href="creditos.html" data-text="creditsNav">Créditos y fuentes</a></nav>
   </header>
   <main id="experiences" class="experience-chooser standalone-chooser">
-    <div class="chooser-heading"><p class="eyebrow">Tres formas de escuchar</p><h1>¿Cómo quieres escuchar la Tierra?</h1><p>Cada opción tiene su propia página y una sola forma de recorrer el mapa. Elige un viaje automático o toma el control de la exploración.</p></div>
+    <div class="chooser-heading"><p class="eyebrow" data-text="chooserEyebrow">Tres formas de escuchar</p><h1 data-text="chooserTitle">¿Cómo quieres escuchar la Tierra?</h1><p data-text="chooserIntro">Cada opción tiene su propia página y una sola forma de recorrer el mapa. Elige un viaje automático o toma el control de la exploración.</p></div>
     <div class="experience-cards">
-      <a class="experience-card journey-card" href="viaje-del-polvo.html"><span class="experience-number" aria-hidden="true">01 · AUTOMÁTICO</span><span class="experience-icon" aria-hidden="true">→</span><strong>Viaje del polvo</strong><span>Sigue una franja tropical desde África hasta la longitud de República Dominicana. Escucharás 30 muestras en unos 15 segundos.</span><span class="card-action">Entrar al viaje →</span></a>
-      <a class="experience-card world-card" href="planeta-completo.html"><span class="experience-number" aria-hidden="true">02 · AUTOMÁTICO</span><span class="experience-icon" aria-hidden="true">◎</span><strong>Planeta completo</strong><span>Una línea vertical atraviesa el mundo en 60 pasos. Cada paso analiza 12 bandas de latitud para conservar aerosoles localizados.</span><span class="card-action">Escuchar el planeta →</span></a>
-      <a class="experience-card explore-card" href="exploracion-manual.html"><span class="experience-number" aria-hidden="true">03 · MANUAL</span><span class="experience-icon" aria-hidden="true">⌖</span><strong>Exploración manual</strong><span>Mueve un cuadro amarillo con las flechas y escucha una zona a la vez. La tecla R te lleva a República Dominicana.</span><span class="card-action">Explorar el mapa →</span></a>
+      <a class="experience-card journey-card" href="viaje-del-polvo.html"><span class="experience-number" aria-hidden="true" data-text="experienceCardJourneyNumber">01 · AUTOMÁTICO</span><span class="experience-icon" aria-hidden="true">→</span><strong data-text="experienceCardJourneyTitle">Viaje del polvo</strong><span data-text="experienceCardJourneyText">Sigue una franja tropical desde África hasta la longitud de República Dominicana. Escucharás 30 muestras en unos 15 segundos.</span><span class="card-action" data-text="enterJourney">Entrar al viaje →</span></a>
+      <a class="experience-card world-card" href="planeta-completo.html"><span class="experience-number" aria-hidden="true" data-text="experienceCardWorldNumber">02 · AUTOMÁTICO</span><span class="experience-icon" aria-hidden="true">◎</span><strong data-text="experienceCardWorldTitle">Planeta completo</strong><span data-text="experienceCardWorldText">Una línea vertical atraviesa el mundo en 60 pasos. Cada paso analiza 12 bandas de latitud para conservar aerosoles localizados.</span><span class="card-action" data-text="enterWorld">Escuchar el planeta →</span></a>
+      <a class="experience-card explore-card" href="exploracion-manual.html"><span class="experience-number" aria-hidden="true" data-text="experienceCardExploreNumber">03 · MANUAL</span><span class="experience-icon" aria-hidden="true">⌖</span><strong data-text="experienceCardExploreTitle">Exploración manual</strong><span data-text="experienceCardExploreText">Mueve un cuadro amarillo con las flechas y escucha una zona a la vez. La tecla R te lleva a República Dominicana.</span><span class="card-action" data-text="enterExplore">Explorar el mapa →</span></a>
     </div>
-    <p class="chooser-note">¿Es tu primera visita? <a href="guia.html">Lee la guía de uso</a> antes de comenzar.</p>
+    <p class="chooser-note"><span data-text="firstVisit">¿Es tu primera visita?</span> <a href="guia.html" data-text="readGuide">Lee la guía de uso</a> <span data-text="beforeStarting">antes de comenzar.</span></p>
   </main>
-  <footer><div><p class="footer-brand">Listen to Earth</p><p>Liceo Científico Dr. Miguel Canela Lázaro · República Dominicana</p></div><div class="footer-actions"><a href="index.html">Inicio</a><a class="button ghost" href="creditos.html">Créditos y fuentes</a></div></footer>
+  <footer><div><p class="footer-brand">Listen to Earth</p><p data-text="footer">Liceo Científico Dr. Miguel Canela Lázaro · República Dominicana</p></div><div class="footer-actions"><a href="index.html" data-text="navHome">Inicio</a><a class="button ghost" href="creditos.html" data-text="creditsNav">Créditos y fuentes</a></div></footer>
 </body>
 </html>

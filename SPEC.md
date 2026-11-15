@@ -24,7 +24,9 @@ Una página web estática que convierte en música la visualización oficial de 
 - **Se publica en GitHub Pages desde `/docs`** del repo `dalgenisdalgenis-hue/listen-to-earth`.
 - **Tiene que funcionar con internet lento.** Usar la imagen de 1920×1080, no una mayor.
 - **El audio solo arranca tras un clic o toque del usuario** (política de los navegadores).
-- **Español**, pero con todos los textos en una tabla de cadenas aparte desde el primer momento, para poder añadir inglés sin rehacer la página.
+- **Español e inglés**, con todos los textos en tablas de cadenas separadas,
+  selector ES/EN accesible y conservación del idioma entre páginas. Español
+  sigue siendo el idioma predeterminado; `?lang=en` abre la versión inglesa.
 
 ## 2. Los datos
 

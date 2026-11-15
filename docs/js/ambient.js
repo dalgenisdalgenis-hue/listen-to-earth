@@ -3,6 +3,7 @@
 (() => {
   const button = document.getElementById('ambient-toggle');
   const status = document.getElementById('ambient-status');
+  const text = window.ListenToEarth?.text;
   if (!button || !status || !window.Tone) return;
 
   const chords = [
@@ -49,10 +50,10 @@
       output.volume.rampTo(-18, 0.7);
       playPhrase();
       button.setAttribute('aria-pressed', 'true');
-      button.innerHTML = '<span aria-hidden="true">Ⅱ</span> Pausar ambientación';
-      status.textContent = 'Ambientación artística activada. No representa datos de aerosoles.';
+      button.innerHTML = `<span aria-hidden="true">Ⅱ</span> ${text?.ambientPause || 'Pausar ambientación'}`;
+      status.textContent = text?.ambientActive || 'Ambientación artística activada. No representa datos de aerosoles.';
     } catch {
-      status.textContent = 'El navegador no permitió iniciar la ambientación. Puedes intentarlo otra vez.';
+      status.textContent = text?.ambientError || 'El navegador no permitió iniciar la ambientación. Puedes intentarlo otra vez.';
     }
   }
 
@@ -69,8 +70,8 @@
       }
     }, 550);
     button.setAttribute('aria-pressed', 'false');
-    button.innerHTML = '<span aria-hidden="true">♪</span> Activar ambientación';
-    if (announce) status.textContent = 'Ambientación pausada. No representa datos de aerosoles.';
+    button.innerHTML = `<span aria-hidden="true">♪</span> ${text?.ambientStart || 'Activar ambientación'}`;
+    if (announce) status.textContent = text?.ambientPaused || 'Ambientación pausada. No representa datos de aerosoles.';
   }
 
   button.addEventListener('click', () => playing ? stop() : start());

@@ -142,6 +142,15 @@ conservan en [historial/](historial/).
     se conservan únicamente en entradas históricas. `PUBLICACION.md` registra
     el enlace actual y la decisión del equipo de conservarlo sin mover el
     repositorio, configurar un dominio ni añadir una redirección.
+17. **Versión bilingüe ES/EN:** las siete páginas visibles comparten dos
+    diccionarios de 384 textos y un selector accesible en el encabezado. El
+    idioma modifica títulos, descripciones, controles, estados dinámicos,
+    tablas y textos científicos; se conserva al navegar y puede abrirse con
+    `?lang=en`. No se añadió ninguna dependencia, API ni compilación.
+
+    Se verificó la igualdad de claves y marcadores, el orden de carga y las
+    referencias del HTML. En Chromium se comprobó el cambio de idioma, los
+    enlaces internos, la carga del mapa y la vista de 390 px sin desbordamiento.
 
 ## Decisiones y correcciones documentadas
 
@@ -152,7 +161,8 @@ conservan en [historial/](historial/).
   sulfatos 0,073 en 1/5. El promedio histórico daba sal marina 0,300.
 - La tecla R usa (587,429) con ventana 3×3 y sal marina 0,608.
 - Se usa el mapeo lineal exacto del SPEC para la pista 1 y las 15 frecuencias
-  indicadas. La escala mayor queda en una constante, provisional.
+  indicadas. La escala mayor y los timbres se conservaron en esta versión
+  después de la escucha del equipo.
 - Las celdas no se clasifican por el color más parecido: conservan los
   cuatro pesos. El selector elige qué pesos sonificar; no vuelve a ajustar
   RGB a una matriz reducida ni normaliza los pesos elegidos.
@@ -199,7 +209,10 @@ intensidad, cobertura, fondo neutral, residuo y evidencia. Carbono negro
 mundial aparece en 21 longitudes y 44 zonas. El selector pasa 16 combinaciones
 sobre 317 resultados. Tone simulado comprueba `√cobertura` y notas de 0,45 s.
 La prueba de eventos comprueba el penúltimo paso con polvo y el resumen final.
-Estas pruebas no acreditan percepción acústica.
+Estas pruebas automatizadas no acreditan percepción acústica. Por separado,
+el equipo informó haber probado controles y sonidos en teléfono y computadora.
+La interfaz bilingüe pasó la verificación de 384 claves y la navegación fue
+comprobada en Chromium de escritorio y móvil.
 
 Los bloques siguientes conservan resultados de etapas anteriores para mostrar
 la evolución y no deben confundirse con el algoritmo zonal vigente.
@@ -284,8 +297,9 @@ Tone.js; no se descargan muestras de instrumentos.
 
 Los cuatro instrumentos pueden sonar a la vez con el mismo instante de
 ataque. Se mantiene una voz por instrumento, con un limitador compartido.
-Son timbres provisionales; todavía no se ha comprobado su identidad auditiva
-en navegador, en altavoz mono ni con personas usuarias.
+El equipo escuchó los timbres y la mezcla en teléfono y computadora y los
+conservó para esta versión. Esa aprobación no equivale a una evaluación
+estructurada con participantes externos ni con usuarios de lector de pantalla.
 
 Si ninguna capa seleccionada supera las guardas, la muestra queda en silencio.
 Con todas las casillas apagadas también hay silencio. Un instrumento con
@@ -302,13 +316,11 @@ La primera versión de la pista 1 quedó publicada mediante GitHub Pages desde
 `main` → `/docs` en `https://dalgenisdalgenis-hue.github.io/listen-to-earth/`.
 El despliegue y los recursos públicos esenciales respondieron correctamente.
 
-El siguiente paso es ejecutar la lista manual en navegadores y altavoz reales,
-con especial atención a la audibilidad de carbono negro y a la claridad de la
-mezcla. La regla está implementada, pero no se presenta como validada
-acústicamente hasta completar esa escucha.
-Quedan también las preferencias de accesibilidad (voz opcional, pantalla
-oscura, tamaño de letra, contraste y movimiento reducido), las pruebas
-humanas y de navegador. Por instrucción del usuario, no se inicia MERRA-2 ni
+La comprobación básica en teléfono y computadora ya fue realizada por el
+equipo. El siguiente paso es la etapa final de accesibilidad: lectores de
+pantalla y preferencias como voz opcional, pantalla oscura, tamaño de letra,
+contraste y movimiento reducido, además de pruebas estructuradas con más
+personas. Por instrucción del usuario, no se inicia MERRA-2 ni
 las pistas 2 y 3 hasta nuevo aviso; no se han inventado datos para sustituirlo.
 
 ## Comportamiento y límites del temporizador
@@ -328,6 +340,7 @@ las pistas 2 y 3 hasta nuevo aviso; no se han inventado datos para sustituirlo.
   borde este y 5 en el oeste. No se añaden píxeles del extremo opuesto.
 - El resultado final tropical sigue siendo un promedio de la franja, no una
   lectura puntual de RD. No se cambia automáticamente el aerosol seleccionado.
-- El entorno declara escritorio disponible pero no ofrece herramienta de
-  control del navegador en esta sesión. No se han ejecutado pruebas reales
-  de navegador ni de audio; siguen pendientes y se describen en PRUEBAS.md.
+- La navegación ES/EN se comprobó en Chromium de escritorio y a 390 px. El
+  equipo además informó pruebas de controles y sonidos en teléfono y
+  computadora. NVDA/VoiceOver y la red lenta siguen pendientes y se describen
+  en PRUEBAS.md.

@@ -34,7 +34,7 @@ con MERRA-2 permanecen detenidas hasta nueva instrucción del equipo.
 
 - **Un instrumento por tipo de aerosol**, para distinguirlos sin mirar. Por defecto solo suena el **polvo**; con una tecla se añaden los demás.
 - **Una textura para la imagen completa** suena debajo de los instrumentos. Resume la suma válida de los cuatro aerosoles mediante volumen y brillo, no mediante otra nota. Se puede apagar o ajustar sin cambiar los datos.
-- **Más cantidad → nota más aguda**, siempre dentro de una **escala pentatónica mayor** de tres octavas desde Sol3 (196 Hz), para que nunca desafine. *(Mayor es provisional: se escucha con datos reales antes de darla por buena.)*
+- **Más cantidad → nota más aguda**, siempre dentro de una **escala pentatónica mayor** de tres octavas desde Sol3 (196 Hz), para que nunca desafine. La escala y los timbres se conservaron para esta versión después de la escucha del equipo.
 - **Más extensión espacial → mayor volumen.** En los recorridos revisados, la
   altura representa la intensidad media local y el volumen representa cuántas
   bandas de latitud contienen ese aerosol.
@@ -81,7 +81,8 @@ En la pista 1 el mapeo de intensidad relativa a las 15 notas es **lineal**, con 
 - GitHub Pages desde `docs/`. Sin backend, base de datos, cuentas ni API de pago.
 - El audio solo inicia tras un gesto del usuario.
 - **La aplicación vive fuera de cualquier IA:** el jurado abre un enlace propio, sin cuentas y sin llamadas a servicios de IA en tiempo de uso. Las maquetas hechas en un asistente son prototipo, nunca la entrega.
-- **Español, con la estructura preparada desde el primer día** para añadir un botón de inglés sin rehacer la página.
+- **Español e inglés** en las mismas páginas, con selector ES/EN, preferencia
+  persistente y enlaces internos que conservan el idioma.
 
 ## Accesibilidad desde el primer día
 
@@ -109,8 +110,10 @@ En la pista 1 el mapeo de intensidad relativa a las 15 notas es **lineal**, con 
 cuadrícula, barrido zonal automático, selector, tecla R y aviso final. Se
 compararon con SciPy 311 muestras puntuales y 870 bandas; carbono negro aparece
 en 21 longitudes mundiales y 44 de 720 zonas. El audio simulado comprueba
-cobertura, duración de 0,45 s y silencio, pero las pruebas en navegador y de
-audio real siguen pendientes. Las pistas 2 y 3 quedan detenidas. Ver
+cobertura, duración de 0,45 s y silencio. El equipo probó controles y sonidos
+en teléfono y computadora; la navegación bilingüe también se comprobó en
+Chromium de escritorio y móvil. Las pruebas con NVDA/VoiceOver siguen
+pendientes y las pistas 2 y 3 quedan detenidas. Ver
 [REGISTRO_CAMBIOS.md](REGISTRO_CAMBIOS.md),
 [METODOLOGIA_SONIFICACION.md](METODOLOGIA_SONIFICACION.md) y
 [PRUEBAS.md](PRUEBAS.md).

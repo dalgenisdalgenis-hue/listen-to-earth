@@ -8,10 +8,10 @@
     <a class="skip" href="#content" data-text="skip"></a>
     <header class="site-header">
       <a class="brand" href="index.html">Listen to Earth</a>
-      <nav aria-label="Navegación principal">
-        <a href="experiencias.html">Experiencias</a>
-        <a href="guia.html">Guía de uso</a>
-        <a href="creditos.html">Créditos y fuentes</a>
+      <nav aria-label="Navegación principal" data-label="navLabel">
+        <a href="experiencias.html" data-text="navExperiences"></a>
+        <a href="guia.html" data-text="navGuide"></a>
+        <a href="creditos.html" data-text="creditsNav"></a>
       </nav>
     </header>
 
@@ -88,6 +88,6 @@
         </section>
       </div>
     </main>
-    <footer><div><p class="footer-brand">Listen to Earth</p><p data-text="footer"></p></div><div class="footer-actions"><a href="guia.html">Guía de uso</a><a class="button ghost" href="creditos.html">Créditos y fuentes</a></div></footer>
+    <footer><div><p class="footer-brand">Listen to Earth</p><p data-text="footer"></p></div><div class="footer-actions"><a href="guia.html" data-text="navGuide"></a><a class="button ghost" href="creditos.html" data-text="creditsNav"></a></div></footer>
   `);
 })();
