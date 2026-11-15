@@ -240,9 +240,9 @@ footer p { margin: .2rem 0; }
 .simple-landing, .static-page { min-height: 100vh; display: flex; flex-direction: column; }
 .simple-landing main, .static-page main { flex: 1; }
 .simple-landing .landing-hero { min-height: calc(100vh - 4.2rem); }
-.simple-landing h1 { max-width: 14ch; font-size: clamp(3rem, 7.5vw, 6.8rem); }
+.simple-landing h1 { max-width: 16ch; font-size: clamp(2.6rem, 5vw, 4.8rem); }
 .simple-landing h1 span { display: block; }
-.simple-landing h1 span:last-child { color: var(--yellow); }
+.simple-landing h1 span:last-child { max-width: 19ch; margin-top: .45em; color: var(--yellow); font-size: .58em; letter-spacing: -.035em; }
 .landing-actions { align-items: center; }
 .sound-button { border: 1px solid var(--cyan); color: #fff; background: rgb(7 19 28 / 72%); }
 .sound-button[aria-pressed="true"] { background: rgb(131 230 239 / 16%); }
@@ -292,10 +292,12 @@ footer p { margin: .2rem 0; }
 .playback-controls .tempo-control output { grid-column: 1; }
 .map-section { position: sticky; top: 4.6rem; }
 .map-panel:focus-visible { outline: 4px solid var(--yellow); outline-offset: 5px; }
+.map-readout { min-height: 5.6rem; margin: 1rem 0 0; }
 body[data-experience="journey"] #audio-controls,
 body[data-experience="world"] #audio-controls { display: none; }
 body[data-experience="explore"] .playback-workspace { grid-template-columns: 1fr; }
 body[data-experience="explore"] .map-section { position: static; }
+body[data-experience="explore"] .map-readout { display: none; }
 body[data-experience="explore"] .map-section .section-heading { grid-template-columns: auto minmax(0, 1fr); gap: clamp(1rem, 4vw, 2.5rem); }
 
 @media (max-width: 1050px) {
@@ -309,7 +311,8 @@ body[data-experience="explore"] .map-section .section-heading { grid-template-co
   .site-header nav { max-width: 68vw; overflow-x: auto; padding: .2rem 0 .45rem; }
   .site-header nav a { display: inline-block; flex: 0 0 auto; }
   .simple-landing .landing-hero { min-height: calc(100vh - 4rem); }
-  .simple-landing h1 { font-size: clamp(2.8rem, 14vw, 4.8rem); }
+  .simple-landing h1 { font-size: clamp(2.4rem, 10vw, 3.8rem); }
+  .simple-landing h1 span:last-child { font-size: .62em; }
   .landing-actions .button { width: 100%; }
   .guide-section, .source-feature { grid-template-columns: 1fr; }
   .full-key-list { grid-template-columns: 1fr; }

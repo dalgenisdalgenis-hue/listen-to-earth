@@ -79,6 +79,10 @@ equipo está en [SPEC.md](SPEC.md); no se ha modificado su contenido.
    composición ambiental original generada con Tone.js: no se inicia al
    cargar, se identifica como artística y se detiene al ocultar o abandonar
    la página. No modifica la sonificación de los datos.
+10. **Estabilidad visual del recorrido:** la lectura dinámica de cada paso se
+    mueve debajo del mapa para que los cambios de longitud no desplacen la
+    imagen. En la portada se reduce el tamaño del título y la segunda frase,
+    “Y todos merecemos escucharla”, pasa a una jerarquía tipográfica menor.
 
 ## Decisiones y correcciones documentadas
 
