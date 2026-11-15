@@ -127,9 +127,10 @@ completa de cuatro colores y se conservan al encender o apagar capas.
 - `SPEC.md`: especificación actual proporcionada por el equipo.
 - `historial/`: versiones de documentos recibidas durante el trabajo.
 
-GitHub Pages se configurará desde **Settings → Pages → Deploy from a branch
-→ main → /docs** cuando el equipo integre los cambios. Esta entrega en una
-rama de desarrollo no implica que la página ya esté publicada.
+La primera versión de la pista 1 está integrada en `main`. GitHub Pages se
+configura desde **Settings → Pages → Deploy from a branch → main → /docs**.
+El sitio solo está publicado cuando GitHub muestre el despliegue correcto y
+el enlace `https://dalgenisdalgenis-hue.github.io/listen-to-earth/` responda.
 
 Todo el cálculo y audio ocurren en el navegador. No hay backend, base de
 datos, claves, CDN ni API externa. La imagen se precarga y se mantiene en la
