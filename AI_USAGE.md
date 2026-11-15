@@ -10,7 +10,12 @@ Declaración conforme a los términos del NASA Space Apps Challenge 2026.
 
 ## Qué hizo la IA y qué hizo el equipo
 
-**El equipo decidió:** el enfoque del proyecto, el público, los ODS que se muestran, qué aerosoles suenan y cómo, el recorrido de la imagen, la estructura de la página, el idioma, quién habla, la escala musical y qué hacer cuando el barrido llega a RD sin polvo. Las decisiones están registradas una por una, con su fecha, en los documentos de trabajo del equipo.
+**El equipo decidió:** el enfoque del proyecto, el público, qué aerosoles
+suenan y cómo, el recorrido de la imagen, la estructura, el idioma, la escala
+musical y qué hacer cuando el barrido llega a RD sin polvo. El 15-nov-2026
+también aprobó sustituir el promedio vertical completo por bandas de latitud y
+representar por separado intensidad y cobertura. Las decisiones están
+registradas con su fecha en los documentos de trabajo.
 
 **La IA hizo:** medir archivos, buscar y verificar fuentes, redactar borradores que el equipo corrige, y programar módulos bajo instrucción. Cuando la IA recomendó una opción, lo hizo con los datos a la vista y el equipo confirmó o cambió la decisión.
 
@@ -31,11 +36,19 @@ Con la imagen oficial del SVS 5669 y su barra de colores descargadas por el equi
 1. **Colores de la leyenda:** se extrajeron los cuatro rectángulos de la barra oficial. Resultado: Black Carbon (210, 94, 69), Dust (193, 154, 220), Sea Salt (133, 170, 169), Sulfate (83, 220, 52). **Esto corrigió un error que el equipo arrastraba en sus documentos**, donde tres de los cuatro colores estaban mal descritos y el carbono negro aparecía como «humo».
 2. **Correspondencia con el planeta:** plate carrée completa estirada a 16:9, verificada contra Cabo Agulhas con 4 a 7 píxeles de error. La Española ocupa 33 × 15 píxeles.
 3. **Método de lectura del color:** se comparó la descomposición no negativa con el método del color más parecido. La primera reconstruye las zonas de aerosol fuerte con un 1 a 5 % de error; la segunda pierde componentes de forma demostrable en mezclas. El equipo eligió la primera con estos datos delante.
-4. **Perfil del barrido:** el procedimiento actual del SPEC usa 30 pasos uniformes de 20°E a 69,9°O, con columnas de 9 píxeles y franja 12–22°N. El máximo es 0,879, el valle muestreado es 0,052 y los últimos dos pasos tienen polvo 0,000. El punto de RD se consulta aparte con ventana 3×3: polvo 0,000 y sal marina 0,608. Los valores antiguos procedían de otro muestreo.
+4. **Perfil del primer barrido:** la versión inicial usa 30 pasos uniformes de
+   20°E a 69,9°O, con columnas de 9 píxeles y franja 12–22°N. El máximo es
+   0,879, el valle muestreado es 0,052 y los últimos dos pasos tienen polvo
+   0,000. El punto de RD se consulta aparte con ventana 3×3: polvo 0,000 y sal
+   marina 0,608. Estos valores quedan como referencia histórica mientras se
+   implementa la revisión por bandas.
 
 ## Implementación y comprobaciones con Codex (14-nov-2026)
 
-- Los estudiantes proporcionaron el SPEC, las imágenes originales y `medir_imagen.py`. El SPEC actualizado se conserva íntegro; las versiones recibidas y documentos originales se archivan en `historial/`.
+- Los estudiantes proporcionaron el SPEC, las imágenes originales y
+  `medir_imagen.py`. Las versiones recibidas se conservan sin reescribir en
+  `historial/`; el `SPEC.md` activo sí se actualiza cuando el equipo aprueba una
+  decisión posterior.
 - Se implementó NNLS por conjunto activo y se comparó con SciPy en 371 muestras, incluidas las 96 posiciones de exploración y las 30 columnas de cada modo de barrido. Los perfiles se usan como comprobación, no como una melodía pregrabada que sustituya la imagen.
 - La discrepancia de sal marina en RD se resolvió al explicitar la ventana de muestreo. También se registró la discrepancia pendiente de las longitudes de la tabla resumida del SPEC.
 - Se añadieron pruebas de navegación y audio con objetos simulados, identificadas como tales. No acreditan el sonido real ni la accesibilidad con NVDA/VoiceOver.
@@ -87,6 +100,21 @@ aportado por el equipo, Codex añadió una textura sostenida calculada con la
 suma limitada de los cuatro pesos que pasan las guardas. La textura modifica
 volumen y filtro, no la altura de las notas existentes. Se acredita a SYSTEM
 Sounds como inspiración y no se copia su audio.
+
+Actualización de investigación y método (15-nov-2026): el equipo aportó el PDF
+de la página de NASA Ciencia “Escucha el universo: sonificación de datos y
+documental de la NASA”. Codex extrajo y leyó sus seis páginas y distinguió los
+principios publicados por NASA de las decisiones propias del proyecto. El
+artículo respalda la traducción explícita de información a sonido y el origen
+accesible del trabajo de Chandra, pero no prescribe una fórmula para aerosoles.
+
+Codex midió la diferencia entre promediar la columna mundial completa y
+dividirla en 12 zonas: el carbono negro pasa de 1 de 30 pasos a presencia en
+15 longitudes y 31 de 360 zonas. A partir de esa evidencia, Codex recomendó
+bandas locales; el equipo aprobó 12 para el mundo, 5 para la ruta tropical,
+altura para intensidad, volumen para cobertura y notas de unos 0,45 s. En esta
+entrega solo se actualizó la documentación: el algoritmo y sus pruebas todavía
+no se cambiaron.
 
 - Una etapa por solicitud; cada entrega incluye qué cambió, cómo comprobarlo y qué limitaciones quedan.
 - **No se afirma que una prueba pasó si no se ejecutó.**

@@ -2,6 +2,11 @@
 
 ## Pruebas automatizadas de desarrollo
 
+> **Estado del 15-nov-2026:** los resultados automatizados descritos abajo
+> corresponden al promedio completo de columnas. La revisión por 12/5 bandas
+> está aprobada, pero todavía no implementada. Después del cambio deberán
+> actualizarse los valores esperados y volver a ejecutarse todas las pruebas.
+
 Python y Node se usan únicamente para comprobar el código. El navegador del
 jurado no los necesita y la web no tiene proceso de compilación.
 
@@ -105,6 +110,31 @@ puede impedir leer el canvas.
 12. Pulsar R durante y después del recorrido. Debe pausarlo si está en marcha,
     mostrar un marcador pequeño sobre RD y describir el punto 3×3: polvo 0,000,
     sal marina aproximadamente 0,608. No debe presentarlo como la franja 0,300.
+
+## Pruebas requeridas para la revisión por bandas
+
+1. Comparar JavaScript con SciPy para las 360 bandas del recorrido mundial y
+   las 150 bandas del viaje tropical, además de bordes y casos sintéticos.
+2. Confirmar 12 bandas de 15° en el mundo y 5 bandas de 2° en 12–22°N, sin
+   huecos, solapamientos ni pérdida de píxeles por redondeo.
+3. Para cada aerosol comprobar por separado intensidad media elegible,
+   cobertura y guardas. Una banda con residuo mayor de 0,10 no cuenta.
+4. Verificar el diagnóstico de referencia: carbono negro mundial en 15 de 30
+   longitudes y 31 de 360 zonas. Investigar cualquier diferencia antes de
+   cambiar el valor esperado.
+5. Confirmar que el Pacífico limpio no produce notas falsas y que el mapa base
+   o las luces urbanas no activan mezclas espurias de forma sistemática.
+6. Comprobar que altura cambia con intensidad y volumen con cobertura sin que
+   el selector o el control de volumen alteren los datos calculados.
+7. Verificar una duración próxima a 0,45 s a tempo 100 %, liberación al pausar,
+   detener u ocultar la pestaña y ausencia de notas atascadas.
+8. Mostrar en texto y tablas intensidad y cobertura, incluido “zonas activas
+   de zonas totales”, sin llamarlas concentraciones.
+9. Escuchar carbono negro, polvo, sulfato y sal marina por separado y juntos
+   en un navegador real y altavoz mono. Ajustar la curva de volumen solo con
+   resultados anotados; las pruebas simuladas no acreditan percepción.
+10. Volver a ejecutar la lista completa y publicar únicamente cuando la guía,
+    los créditos y el comportamiento describan la misma regla.
 
 ## Prueba manual pendiente de presentación, guía y créditos
 

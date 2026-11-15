@@ -1,6 +1,12 @@
 # Listen to Earth — Especificación para programar
 
-*Documento autocontenido. Quien lo lea debería poder programar la aplicación sin consultar nada más. 14-nov-2026.*
+*Documento autocontenido. Quien lo lea debería poder programar la aplicación
+sin consultar nada más. Revisión del equipo: 15-nov-2026.*
+
+> **Estado de la revisión:** la sonificación por bandas de latitud descrita en
+> este documento fue aprobada después de revisar referencias de NASA y medir
+> el problema del promedio de polo a polo. Todavía no está implementada en la
+> versión publicada. Las pruebas existentes corresponden al método anterior.
 
 ---
 
@@ -70,6 +76,30 @@ Caja: -71,875 / 17,5 / -68,75 / 19,5. Conversión: µg/m³ = kg/m³ × 1e9.
 
 Valores conocidos para verificar: junio promedio 7,8 µg/m³; diciembre 0,16. Máximos: junio 2010 y junio 2014 con 12,6. Junio 2020 («Godzilla») = 11,3, puesto 10 de 540.
 
+### 2.4 Base investigada para la sonificación
+
+NASA Ciencia define la sonificación como la traducción de datos en sonidos y
+explica que el proyecto de Chandra añade una representación sonora a
+información científica que normalmente se convierte en imágenes. Ese proyecto
+nació de trabajos dirigidos a personas ciegas y con discapacidad visual, pero
+también alcanza a públicos más amplios.
+
+La referencia Caldwell 73 de NASA/SYSTEM Sounds muestra otro principio útil:
+propiedades identificables de la imagen se asignan a propiedades sonoras y los
+grupos visuales reciben timbres distintos. Listen to Earth adopta ese principio
+de correspondencias explícitas, no su audio ni su regla astronómica.
+
+Por decisión del equipo:
+
+- posición este→oeste = tiempo;
+- tipo/color del aerosol = timbre;
+- intensidad relativa local = altura;
+- extensión o cobertura espacial = volumen.
+
+NASA no prescribe las 12 o 5 bandas ni esta fórmula concreta. Esas decisiones
+proceden del análisis del PNG y se justifican en
+`METODOLOGIA_SONIFICACION.md`.
+
 ## 3. El algoritmo central: de color a cantidad
 
 > **El script que produce todos los números de esta sección está en el repositorio: `scripts/medir_imagen.py`.** Ejecútalo para reproducirlos y para comprobar que tu implementación en JavaScript da lo mismo. Trae cuatro comprobaciones que deben pasar.
@@ -86,10 +116,13 @@ Valores conocidos para verificar: junio promedio 7,8 µg/m³; diciembre 0,16. M�
 | 7×7 | (54, 78, 75) | 0,000 | 0,424 |
 | 9×9 | (50, 73, 70) | 0,000 | 0,393 |
 
-Todas son correctas; miden cosas distintas. **El SPEC fija estas dos reglas:**
+Todas son correctas; miden cosas distintas. **El SPEC fija estas reglas:**
 
 - **Consulta puntual** (tecla R, cursor con flechas): **promedio de 3×3** centrado en el píxel. Cubre unos 60 × 54 km a la latitud de RD, parecido a una celda de MERRA-2 (55 × 65 km), que es lo que suena en las pistas 2 y 3. Un píxel suelto es ruidoso; de 5×5 en adelante se sale de La Española, que mide 33 × 15 px.
-- **Cada paso del barrido:** promedio de una **columna de 9 píxeles de ancho**, alta desde el borde sur hasta el borde norte de la franja.
+- **Cada paso del barrido:** columna de **9 píxeles de ancho**, dividida antes
+  de descomponer el color: 12 bandas de 15° para el mundo entero y 5 bandas de
+  2° para la franja 12–22°N. Se promedia RGB dentro de cada banda, no en toda
+  la altura de una vez.
 
 ### 3.1 El método
 
@@ -131,7 +164,8 @@ function suena(peso, residuo) {
 
 **Por qué la segunda.** El sistema está subdeterminado (cuatro aerosoles, tres canales de color), así que en píxeles oscuros encuentra repartos que ajustan mal. Ejemplo real: el océano limpio del Pacífico sur da sal marina **0,089**, que pasaría el umbral, pero con **20,5 % de residuo**. Las zonas de aerosol real tienen entre **1 % y 4 %**. El residuo es la señal de que no hay que fiarse.
 
-Si no pasa las dos guardas: **clic suave**, nada de nota.
+Si no pasa las dos guardas: silencio para ese aerosol. El equipo retiró el clic
+porque se confundía con los sonidos de los datos.
 
 ### 3.3 Limitaciones del método (hay que declararlas en la página)
 
@@ -164,14 +198,33 @@ La imagen global convertida en sonido.
 **Barrido automático** (es lo principal): una línea cruza la imagen de **este a oeste**, siguiendo el polvo de África hacia el Caribe, en **~30 pasos** y **unos 15 segundos**. Se puede pausar, repetir e ir más lento.
 
 Dos modos, que se cambian con una tecla:
-- **«El viaje del polvo»** (por defecto): franja tropical **12°N a 22°N**, de **20°E a 69,9°O**. Es la banda por donde realmente cruza el polvo, y termina en la **longitud de RD**. En cada paso se promedia la columna de píxeles de esa franja.
-- **«El mundo entero»**: barre todo el planeta.
+- **«El viaje del polvo»** (por defecto): franja tropical **12°N a 22°N**, de
+  **20°E a 69,9°O**. Cada paso divide esa franja en 5 bandas de 2°.
+- **«El mundo entero»**: barre todo el planeta y divide cada paso en 12 bandas
+  de 15°.
+
+En cada banda se promedia RGB, se ejecuta NNLS y se aplican las dos guardas.
+Para cada aerosol, la **intensidad** del paso es la media de los pesos en las
+bandas elegibles y la **cobertura** es la fracción de bandas elegibles. La
+intensidad controla la nota; la cobertura controla el volumen. La interfaz
+debe mostrar ambos números.
+
+**Por qué cambió:** el promedio anterior de una columna mundial completa hacía
+audible el carbono negro en solo 1 de 30 pasos. Las mismas columnas divididas
+en 12 bandas lo encuentran en 15 longitudes y 31 de 360 zonas. El promedio
+vertical estaba ocultando plumas localizadas.
 
 ⚠️ **El final del barrido y la tecla R son dos lugares distintos, y hay que decirlo.**
-- El **último paso del barrido** es el **promedio de la franja 12°N–22°N** (columna de 9 px) en la longitud 69,9°O. Allí: polvo **0,000**, sal marina **0,300**.
+- El valor **histórico de la primera versión** para el último paso fue el
+  promedio completo de la franja 12°N–22°N: polvo **0,000**, sal marina
+  **0,300**. Tras implementar las cinco bandas, el aviso final debe mostrar la
+  nueva intensidad y cobertura y conservar el resultado anterior solo como
+  referencia de pruebas, no como salida vigente.
 - La **tecla R** da el **valor puntual** del píxel de RD (587, 429), a 18,47°N, con ventana 3×3. Allí: polvo **0,000**, sal marina **0,608**.
 
-Los dos dicen que ese día no hubo polvo, pero son números distintos porque uno promedia una banda de 10 grados de alto y el otro es un punto. **El aviso debe distinguirlos**: no presentar el valor de la franja como si fuera «el dato de RD».
+Los dos análisis dicen que ese día no hubo polvo, pero son números distintos
+porque el recorrido resume una franja y R consulta un punto. **El aviso debe
+distinguirlos**: no presentar el resumen zonal como si fuera «el dato de RD».
 
 **Exploración libre:** con las flechas se mueve un cursor por una cuadrícula de **8 × 12** y suena el aerosol de donde está. La resolución es distinta a propósito: el barrido es una melodía y necesita detalle; las flechas necesitan casillas grandes para no perderse.
 
@@ -192,7 +245,8 @@ Medido sobre la imagen real, el perfil del polvo en la franja tropical:
 
 **Ese día el polvo no llegó al país.** Ni en el promedio de la franja (0,000) ni en el punto de RD (0,000, con sal marina 0,608 en ventana 3×3).
 
-El barrido **llega igual hasta RD y el polvo se apaga de verdad**. No queda un bache de audio, porque una zona sin partículas suena como **clic suave** y el texto dice «polvo: nada».
+El barrido **llega igual hasta RD y el polvo se apaga de verdad**. Una zona sin
+partículas queda en silencio y el texto dice «polvo: nada».
 
 **Al terminar, la página avisa:** que ese día no hubo polvo allí, que lo que hay es sal marina, y **ofrece una tecla** para oírla. **No cambiar los aerosoles automáticamente**: rompería el modelo mental de quien eligió «solo polvo» y no está mirando la pantalla.
 
@@ -227,8 +281,14 @@ Cada nota es un mes, de 1980 a 2024 (540 notas, unos 45 segundos). Golpe grave e
 ## 5. La regla del sonido
 
 - **Un instrumento por tipo de aerosol**, para distinguirlos sin mirar. Polvo (cuerdas), carbono negro (tambor), sulfatos (campanas), sal marina (oleaje) — son sugerencias, lo que importa es que se distingan.
-- **Más cantidad → nota más aguda.**
-- **Zona sin partículas = clic suave**, para saber que el cursor se movió. **Umbral 0,05.**
+- **Más intensidad relativa local → nota más aguda.**
+- **Más cobertura espacial → mayor volumen del instrumento.** La cobertura es
+  la fracción de bandas válidas del paso; se aplica antes del volumen elegido
+  por la persona. La curva perceptual exacta debe calibrarse en navegador y
+  altavoz mono antes de declararla validada.
+- **Cada nota automática dura aproximadamente 0,45 s** dentro del paso nominal
+  de 0,50 s, para conservar continuidad sin superponer pasos diferentes.
+- **Zona sin partículas = silencio. Umbral 0,05.**
 - Control de volumen por instrumento y de tempo.
 
 ### Las 15 notas
@@ -253,7 +313,7 @@ const NOTAS_HZ = [196.00, 220.00, 246.94, 293.67, 329.63,
 ```js
 const UMBRAL = 0.05;
 function notaDeIntensidad(i) {
-  if (i < UMBRAL) return null;              // clic suave
+  if (i < UMBRAL) return null;              // silencio
   const t = (i - UMBRAL) / (1 - UMBRAL);
   return Math.round(Math.min(Math.max(t,0),1) * 14);
 }
@@ -352,6 +412,11 @@ work/raw/      originales NASA (excluido de Git)
 - No afirmar que la plataforma está «validada con usuarios» mientras las pruebas no se hayan hecho.
 - No afirmar que esto demuestra cambio climático.
 - No presentar los valores como concentraciones en µg/m³ ni compararlos con las guías de la OMS: la imagen da intensidad relativa, y la serie de MERRA-2 es solo polvo fino.
+- No volver a promediar una columna mundial completa antes de NNLS: diluye las
+  plumas localizadas y hace que su extensión audible no corresponda a la imagen.
+- No atribuir a NASA la elección de 12/5 bandas o las fórmulas de Listen to
+  Earth. NASA aporta las fuentes y precedentes; el equipo diseña y documenta
+  esta traducción.
 
 ## 9. Orden sugerido de trabajo
 

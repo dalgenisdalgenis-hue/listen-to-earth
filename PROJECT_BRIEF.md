@@ -12,7 +12,8 @@ Liceo Científico Dr. Miguel Canela Lázaro · Equipo de seis estudiantes
 Una plataforma web para escuchar la Tierra: convierte la visualización oficial de aerosoles de la NASA en música que cualquier persona puede explorar, vea o no vea. No evalúa al usuario ni le pide respuestas: invita a explorar.
 
 Tres ideas se fusionan:
-- **Ciencia:** el sonido nace de los datos de la imagen; la regla es fija y consultable.
+- **Ciencia:** el sonido nace de los píxeles de una visualización científica;
+  cada correspondencia es fija, consultable y declara sus límites.
 - **Música:** debe sonar bien, no ser un pitido de laboratorio.
 - **Accesibilidad:** todo se puede explorar sin ver la pantalla.
 
@@ -34,6 +35,9 @@ con MERRA-2 permanecen detenidas hasta nueva instrucción del equipo.
 - **Un instrumento por tipo de aerosol**, para distinguirlos sin mirar. Por defecto solo suena el **polvo**; con una tecla se añaden los demás.
 - **Una textura para la imagen completa** suena debajo de los instrumentos. Resume la suma válida de los cuatro aerosoles mediante volumen y brillo, no mediante otra nota. Se puede apagar o ajustar sin cambiar los datos.
 - **Más cantidad → nota más aguda**, siempre dentro de una **escala pentatónica mayor** de tres octavas desde Sol3 (196 Hz), para que nunca desafine. *(Mayor es provisional: se escucha con datos reales antes de darla por buena.)*
+- **Más extensión espacial → mayor volumen.** En los recorridos revisados, la
+  altura representa la intensidad media local y el volumen representa cuántas
+  bandas de latitud contienen ese aerosol.
 - En las pistas 2 y 3, el valor se convierte en altura con una **escala logarítmica de 0,02 a 13 µg/m³**, porque entre el mes más limpio y el más cargado hay más de 600 veces de diferencia. **La misma regla para todos los años:** al comparar solo cambia el timbre.
 - **Zonas sin partículas: silencio.** El clic de posición se retiró por
   decisión posterior del equipo porque se confundía con los sonidos de datos.
@@ -42,7 +46,16 @@ con MERRA-2 permanecen detenidas hasta nueva instrucción del equipo.
 
 La imagen pinta cada tipo de aerosol de un color distinto. Para cada punto hacemos una **descomposición no negativa** del color sobre los cuatro colores de la leyenda oficial: se calcula cuánto hay de cada tipo **a la vez**, así que donde se mezclan dos aerosoles suenan dos instrumentos.
 
-Con el procedimiento actual de `scripts/medir_imagen.py`, la consulta puntual usa **RGB promedio de 3×3 antes de descomponer**: sobre el Sáhara da 0,874 de polvo y 1,9 % de residuo. Cada paso del barrido promedia una columna de 9 píxeles de ancho en la franja elegida. Una nota requiere peso de al menos 0,05 y residuo de hasta 0,10; un residuo bajo tampoco garantiza que el reparto entre aerosoles sea único.
+La consulta puntual usa **RGB promedio de 3×3 antes de descomponer**: sobre el
+Sáhara da 0,874 de polvo y 1,9 % de residuo. Una nota requiere peso de al menos
+0,05 y residuo de hasta 0,10; un residuo bajo tampoco garantiza que el reparto
+entre aerosoles sea único.
+
+La primera versión promedió cada columna completa antes de NNLS. La revisión
+del 15-nov-2026 demostró que ese orden diluye plumas localizadas: el carbono
+negro mundial resulta audible en 1 de 30 pasos, pero aparece en 15 longitudes
+al dividir las franjas en 12 bandas. El equipo aprobó descomponer localmente y
+después resumir intensidad y cobertura. Ver `METODOLOGIA_SONIFICACION.md`.
 
 En la pista 1 el mapeo de intensidad relativa a las 15 notas es **lineal**, con la fórmula del SPEC. El mapeo logarítmico corresponde a MERRA-2 en las pistas 2 y 3.
 
@@ -86,7 +99,15 @@ En la pista 1 el mapeo de intensidad relativa a las 15 notas es **lineal**, con 
 
 ## Validación
 
-**Estado de esta entrega:** implementada la pista 1 con canvas, descomposición, cuadrícula, barrido automático en los dos modos, selector de cuatro aerosoles, tecla R y aviso final que distingue el punto de RD del promedio de la franja. Se ejecutaron comparaciones numéricas de 371 muestras, las 16 combinaciones del selector y pruebas de eventos de app.js y controladores con DOM/Tone/reloj simulados. Las pruebas en navegador y de audio real siguen pendientes; la configuración y validación específica con lectores de pantalla quedan al final por instrucción posterior del usuario. Las pistas 2 y 3 quedan detenidas hasta nuevo aviso. Ver [REGISTRO_CAMBIOS.md](REGISTRO_CAMBIOS.md) y [PRUEBAS.md](PRUEBAS.md).
+**Estado de esta entrega:** implementada la primera versión de la pista 1 con
+canvas, descomposición, cuadrícula, barrido automático, selector, tecla R y
+aviso final. La corrección del barrido por zonas está aprobada y documentada,
+pero todavía no implementada ni probada. Las 371 comparaciones existentes
+corresponden al algoritmo anterior. Las pruebas en navegador y de audio real
+siguen pendientes; las pistas 2 y 3 quedan detenidas hasta nuevo aviso. Ver
+[REGISTRO_CAMBIOS.md](REGISTRO_CAMBIOS.md),
+[METODOLOGIA_SONIFICACION.md](METODOLOGIA_SONIFICACION.md) y
+[PRUEBAS.md](PRUEBAS.md).
 
 Al menos 5 voluntarios exploran ~5 minutos y cuentan qué sintieron y entendieron. Con consentimiento; sin nombres, voces ni imágenes; autorización de tutores si hay menores. Si no participan personas ciegas o con baja visión, esa validación se declara pendiente. **No se afirman efectos educativos y no se presenta la plataforma como «validada con usuarios» mientras las pruebas no se hayan hecho.**
 

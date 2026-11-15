@@ -33,7 +33,11 @@ y = (90 - latitud)  / 180 * 1080
 
 Verificado contra Cabo Agulhas (34,8°S 20°E): predicho (1067, 749), observado (1063, 742). Un píxel ≈ 20 × 18 km a la latitud de RD, que cae en el píxel (587, 429). La Española ocupa unos 33 × 15 píxeles.
 
-El muestreo reproducible se define en `scripts/medir_imagen.py`: promedio RGB 3×3 para consultas puntuales y columnas de 9 píxeles para el barrido. Las limitaciones del fondo y de la separación de colores siguen vigentes.
+El muestreo reproducible de la versión publicada se define en
+`scripts/medir_imagen.py`: promedio RGB 3×3 para consultas puntuales y columnas
+de 9 píxeles para el barrido. El equipo aprobó revisar los recorridos con 12
+bandas de latitud en el mundo y 5 en la ruta tropical; esa decisión todavía
+no está implementada y se documenta en `METODOLOGIA_SONIFICACION.md`.
 
 **Qué miden estos colores, y qué no.** Son **intensidad relativa por tipo**, no concentración en µg/m³, y representan **toda la columna de aire**, no lo que se respira a nivel del suelo. La imagen lleva debajo un mapa base de la Tierra con luces de ciudad, así que sobre tierra y zonas urbanas la lectura del color está contaminada por ese fondo; sobre mar es limpia.
 
@@ -61,6 +65,22 @@ Referencias del conjunto de datos:
 
 - **SVS 5533 — Air Quality Model Runs** (GEOS-CF, jul–sep 2024: CO, PM2.5, O3, NOx). Está en la lista del reto y lleva la etiqueta «Earth Information Center». Justifica por qué hablamos de PM2.5. **No sirve como dato base**: no separa polvo, sal marina y sulfatos, y el mapa está en franjas por contaminante.
 - **Data Sonification: Caldwell 73.** En la lista del reto. Precedente de método de la propia NASA: brillo y posición → volumen y altura. La combinación de una textura para la imagen completa con instrumentos para elementos específicos inspira la nueva capa de imagen de Listen to Earth. Crédito: SYSTEM Sounds (M. Russo, A. Santaguida). No se reutiliza su audio. https://svs.gsfc.nasa.gov/13786/
+
+## Investigación de NASA sobre sonificación
+
+- **NASA Ciencia — “Escucha el universo: sonificación de datos y documental
+  de la NASA”.** Publicado el 25-jun-2024 y actualizado el 29-may-2025. Define
+  la sonificación como el proceso de traducir datos en sonidos; explica que el
+  proyecto de Chandra transforma en sonido información científica normalmente
+  convertida en imágenes y que surgió de trabajos dirigidos a personas ciegas
+  y con discapacidad visual. El artículo respalda el principio de una
+  traducción explícita y accesible, pero no fija una fórmula para aerosoles.
+  https://ciencia.nasa.gov/universo/escucha-el-universo-sonificacion-de-datos-y-documental-de-la-nasa/
+
+**Decisión derivada por el equipo, no atribuida a NASA:** usar tiempo para la
+posición este-oeste, timbre para el tipo de aerosol, altura para intensidad
+relativa y volumen para cobertura espacial. La elección de 12 y 5 bandas se
+basa en mediciones del PNG del proyecto, no en una recomendación de NASA.
 
 ## Recursos descartados
 

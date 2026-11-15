@@ -3,8 +3,9 @@
 Actualizado: 15 de noviembre de 2026 (República Dominicana).
 
 Este registro acompaña al código. Se distingue lo implementado de lo ejecutado
-en pruebas y de lo que requiere comprobación humana. La especificación del
-equipo está en [SPEC.md](SPEC.md); no se ha modificado su contenido.
+en pruebas y de lo que requiere comprobación humana. La especificación vigente
+del equipo está en [SPEC.md](SPEC.md); las versiones recibidas sin modificar se
+conservan en [historial/](historial/).
 
 ## Entregas
 
@@ -91,6 +92,18 @@ equipo está en [SPEC.md](SPEC.md); no se ha modificado su contenido.
     selector. La capa tiene interruptor y volumen propios, y se detiene con
     pausa, Stop, pestaña oculta o salida de la página. Se acredita a SYSTEM
     Sounds (M. Russo y A. Santaguida) como inspiración; no se usa su audio.
+12. **Revisión científica del barrido, aprobada y pendiente:** después de que
+    el equipo notara que el carbono negro sonaba un solo instante, se comparó
+    el promedio completo con una lectura por bandas. En el modo mundial, el
+    método publicado habilita carbono negro en 1 de 30 pasos; con 12 bandas
+    aparece en 15 longitudes y 31 de 360 zonas. El equipo aprobó 12 bandas de
+    15° para el mundo y 5 de 2° para el viaje tropical. Intensidad media válida
+    controlará altura, cobertura controlará volumen y cada nota durará cerca de
+    0,45 s. Esta entrada registra una decisión, no una función implementada.
+
+    La decisión se apoya en el principio de traducción explícita descrito por
+    NASA Ciencia y en el precedente de capas de Caldwell 73. NASA no eligió
+    esas cantidades de bandas: son una decisión del equipo basada en el PNG.
 
 ## Decisiones y correcciones documentadas
 
@@ -109,19 +122,25 @@ equipo está en [SPEC.md](SPEC.md); no se ha modificado su contenido.
   el botón y anuncian la nueva posición mediante aria-live.
 - La página no inicia síntesis de voz. La narración opcional aún no está
   implementada. No se usa ninguna API externa en tiempo de uso.
-- El SPEC original indicaba un clic suave para las zonas sin partículas. El
+- El SPEC recibido originalmente indicaba un clic suave para las zonas sin partículas. El
   equipo lo retiró después de escuchar la plataforma: ahora esas muestras son
-  silencio. Se conserva el SPEC sin editar y este registro documenta el cambio.
+  silencio. La versión original se conserva en `historial/` y el SPEC vigente
+  documenta el cambio.
 - Los documentos actuales de la rama `assets/imagen-5669` se conservaron como
   base; los originales del ZIP y las versiones de SPEC recibidas se guardan
   en [historial/](historial/).
+- La investigación distingue fuente y diseño: NASA define y ejemplifica la
+  sonificación de datos; Listen to Earth decide sus propias correspondencias
+  y documenta por qué. El PNG permite estimar intensidades relativas visibles,
+  no concentraciones atmosféricas.
 
 ## Cambio de orden solicitado por el usuario — 14-nov-2026
 
 La configuración del modo de uso sin mirar la pantalla y las pruebas con
 lector de pantalla se dejan para la última etapa, por instrucción posterior
 del usuario. Este acuerdo cambia el orden de trabajo indicado inicialmente
-en el SPEC; el archivo de especificación se conserva íntegro.
+en el SPEC recibido; esa versión se conserva íntegra en `historial/` y el SPEC
+vigente documenta la decisión posterior.
 
 Se mantienen las etiquetas, el foco móvil y el teclado ya implementados.
 NVDA y VoiceOver son lectores externos: no se encienden desde la página.
@@ -230,7 +249,9 @@ La primera versión de la pista 1 quedó publicada mediante GitHub Pages desde
 `main` → `/docs` en `https://dalgenisdalgenis-hue.github.io/listen-to-earth/`.
 El despliegue y los recursos públicos esenciales respondieron correctamente.
 
-El siguiente paso es ejecutar la lista manual en navegadores y altavoz reales.
+El siguiente paso es implementar y probar la revisión por bandas descrita en
+`METODOLOGIA_SONIFICACION.md`. Después se ejecutará la lista manual en
+navegadores y altavoz reales.
 Quedan también las preferencias de accesibilidad (voz opcional, pantalla
 oscura, tamaño de letra, contraste y movimiento reducido), las pruebas
 humanas y de navegador. Por instrucción del usuario, no se inicia MERRA-2 ni

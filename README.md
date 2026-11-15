@@ -25,9 +25,16 @@ Cada experiencia tiene una URL propia. Guía y créditos también son páginas
 independientes. La portada ofrece una ambientación artística opcional,
 sintetizada localmente y separada de los sonidos de los datos.
 
-Ejecutados: 371 comparaciones JS/SciPy y pruebas de controladores con DOM,
+Ejecutados sobre la versión publicada: 371 comparaciones JS/SciPy y pruebas de controladores con DOM,
 Tone y reloj simulados. **Pendientes: navegador, audio real, NVDA/VoiceOver y pruebas
 con voluntarios.** No se afirma validación con usuarios.
+
+**Revisión científica aprobada, todavía no implementada:** el promedio de una
+columna completa oculta plumas localizadas. El siguiente cambio dividirá cada
+paso en bandas de latitud antes de descomponer el color: 12 para Planeta
+completo y 5 para Viaje del polvo. La intensidad controlará la altura y la
+cobertura espacial controlará el volumen. La decisión, sus mediciones y las
+referencias de NASA están en [METODOLOGIA_SONIFICACION.md](METODOLOGIA_SONIFICACION.md).
 
 La configuración del modo sin mirar la pantalla y las pruebas
 con lectores de pantalla se reservan para la última etapa, según la nueva
@@ -36,7 +43,8 @@ etiquetas y el teclado existentes. Por decisión del usuario, esta primera
 versión se publica solo con la pista 1; no se trabaja todavía con MERRA-2 ni
 con las pistas 2 y 3.
 
-- [Especificación del equipo](SPEC.md), conservada íntegra.
+- [Especificación vigente del equipo](SPEC.md).
+- [Metodología y fundamento NASA](METODOLOGIA_SONIFICACION.md).
 - [Registro de avances, decisiones y pendientes](REGISTRO_CAMBIOS.md).
 - [Cómo ejecutar las pruebas](PRUEBAS.md).
 - [Brief y alcance](PROJECT_BRIEF.md).
@@ -119,11 +127,17 @@ reparte ese color entre los cuatro colores oficiales sin pesos negativos.
 Solo se habilita una nota si el peso seleccionado es al menos 0,05 y el
 residuo de reconstrucción es como máximo 0,10. En otro caso hay silencio.
 
-El barrido promedia columnas de 9 píxeles, con altura de 12–22°N en el viaje
+La versión publicada todavía promedia columnas de 9 píxeles, con altura de 12–22°N en el viaje
 del polvo y de polo a polo en el mundo entero. El muestreo y el recorrido se
 calculan en el navegador. En los bordes del PNG se recorta la columna como
 en Python. El último paso tropical llega a 69,9°O aunque el polvo sea cero;
 su promedio de la franja no se presenta como el dato puntual de RD.
+
+Ese promedio global se sustituirá por el método aprobado por zonas porque en
+el recorrido mundial deja audible el carbono negro en solo 1 de 30 pasos,
+mientras el análisis en 12 bandas lo encuentra en 15 longitudes y 31 de 360
+zonas. El nuevo resumen mantendrá dos datos distintos: intensidad media de las
+bandas válidas y cobertura o fracción del mapa donde aparece el aerosol.
 
 La intensidad relativa se convierte linealmente en una de las 15 notas
 pentatónicas del SPEC. La escala mayor y el timbre son provisionales para que
@@ -152,7 +166,9 @@ reutilizar su audio.
 - `docs/guia.html` y `docs/creditos.html`: instrucciones, fuentes y créditos.
 - `docs/escuchar.html`: redirección compatible con los enlaces antiguos.
 - `scripts/`: medición y pruebas de desarrollo reproducibles.
-- `SPEC.md`: especificación actual proporcionada por el equipo.
+- `SPEC.md`: especificación vigente, actualizada con las decisiones del equipo.
+- `METODOLOGIA_SONIFICACION.md`: evidencia, correspondencias sonoras y estado
+  de la revisión por zonas.
 - `historial/`: versiones de documentos recibidas durante el trabajo.
 
 La primera versión de la pista 1 está publicada en:
