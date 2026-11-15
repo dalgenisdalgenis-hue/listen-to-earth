@@ -235,3 +235,90 @@ footer p { margin: .2rem 0; }
   [role="gridcell"]:focus { outline-color: Highlight; }
   #rd-marker { border: 3px solid Highlight; box-shadow: none; }
 }
+
+/* Arquitectura de páginas: portada, elección, guía, créditos y reproductores. */
+.simple-landing, .static-page { min-height: 100vh; display: flex; flex-direction: column; }
+.simple-landing main, .static-page main { flex: 1; }
+.simple-landing .landing-hero { min-height: calc(100vh - 4.2rem); }
+.simple-landing h1 { max-width: 14ch; font-size: clamp(3rem, 7.5vw, 6.8rem); }
+.simple-landing h1 span { display: block; }
+.simple-landing h1 span:last-child { color: var(--yellow); }
+.landing-actions { align-items: center; }
+.sound-button { border: 1px solid var(--cyan); color: #fff; background: rgb(7 19 28 / 72%); }
+.sound-button[aria-pressed="true"] { background: rgb(131 230 239 / 16%); }
+.ambient-status { margin-top: -1rem; color: var(--muted); font-size: .92rem; }
+
+.standalone-chooser { padding-top: clamp(4rem, 9vw, 8rem); }
+.standalone-chooser .chooser-heading h1, .information-hero h1 { max-width: 14ch; font-size: clamp(2.8rem, 7vw, 5.5rem); }
+.chooser-note { margin: 2rem auto 0; padding: 1rem 1.2rem; border-left: 3px solid var(--yellow); background: var(--surface); color: var(--muted); }
+.chooser-note a { color: var(--cyan); font-weight: 800; }
+
+.information-page { width: min(100% - 2rem, 72rem); margin-inline: auto; padding-bottom: clamp(4rem, 8vw, 7rem); }
+.information-hero { padding: clamp(4rem, 9vw, 8rem) 0 clamp(3rem, 6vw, 5rem); border-bottom: 1px solid var(--line); }
+.information-hero > p:last-of-type { color: var(--muted); font-size: 1.15rem; }
+.information-hero .button { margin-top: 1rem; }
+.guide-section { display: grid; grid-template-columns: 5rem minmax(0, 1fr); gap: 1.5rem; padding: clamp(3rem, 7vw, 5rem) 0; border-bottom: 1px solid var(--line); }
+.guide-section h2 { margin-top: 0; }
+.expanded-steps { padding-left: 1.4rem; }
+.expanded-steps li { padding: 1rem 1.2rem; }
+.full-key-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+.source-feature { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(18rem, .7fr); gap: 2rem; align-items: center; padding: clamp(3rem, 7vw, 5rem) 0; border-bottom: 1px solid var(--line); }
+.source-feature h2, .detailed-credits h2, .repository-card h2 { font-size: clamp(1.5rem, 3vw, 2.3rem); }
+.source-feature > div > p:not(.source-kicker), .detailed-credits p, .repository-card p { color: var(--muted); }
+.source-feature img { width: 100%; height: auto; border: 1px solid var(--line); border-radius: var(--radius); background: #02070b; }
+.source-kicker { margin: 0 0 .45rem; color: var(--yellow) !important; font-size: .78rem; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; }
+.source-links { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-top: 1.4rem; }
+.source-links > a:not(.button) { color: var(--cyan); font-weight: 800; }
+.detailed-credits { margin: clamp(3rem, 7vw, 5rem) 0; }
+.detailed-credits article { display: flex; flex-direction: column; align-items: flex-start; }
+.detailed-credits article > a { margin-top: .35rem; }
+.credit-notice { margin: 2rem 0; padding: 1.3rem 1.5rem; border: 1px solid var(--yellow); border-radius: var(--radius); background: rgb(255 220 117 / 8%); }
+.credit-notice h2 { font-size: 1.5rem; }
+.credit-notice p { color: var(--muted); }
+.repository-card { display: flex; justify-content: space-between; align-items: center; gap: 2rem; padding: 1.5rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+
+.setup-section { padding-top: 3rem; padding-bottom: 3rem; }
+.setup-section .aerosol-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.setup-section .aerosol-card { padding: .9rem; }
+.playback-workspace { display: grid; grid-template-columns: minmax(19rem, .62fr) minmax(0, 1.38fr); gap: clamp(1rem, 3vw, 2rem); align-items: start; border-bottom: 1px solid rgb(131 230 239 / 18%); }
+.playback-workspace > .section-block { padding-block: 3rem; border-bottom: 0; }
+.playback-controls .section-heading, .map-section .section-heading { grid-template-columns: 2.5rem minmax(0, 1fr); gap: .8rem; margin-bottom: 1.2rem; }
+.playback-controls .section-heading h2, .map-section .section-heading h2 { font-size: clamp(1.7rem, 3vw, 2.4rem); }
+.playback-controls .scan-panel { padding: 1rem; }
+.playback-controls .transport { align-items: stretch; }
+.playback-controls .transport > .button { width: 100%; }
+.playback-controls .tempo-control { grid-template-columns: 1fr; margin: .4rem 0 0; }
+.playback-controls .tempo-control output { grid-column: 1; }
+.map-section { position: sticky; top: 4.6rem; }
+.map-panel:focus-visible { outline: 4px solid var(--yellow); outline-offset: 5px; }
+body[data-experience="journey"] #audio-controls,
+body[data-experience="world"] #audio-controls { display: none; }
+body[data-experience="explore"] .playback-workspace { grid-template-columns: 1fr; }
+body[data-experience="explore"] .map-section { position: static; }
+body[data-experience="explore"] .map-section .section-heading { grid-template-columns: auto minmax(0, 1fr); gap: clamp(1rem, 4vw, 2.5rem); }
+
+@media (max-width: 1050px) {
+  .setup-section .aerosol-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .playback-workspace { grid-template-columns: 1fr; }
+  .map-section { position: static; padding-top: 0 !important; }
+}
+
+@media (max-width: 760px) {
+  .site-header { align-items: flex-start; }
+  .site-header nav { max-width: 68vw; overflow-x: auto; padding: .2rem 0 .45rem; }
+  .site-header nav a { display: inline-block; flex: 0 0 auto; }
+  .simple-landing .landing-hero { min-height: calc(100vh - 4rem); }
+  .simple-landing h1 { font-size: clamp(2.8rem, 14vw, 4.8rem); }
+  .landing-actions .button { width: 100%; }
+  .guide-section, .source-feature { grid-template-columns: 1fr; }
+  .full-key-list { grid-template-columns: 1fr; }
+  .repository-card { align-items: flex-start; flex-direction: column; }
+  .setup-section .aerosol-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 460px) {
+  .site-header { flex-direction: column; }
+  .site-header nav { max-width: 100%; width: 100%; }
+  .information-page { width: min(100% - 1rem, 72rem); }
+}

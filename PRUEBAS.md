@@ -13,6 +13,7 @@ python scripts/verificar_imagen.py
 node scripts/verificar_teclado.cjs
 node scripts/verificar_audio.cjs
 node scripts/verificar_barrido.cjs
+node scripts/verificar_ambientacion.cjs
 python scripts/verificar_archivos.py
 ```
 
@@ -29,7 +30,7 @@ política de activación ni un lector de pantalla.
 El segundo comando ejecuta además el selector sobre 16 combinaciones × 376
 resultados (371 muestras reales y cinco casos sintéticos). Comprueba que
 elegir capas no cambia pesos ni notas de las otras capas. También ejecuta
-app.js con el HTML real y el PNG decodificado por Pillow sobre DOM/Tone/reloj
+app.js con la plantilla real de las experiencias y el PNG decodificado por Pillow sobre DOM/Tone/reloj
 simulados: casillas, 4–8, volúmenes, foco, recarga y cambios sin reinicio del
 barrido. También comprueba R en el píxel (587,429), sus valores y nota, el
 aviso final, la selección sin cambios automáticos y la repetición explícita
@@ -39,6 +40,10 @@ de la última columna. Sigue sin ser una prueba de navegador o acústica.
 30 pasos/15 segundos ideales, pausas, repeticiones, tempo, cambios de modo,
 errores, callbacks tardíos y cancelación de un arranque pendiente. No mide
 la precisión temporal ni el sonido de un navegador real.
+
+`verificar_ambientacion.cjs` comprueba con Tone simulado que la portada no
+crea audio al cargar, que la primera pulsación inicia la composición y que
+puede pausarse. No acredita el timbre ni el volumen percibido.
 
 ## Prueba manual pendiente en navegador
 
@@ -68,9 +73,9 @@ puede impedir leer el canvas.
 ## Prueba manual pendiente del barrido
 
 1. Recargar: no debe arrancar audio ni barrido automáticamente.
-2. Confirmar que Viaje del polvo aparece seleccionado. Elegir la tarjeta
-   Planeta completo y volver a Viaje del polvo; el estado visible y anunciado
-   debe coincidir. V debe alternar exactamente las mismas opciones.
+2. Abrir Viaje del polvo y Planeta completo desde sus páginas propias. El
+   estado visible y anunciado debe coincidir con la URL. V debe navegar a la
+   otra experiencia automática.
 3. Pulsar P o Reproducir barrido. Al tempo 100 %, comprobar los 30 pasos de
    este a oeste y una duración aproximada de 15 segundos desde el primer paso.
 4. Pausar a mitad de un intervalo y esperar. El cursor y progreso deben
@@ -96,21 +101,27 @@ puede impedir leer el canvas.
     mostrar un marcador pequeño sobre RD y describir el punto 3×3: polvo 0,000,
     sal marina aproximadamente 0,608. No debe presentarlo como la franja 0,300.
 
-## Prueba manual pendiente de presentación y guía
+## Prueba manual pendiente de presentación, guía y créditos
 
-1. Confirmar que la portada muestra título, explicación y botón para comenzar.
-2. Abrir **Cómo usar** desde cabecera, portada y pie. Debe conservar el foco
-   dentro del diálogo, cerrar con su botón o Esc y devolver el foco al origen.
-3. Revisar que las secciones 01–04 tengan un orden comprensible y que las
+1. Confirmar que la portada muestra exactamente el título, explicación y
+   botón para elegir una experiencia, sin etiquetas de pista o competencia.
+2. Pulsar **Activar ambientación**: no debe sonar antes de la pulsación; debe
+   pausarse con el mismo botón y detenerse al ocultar o abandonar la portada.
+3. Abrir **Guía de uso** y **Créditos y fuentes** como páginas independientes.
+   Revisar todos los enlaces oficiales y el aviso de no respaldo de NASA.
+4. Revisar que las secciones del reproductor tengan un orden comprensible y que las
    tablas científicas permanezcan plegadas hasta pedirlas.
-4. Probar a 320 px, teléfono, tableta y escritorio; zoom 200 % y 400 %.
-5. Confirmar contraste, foco visible y que los controles no se superponen.
-6. Desde la portada abrir las tres opciones y confirmar URLs distintas:
-   `?modo=viaje`, `?modo=planeta` y `?modo=explorar`.
-7. En los recorridos no debe aparecer la cuadrícula amarilla. En Explorar por
+5. Probar a 320 px, teléfono, tableta y escritorio; zoom 200 % y 400 %.
+6. Confirmar contraste, foco visible y que los controles no se superponen.
+7. Desde `experiencias.html` abrir las tres URLs distintas:
+   `viaje-del-polvo.html`, `planeta-completo.html` y `exploracion-manual.html`.
+8. En los recorridos no debe aparecer la cuadrícula amarilla. En Explorar por
    zonas no debe aparecer la línea automática ni controles de barrido.
-8. Confirmar que inicialmente elegir un aerosol apaga el anterior. Activar
+9. Confirmar que inicialmente elegir un aerosol apaga el anterior. Activar
    Mezclar varios y comprobar que entonces sí permite combinaciones.
+10. En teléfono, pulsar Reproducir y comprobar que el mapa entra en vista y
+    recibe el foco. En escritorio, selector, controles y mapa deben quedar
+    próximos sin obligar a recorrer una página larga.
 
 ## Prueba manual pendiente del selector
 

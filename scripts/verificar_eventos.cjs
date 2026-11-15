@@ -33,7 +33,10 @@ class Element {
     this.disabled = Object.hasOwn(attributes, 'disabled');
     this.value = attributes.value || ''; this.text = '';
     for (const [name, value] of Object.entries(attributes)) {
-      if (name.startsWith('data-')) this.dataset[name.slice(5)] = value;
+      if (name.startsWith('data-')) {
+        const key = name.slice(5).replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+        this.dataset[key] = value;
+      }
     }
     if (attributes.id) ids.set(attributes.id, this);
     nodes.push(this);
@@ -101,7 +104,7 @@ class Filter extends AudioNode {}
 const Tone = { Synth, MembraneSynth, FMSynth, NoiseSynth, Volume, Limiter, Filter,
   gainToDb: v => 20 * Math.log10(v), now: () => now / 1000,
   getContext: () => ({ state: 'running' }), start: async () => {} };
-const context = { window: { Tone, setTimeout: setTimer, clearTimeout: id => timers.delete(id) },
+const context = { window: { Tone, setTimeout: setTimer, clearTimeout: id => timers.delete(id), location: { search: '', href: '' } },
   document, setTimeout: setTimer, clearTimeout: id => timers.delete(id), performance: { now: () => now },
   Image: class { naturalWidth = 1920; naturalHeight = 1080; set src(value) { queueMicrotask(() => this.onload()); } } };
 vm.createContext(context);
@@ -125,9 +128,6 @@ const key = (key, target = body) => target.dispatch('keydown', { key });
   assert.equal(app.scanner.snapshot.mode, 'world');
   byId('mode-journey').dispatch('click');
   assert.equal(byId('scan-mode').value, 'journey');
-  const guideOpener = nodes.find(node => Object.hasOwn(node.attributes, 'data-guide-open'));
-  guideOpener.dispatch('click'); assert.equal(byId('guide-dialog').attributes.open, '');
-  byId('guide-close').dispatch('click'); assert.ok(!Object.hasOwn(byId('guide-dialog').attributes, 'open'));
   key('7'); assert.deepEqual(Array.from(app.selection.types), ['seaSalt']); assert.equal(audioNodes.length, 0);
   byId('aerosol-dust').focus(); key('5', byId('aerosol-dust'));
   assert.deepEqual(Array.from(app.selection.types), ['blackCarbon']);
@@ -157,6 +157,7 @@ const key = (key, target = body) => target.dispatch('keydown', { key });
   assert.equal(audioNodes.length, created); assert.ok(byId('sound-source').textContent.includes('fila 1'));
   const weights = JSON.stringify(app.gridCells.map(cell => cell.result));
   key('p'); await flush(); assert.equal(app.scanner.snapshot.state, 'playing');
+  assert.equal(document.activeElement, byId('image-panel'));
   assert.equal(byId('scan-progress').value, 1);
   const snapshot = JSON.stringify(app.scanner.snapshot), before = plays.length;
   const tick = [...timers.entries()].find(entry => entry[1].at === now + 500);
@@ -196,8 +197,7 @@ const key = (key, target = body) => target.dispatch('keydown', { key });
   const text = new Element('input', { type: 'text' }); body.append(text);
   const selection = JSON.stringify(app.selection.types); key('7', text);
   assert.equal(JSON.stringify(app.selection.types), selection);
-  key('v'); assert.equal(byId('sound-source').textContent, app.text.sourceEmpty);
-  assert.equal(app.scanner.snapshot.mode, 'world'); assert.equal(app.scanner.snapshot.state, 'idle');
+  key('v'); assert.equal(context.window.location.href, 'planeta-completo.html');
   const state = JSON.stringify(app.selection.types);
   byId('retry').dispatch('click'); await flush();
   assert.equal(JSON.stringify(app.selection.types), state); assert.equal(app.audio.getVolume('seaSalt'), 80);

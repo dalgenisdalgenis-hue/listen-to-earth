@@ -3,6 +3,7 @@
 from pathlib import Path
 from html.parser import HTMLParser
 import json
+import re
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,9 +26,11 @@ class Document(HTMLParser):
         for attr in ['data-text', 'data-alt', 'data-label']:
             if attr in a:
                 self.keys.append(a[attr])
-        resource = a.get('src') or (a.get('href') if tag == 'link' else None)
+        resource = a.get('src') or (a.get('href') if tag in {'link', 'a'} else None)
         if resource:
-            assert (ROOT / 'docs' / resource).is_file(), f'Recurso ausente: {resource}'
+            local = resource.split('#', 1)[0].split('?', 1)[0]
+            if local and not local.startswith(('#', '//')) and '://' not in local and not local.startswith(('mailto:', 'tel:')):
+                assert (ROOT / 'docs' / local).is_file(), f'Recurso ausente: {resource}'
 
 
 def main():
@@ -44,6 +47,13 @@ def main():
         doc.feed(page.read_text())
         assert all(key in strings for key in doc.keys), f'Falta un texto en strings.es.js: {page.name}'
         assert all(ref in doc.ids for ref in doc.references), f'Referencia ARIA/label sin destino: {page.name}'
+    shell_source = (ROOT / 'docs/js/experience-shell.js').read_text()
+    match = re.search(r"insertAdjacentHTML\('afterbegin', `([\s\S]*?)`\);", shell_source)
+    assert match, 'No se encontró la plantilla HTML de las experiencias'
+    shell = Document()
+    shell.feed(match.group(1))
+    assert all(key in strings for key in shell.keys), 'Falta una clave de texto en la plantilla de experiencias'
+    assert all(ref in shell.ids for ref in shell.references), 'Referencia ARIA/label sin destino en la plantilla de experiencias'
     print('PASS: sintaxis JS, recursos locales, IDs, referencias ARIA y claves de texto del HTML.')
 
 

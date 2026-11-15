@@ -66,6 +66,19 @@ equipo está en [SPEC.md](SPEC.md); no se ha modificado su contenido.
    anterior; Mezclar varios habilita las combinaciones como opción avanzada.
    Por solicitud posterior del usuario, una muestra sin nota queda en silencio:
    se retiró el clic porque se confundía con los sonidos de los aerosoles.
+9. **Arquitectura de plataforma y ambientación:** la portada queda dedicada
+   a la frase “El planeta tiene una voz. Y todos merecemos escucharla”. El
+   botón principal abre `experiencias.html`; viaje, planeta y exploración
+   tienen URLs individuales. Guía y créditos son páginas independientes.
+   Los créditos detallan NASA SVS 5669, GMAO, las personas acreditadas por
+   NASA, Tone.js, el equipo, la competencia, las limitaciones y los enlaces.
+
+   El selector de aerosoles aparece antes de la reproducción. En escritorio,
+   controles y mapa forman un espacio de trabajo conjunto; en pantallas más
+   estrechas, Reproducir desplaza y enfoca el mapa. La portada incluye una
+   composición ambiental original generada con Tone.js: no se inicia al
+   cargar, se identifica como artística y se detiene al ocultar o abandonar
+   la página. No modifica la sonificación de los datos.
 
 ## Decisiones y correcciones documentadas
 

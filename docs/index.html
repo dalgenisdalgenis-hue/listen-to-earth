@@ -3,87 +3,41 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Elige una experiencia para escuchar los aerosoles del planeta con datos de la NASA.">
+  <meta name="description" content="Escucha una visualización oficial de aerosoles de la NASA convertida en sonido.">
   <meta name="theme-color" content="#07131c">
   <title>Listen to Earth</title>
   <link rel="stylesheet" href="css/styles.css">
   <link rel="preload" as="image" href="assets/aerosols_5669_1920x1080.png">
-  <script defer src="js/strings.es.js"></script>
-  <script defer src="js/landing.js"></script>
+  <script defer src="vendor/tone.js"></script>
+  <script defer src="js/ambient.js"></script>
 </head>
-<body class="landing-page">
-  <a class="skip" href="#experiences" data-text="skip"></a>
+<body class="landing-page simple-landing">
+  <a class="skip" href="#hero-title">Ir al contenido</a>
   <header class="site-header">
-    <a class="brand" href="index.html" data-text="title"></a>
-    <button class="nav-guide" type="button" data-guide-open data-text="openGuide"></button>
+    <a class="brand" href="index.html">Listen to Earth</a>
+    <nav aria-label="Navegación principal">
+      <a href="experiencias.html">Experiencias</a>
+      <a href="guia.html">Guía de uso</a>
+      <a href="creditos.html">Créditos y fuentes</a>
+    </nav>
   </header>
   <main>
     <section class="hero landing-hero" aria-labelledby="hero-title">
       <div class="hero-content">
-        <p class="eyebrow" data-text="heroEyebrow"></p>
-        <h1 id="hero-title" data-text="heroTitle"></h1>
-        <p class="hero-lead" data-text="landingLead"></p>
-        <a class="button primary" href="#experiences" data-text="landingChoose"></a>
+        <p class="eyebrow">Listen to Earth</p>
+        <h1 id="hero-title"><span>El planeta tiene una voz.</span><span>Y todos merecemos escucharla.</span></h1>
+        <p class="hero-lead">Tres experiencias transforman una visualización oficial de aerosoles de la NASA en sonido. Elige cómo quieres escuchar la Tierra.</p>
+        <div class="hero-actions landing-actions">
+          <a class="button primary" href="experiencias.html">Elegir una experiencia <span aria-hidden="true">→</span></a>
+          <button id="ambient-toggle" class="button sound-button" type="button" aria-pressed="false"><span aria-hidden="true">♪</span> Activar ambientación</button>
+        </div>
+        <p id="ambient-status" class="ambient-status" role="status" aria-live="polite">Ambientación artística opcional; no representa datos de aerosoles.</p>
       </div>
-    </section>
-
-    <section id="experiences" class="experience-chooser" aria-labelledby="chooser-title">
-      <div class="chooser-heading">
-        <p class="eyebrow" data-text="chooserEyebrow"></p>
-        <h2 id="chooser-title" data-text="chooserTitle"></h2>
-        <p data-text="chooserIntro"></p>
-      </div>
-      <div class="experience-cards">
-        <a class="experience-card journey-card" href="escuchar.html?modo=viaje">
-          <span class="experience-number" aria-hidden="true">01</span>
-          <span class="experience-icon" aria-hidden="true">→</span>
-          <strong data-text="modeJourneyTitle"></strong>
-          <span data-text="landingJourneyDescription"></span>
-          <span class="card-action" data-text="enterJourney"></span>
-        </a>
-        <a class="experience-card world-card" href="escuchar.html?modo=planeta">
-          <span class="experience-number" aria-hidden="true">02</span>
-          <span class="experience-icon" aria-hidden="true">◎</span>
-          <strong data-text="modeWorldTitle"></strong>
-          <span data-text="landingWorldDescription"></span>
-          <span class="card-action" data-text="enterWorld"></span>
-        </a>
-        <a class="experience-card explore-card" href="escuchar.html?modo=explorar">
-          <span class="experience-number" aria-hidden="true">03</span>
-          <span class="experience-icon" aria-hidden="true">⌖</span>
-          <strong data-text="landingExploreTitle"></strong>
-          <span data-text="landingExploreDescription"></span>
-          <span class="card-action" data-text="enterExplore"></span>
-        </a>
-      </div>
-      <div class="landing-note">
-        <h3 data-text="landingSoundTitle"></h3>
-        <p data-text="landingSoundNote"></p>
-      </div>
-    </section>
-
-    <section id="credits" class="credits-section" aria-labelledby="credits-title">
-      <div class="chooser-heading"><p class="eyebrow" data-text="creditsEyebrow"></p><h2 id="credits-title" data-text="creditsTitle"></h2><p data-text="creditsIntro"></p></div>
-      <div class="credits-grid">
-        <article><h3 data-text="creditsNasaTitle"></h3><p data-text="creditsNasaText"></p><a href="https://svs.gsfc.nasa.gov/5669/" target="_blank" rel="noopener" data-text="creditsNasaLink"></a></article>
-        <article><h3 data-text="creditsGmaoTitle"></h3><p data-text="creditsGmaoText"></p><a href="https://gmao.gsfc.nasa.gov/" target="_blank" rel="noopener" data-text="creditsGmaoLink"></a></article>
-        <article><h3 data-text="creditsToneTitle"></h3><p data-text="creditsToneText"></p><a href="https://tonejs.github.io/" target="_blank" rel="noopener" data-text="creditsToneLink"></a></article>
-        <article><h3 data-text="creditsTeamTitle"></h3><p data-text="creditsTeamText"></p></article>
-      </div>
-      <p class="credits-disclaimer" data-text="creditsDisclaimer"></p>
     </section>
   </main>
-
-  <dialog id="guide-dialog" class="guide-dialog" aria-labelledby="guide-title">
-    <div class="guide-header"><div><p class="eyebrow" data-text="guideEyebrow"></p><h2 id="guide-title" data-text="guideTitle"></h2></div><button id="guide-close" class="icon-button" type="button" data-text="closeGuide"></button></div>
-    <p data-text="landingGuideIntro"></p>
-    <ol class="guide-steps">
-      <li><strong data-text="landingGuide1Title"></strong><span data-text="landingGuide1"></span></li>
-      <li><strong data-text="landingGuide2Title"></strong><span data-text="landingGuide2"></span></li>
-      <li><strong data-text="landingGuide3Title"></strong><span data-text="landingGuide3"></span></li>
-    </ol>
-  </dialog>
-
-  <footer><div><p class="footer-brand" data-text="title"></p><p data-text="footer"></p></div><div class="footer-actions"><a href="#credits" data-text="creditsNav"></a><button class="button ghost" type="button" data-guide-open data-text="openGuide"></button></div></footer>
+  <footer>
+    <div><p class="footer-brand">Listen to Earth</p><p>Liceo Científico Dr. Miguel Canela Lázaro · República Dominicana</p></div>
+    <div class="footer-actions"><a href="guia.html">Guía de uso</a><a class="button ghost" href="creditos.html">Créditos y fuentes</a></div>
+  </footer>
 </body>
 </html>

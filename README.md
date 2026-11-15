@@ -16,9 +16,11 @@ escuchar polvo, carbono negro, sulfatos y sal marina, con volumen por capa.
 De entrada solo suena el polvo; el audio se activa con un botón o P por acción explícita del usuario.
 La tecla R consulta el punto exacto de República Dominicana y el final del
 recorrido explica por separado el promedio de la franja. Tone.js 15.1.22 está dentro del repo.
-La portada separa tres experiencias: **Viaje del polvo**, **Planeta completo**
-y **Explorar por zonas**. Las dos primeras muestran solo la línea automática;
-la tercera muestra solo el cuadro amarillo controlado con flechas.
+La portada presenta la idea y enlaza a una página de elección con tres
+experiencias: **Viaje del polvo**, **Planeta completo** y **Exploración manual**.
+Cada experiencia tiene una URL propia. Guía y créditos también son páginas
+independientes. La portada ofrece una ambientación artística opcional,
+sintetizada localmente y separada de los sonidos de los datos.
 
 Ejecutados: 371 comparaciones JS/SciPy y pruebas de controladores con DOM,
 Tone y reloj simulados. **Pendientes: navegador, audio real, NVDA/VoiceOver y pruebas
@@ -53,7 +55,8 @@ No hay compilación ni instalación de dependencias para abrir la web. Evitar
 abrir index.html con doble clic: algunos navegadores bloquean la lectura del
 canvas mediante `file://`.
 
-1. Abrir la portada y elegir una experiencia.
+1. Abrir la portada. La ambientación no empieza sola: se activa con su botón.
+   Pulsar **Elegir una experiencia** para abrir la página de opciones.
 2. En los recorridos, esperar la imagen y pulsar Reproducir. En Explorar por
    zonas, esperar la cuadrícula y activar sonido.
 3. En Explorar por zonas, usar flechas; Enter repite y Tab sale.
@@ -73,8 +76,9 @@ canvas mediante `file://`.
    polvo 0,000 y sal marina aproximadamente 0,300. R muestra el punto del
    país por separado, donde la sal marina es aproximadamente 0,608.
 
-El botón **Cómo usar** abre una guía rápida con estos pasos y los atajos,
-sin salir de la experiencia.
+La página **Guía de uso** reúne estos pasos y los atajos. La página
+**Créditos y fuentes** identifica la visualización NASA, sus créditos, las
+limitaciones, Tone.js, el equipo y los enlaces oficiales.
 
 De entrada se escucha un contaminante a la vez para distinguir los timbres.
 La opción **Mezclar varios** permite compararlos simultáneamente. Durante el
@@ -94,6 +98,7 @@ python scripts/verificar_imagen.py
 node scripts/verificar_teclado.cjs
 node scripts/verificar_audio.cjs
 node scripts/verificar_barrido.cjs
+node scripts/verificar_ambientacion.cjs
 python scripts/verificar_archivos.py
 ```
 
@@ -130,8 +135,12 @@ completa de cuatro colores y se conservan al encender o apagar capas.
 ## Estructura y publicación prevista
 
 - `docs/`: HTML, CSS, JavaScript, imágenes NASA y Tone.js local.
-- `docs/index.html`: portada y selector de experiencias.
-- `docs/escuchar.html`: experiencia individual elegida mediante `?modo=`.
+- `docs/index.html`: portada sencilla y ambientación voluntaria.
+- `docs/experiencias.html`: elección entre las tres experiencias.
+- `docs/viaje-del-polvo.html`, `docs/planeta-completo.html` y
+  `docs/exploracion-manual.html`: URLs individuales con un motor compartido.
+- `docs/guia.html` y `docs/creditos.html`: instrucciones, fuentes y créditos.
+- `docs/escuchar.html`: redirección compatible con los enlaces antiguos.
 - `scripts/`: medición y pruebas de desarrollo reproducibles.
 - `SPEC.md`: especificación actual proporcionada por el equipo.
 - `historial/`: versiones de documentos recibidas durante el trabajo.

@@ -5,6 +5,7 @@ import json
 import subprocess
 import tempfile
 from html.parser import HTMLParser
+import re
 import numpy as np
 from PIL import Image
 import medir_imagen as m
@@ -72,8 +73,13 @@ def main():
         folder = Path(tmp)
         (folder / 'fixtures.json').write_text(json.dumps(fixtures))
         (folder / 'image.rgba').write_bytes(im.convert('RGBA').tobytes())
+        # Las tres experiencias tienen URL propia y comparten este marcado.
+        # Extraemos la plantilla tal como la recibe el navegador antes de app.js.
+        shell = (ROOT / 'docs/js/experience-shell.js').read_text()
+        match = re.search(r"insertAdjacentHTML\('afterbegin', `([\s\S]*?)`\);", shell)
+        assert match, 'No se encontró la plantilla de la experiencia'
         markup = Markup()
-        markup.feed((ROOT / 'docs/escuchar.html').read_text())
+        markup.feed('<body data-page-mode="viaje" data-experience="journey">' + match.group(1) + '</body>')
         (folder / 'dom.json').write_text(json.dumps(markup.root))
         subprocess.run(['node', str(ROOT / 'scripts/verificar_nucleo.cjs'), str(folder)],
                        cwd=ROOT, check=True)

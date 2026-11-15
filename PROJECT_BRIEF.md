@@ -9,7 +9,7 @@ Liceo Científico Dr. Miguel Canela Lázaro · Equipo de seis estudiantes
 
 ## Qué construimos
 
-Una plataforma web para escuchar el aire: convierte la visualización oficial de aerosoles de la NASA en música que cualquier persona puede explorar, vea o no vea. No evalúa al usuario ni le pide respuestas: invita a explorar.
+Una plataforma web para escuchar la Tierra: convierte la visualización oficial de aerosoles de la NASA en música que cualquier persona puede explorar, vea o no vea. No evalúa al usuario ni le pide respuestas: invita a explorar.
 
 Tres ideas se fusionan:
 - **Ciencia:** el sonido nace de los datos de la imagen; la regla es fija y consultable.
@@ -20,13 +20,14 @@ Tres ideas se fusionan:
 
 Partimos de la visualización oficial de aerosoles del Earth Information Center y la convertimos en una orquesta. Escuchamos el polvo del Sahara cruzando el Atlántico, y descubrimos que **ese día no llegó a República Dominicana**. Para saber si eso pasa siempre, usamos MERRA-2 —producido con el mismo modelo GEOS— y escuchamos 45 años de polvo sobre RD: llega cada verano.
 
-## Tres pistas, en una sola página con selector
+## Experiencias y alcance futuro
 
-1. **Escucha el aire** — la imagen global del SVS 5669 convertida en sonido. Cada tipo de aerosol es un instrumento: polvo, carbono negro, sulfatos y sal marina. Un barrido automático de unos 30 pasos recorre la imagen de este a oeste en unos 15 segundos, en dos modos: «El viaje del polvo» (franja tropical 12–22°N, termina en RD) y «El mundo entero». Con las flechas se explora libremente una cuadrícula de 8 × 12. La tecla **R** lleva a RD.
+1. **Visualización global de aerosoles** — la imagen del SVS 5669 convertida en sonido mediante tres páginas: «Viaje del polvo», «Planeta completo» y «Exploración manual». Cada tipo de aerosol es un instrumento: polvo, carbono negro, sulfatos y sal marina. Los recorridos automáticos usan 30 pasos; la exploración usa una cuadrícula de 8 × 12 y la tecla **R** lleva a RD.
 2. **Compara años** — con MERRA-2 sobre RD: elegir años con botones o con un rango; «Mes a mes» (hasta 4 años, cada uno con su timbre) y «Comparar picos» (el mes de máximo polvo de cada año).
 3. **Escucha 45 años** — cada nota es un mes, de 1980 a 2024, con un golpe grave en cada enero y la opción de oír solo los veranos.
 
-Viven en la misma página para que cambiar de pista **no corte el audio**: así se puede encadenar el barrido que se apaga sin polvo en RD con los 45 veranos en los que sí llega.
+La versión publicada solo incluye la visualización global. Las pistas futuras
+con MERRA-2 permanecen detenidas hasta nueva instrucción del equipo.
 
 ## Cómo suena
 

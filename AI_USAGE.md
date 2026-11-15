@@ -74,6 +74,14 @@ principal y dejó la mezcla como opción avanzada. También retiró el clic de
 ausencia; esta última decisión cambia la realimentación sonora del SPEC y
 queda registrada en los documentos del proyecto.
 
+Actualización de arquitectura: Codex convirtió la portada, el selector de
+experiencias, la guía y los créditos en páginas independientes; creó URLs
+propias para los tres recorridos y acercó selector, reproducción y mapa.
+También programó una ambientación original con Tone.js que requiere una
+pulsación explícita y está rotulada como artística, no como dato NASA. Se
+añadieron pruebas simuladas de consentimiento y pausa; no sustituyen una
+evaluación acústica humana.
+
 - Una etapa por solicitud; cada entrega incluye qué cambió, cómo comprobarlo y qué limitaciones quedan.
 - **No se afirma que una prueba pasó si no se ejecutó.**
 - Datos sintéticos de desarrollo siempre identificados y separados de la demo.

@@ -3,8 +3,9 @@
 (() => {
   const app = window.ListenToEarth;
   const requestedPageMode = app.pageModeFromSearch(window.location?.search || '');
-  const pageMode = requestedPageMode || 'viaje';
-  const fixedPageMode = Boolean(requestedPageMode);
+  const declaredPageMode = document.body.dataset.pageMode;
+  const pageMode = declaredPageMode || requestedPageMode || 'viaje';
+  const fixedPageMode = Boolean(declaredPageMode || requestedPageMode);
   const scanModeForPage = pageMode === 'planeta' ? 'world' : 'journey';
   document.body.dataset.experience = pageMode === 'planeta' ? 'world' : pageMode === 'explorar' ? 'explore' : 'journey';
   document.querySelectorAll('[data-text]').forEach(node => {
@@ -33,15 +34,15 @@
   const pageCopy = pageMode === 'planeta' ? {
     eyebrow: app.text.worldPageEyebrow, title: app.text.modeWorldTitle,
     description: app.text.worldPageDescription,
-    alternate: app.text.goJourney, href: 'escuchar.html?modo=viaje'
+    alternate: app.text.goJourney, href: 'viaje-del-polvo.html'
   } : pageMode === 'explorar' ? {
     eyebrow: app.text.explorePageEyebrow, title: app.text.landingExploreTitle,
     description: app.text.explorePageDescription,
-    alternate: app.text.chooseAnotherExperience, href: 'index.html#experiences'
+    alternate: app.text.chooseAnotherExperience, href: 'experiencias.html'
   } : {
     eyebrow: app.text.journeyPageEyebrow, title: app.text.modeJourneyTitle,
     description: app.text.journeyPageDescription,
-    alternate: app.text.goWorld, href: 'escuchar.html?modo=planeta'
+    alternate: app.text.goWorld, href: 'planeta-completo.html'
   };
   byId('experience-page-eyebrow').textContent = pageCopy.eyebrow;
   byId('experience-page-title').textContent = pageCopy.title;
@@ -403,8 +404,16 @@
   byId('mute').addEventListener('click', mute);
   byId('stop').addEventListener('click', stop);
   byId('scan-stop').addEventListener('click', stop);
-  byId('scan-play').addEventListener('click', () => scanner?.toggle());
-  byId('scan-repeat').addEventListener('click', () => scanner?.repeat());
+  function revealMap() {
+    const panel = byId('image-panel');
+    if (!panel) return;
+    const bounds = typeof panel.getBoundingClientRect === 'function' ? panel.getBoundingClientRect() : null;
+    const visible = bounds && bounds.top >= 0 && bounds.bottom <= window.innerHeight;
+    if (!visible && typeof panel.scrollIntoView === 'function') panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (typeof panel.focus === 'function') panel.focus({ preventScroll: true });
+  }
+  byId('scan-play').addEventListener('click', () => { scanner?.toggle(); revealMap(); });
+  byId('scan-repeat').addEventListener('click', () => { scanner?.repeat(); revealMap(); });
   byId('hear-ending-salt').addEventListener('click', () => {
     if (!lastScanStep || scanner?.snapshot.state !== 'ended' || scanner.snapshot.mode !== 'journey') return;
     // El botón promete repetir la columna final aunque la persona haya usado R
@@ -455,19 +464,21 @@
   });
   byId('go-rd').addEventListener('click', goToDominicanRepublic);
   const guide = byId('guide-dialog');
-  document.querySelectorAll('[data-guide-open]').forEach(button => {
-    button.addEventListener('click', () => {
-      if (guide.showModal) guide.showModal();
-      else guide.setAttribute('open', '');
+  if (guide) {
+    document.querySelectorAll('[data-guide-open]').forEach(button => {
+      button.addEventListener('click', () => {
+        if (guide.showModal) guide.showModal();
+        else guide.setAttribute('open', '');
+      });
     });
-  });
-  byId('guide-close').addEventListener('click', () => {
-    if (guide.close) guide.close();
-    else guide.removeAttribute('open');
-  });
-  guide.addEventListener('click', event => {
-    if (event.target === guide && guide.close) guide.close();
-  });
+    byId('guide-close')?.addEventListener('click', () => {
+      if (guide.close) guide.close();
+      else guide.removeAttribute('open');
+    });
+    guide.addEventListener('click', event => {
+      if (event.target === guide && guide.close) guide.close();
+    });
+  }
   document.addEventListener('keydown', event => {
     if (event.ctrlKey || event.altKey || event.metaKey || event.repeat) return;
     if (event.key === 'Escape') { event.preventDefault(); stop(); return; }
@@ -484,11 +495,11 @@
     }
     if (event.target.closest('input, textarea, select, [contenteditable="true"]')) return;
     if (event.key.toLowerCase() === 'r') { event.preventDefault(); goToDominicanRepublic(); return; }
-    if (event.key.toLowerCase() === 'p' && scanner && pageMode !== 'explorar') { event.preventDefault(); scanner.toggle(); }
+    if (event.key.toLowerCase() === 'p' && scanner && pageMode !== 'explorar') { event.preventDefault(); scanner.toggle(); revealMap(); }
     if (event.key.toLowerCase() === 'v' && scanner) {
       event.preventDefault();
       if (fixedPageMode && pageMode !== 'explorar') {
-        window.location.href = pageMode === 'planeta' ? 'escuchar.html?modo=viaje' : 'escuchar.html?modo=planeta';
+        window.location.href = pageMode === 'planeta' ? 'viaje-del-polvo.html' : 'planeta-completo.html';
       } else if (pageMode !== 'explorar') changeMode(byId('scan-mode').value === 'journey' ? 'world' : 'journey');
     }
     if (['+', '-', '−'].includes(event.key) && scanner) {
