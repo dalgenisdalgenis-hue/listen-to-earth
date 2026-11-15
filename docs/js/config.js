@@ -12,6 +12,9 @@
     maxResidual: 0.10,
     rows: 8,
     cols: 12,
+    // Punto fijado por el equipo para la consulta puntual de RD. No se
+    // recalcula desde una ciudad ni se sustituye por el centro de una celda.
+    dominicanRepublic: { x: 587, y: 429, lat: 18.47, lon: -69.94 },
     instrumentOrder: ['dust', 'blackCarbon', 'sulfate', 'seaSalt'],
     aerosolShortcuts: { '4': 'dust', '5': 'blackCarbon', '6': 'sulfate', '7': 'seaSalt' },
     scan: {

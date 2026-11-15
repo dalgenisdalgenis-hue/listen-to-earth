@@ -14,17 +14,19 @@ alternativos y tabla textual. El barrido automático ofrece viaje del polvo y
 mundo entero, con 30 pasos, pausa, repetición y tempo. El selector permite
 escuchar polvo, carbono negro, sulfatos y sal marina, con volumen por capa.
 De entrada solo suena el polvo; el audio se activa con un botón o P por acción explícita del usuario.
-Tone.js 15.1.22 está dentro del repo.
+La tecla R consulta el punto exacto de República Dominicana y el final del
+recorrido explica por separado el promedio de la franja. Tone.js 15.1.22 está dentro del repo.
 
 Ejecutados: 371 comparaciones JS/SciPy y pruebas de controladores con DOM,
 Tone y reloj simulados. **Pendientes: navegador, audio real, NVDA/VoiceOver y pruebas
 con voluntarios.** No se afirma validación con usuarios.
 
-Siguiente: tecla R con el aviso final.
 La configuración del modo sin mirar la pantalla y las pruebas
 con lectores de pantalla se reservan para la última etapa, según la nueva
 instrucción del usuario registrada en REGISTRO_CAMBIOS.md. Se mantienen las
-etiquetas y el teclado existentes. Las pistas 2 y 3 esperan el JSON real de MERRA-2.
+etiquetas y el teclado existentes. Por decisión del usuario, esta primera
+versión se publica solo con la pista 1; no se trabaja todavía con MERRA-2 ni
+con las pistas 2 y 3.
 
 - [Especificación del equipo](SPEC.md), conservada íntegra.
 - [Registro de avances, decisiones y pendientes](REGISTRO_CAMBIOS.md).
@@ -61,6 +63,10 @@ canvas mediante `file://`.
 8. 4 enciende/apaga polvo; 5 carbono negro; 6 sulfatos; 7 sal marina. También
    hay casillas. 8 activa todos; desde todos, vuelve a solo polvo. Los cuatro
    controles de volumen mantienen sus ajustes al cambiar la selección.
+9. R o el botón correspondiente consulta el píxel de RD con ventana 3×3.
+   Al terminar el viaje del polvo, leer el aviso: la columna final tiene
+   polvo 0,000 y sal marina aproximadamente 0,300. R muestra el punto del
+   país por separado, donde la sal marina es aproximadamente 0,608.
 
 Durante el barrido las capas nuevas entran en el siguiente paso. Fuera del
 barrido se vuelve a tocar la última muestra si el audio ya está activado;

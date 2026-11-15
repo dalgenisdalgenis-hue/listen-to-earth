@@ -19,7 +19,7 @@
   const percent = new Intl.NumberFormat('es-DO', { style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1 });
   let loading = false, activating = false, controller, currentCell, announcement;
   let scanner, profiles, previousScanState = 'idle', audioRequest = 0;
-  let lastSource = null, lastScanStep = null;
+  let lastSource = null, lastScanStep = null, rdPoint = null;
 
   function announce(message) {
     clearTimeout(announcement);
@@ -43,15 +43,25 @@
   }
   function sourceLabel() {
     if (!lastSource) return app.text.sourceEmpty;
-    return lastSource.kind === 'grid' ? app.format('sourceGrid', {
+    if (lastSource.kind === 'grid') return app.format('sourceGrid', {
       row: lastSource.item.row + 1, col: lastSource.item.col + 1
-    }) : app.format('sourceScan', {
+    });
+    if (lastSource.kind === 'scan') return app.format('sourceScan', {
       step: lastSource.item.index + 1, mode: app.text[lastSource.item.mode]
     });
+    return app.text.sourcePoint;
   }
   function renderSource() {
     const view = lastSource ? app.describeResult(lastSource.item.result) : null;
     byId('sound-source').textContent = sourceLabel() + (view ? ' ' + view.quantities + '. ' + view.outcome : '');
+  }
+  function describeRdPoint() {
+    if (!rdPoint) return '';
+    const view = app.describeResult(rdPoint.result);
+    return app.format('dominicanRepublicDescription', {
+      quantities: view.quantities,
+      residual: percent.format(rdPoint.result.residual), outcome: view.outcome
+    });
   }
   function renderSelector() {
     for (const type of app.config.instrumentOrder) {
@@ -84,6 +94,7 @@
     controller?.refresh();
     renderGridTable();
     if (currentCell) byId('readout').textContent = currentCell.description;
+    if (lastSource?.kind === 'point') byId('readout').textContent = describeRdPoint();
     if (profiles && scanner) scanProfileView(byId('scan-mode').value);
     if (lastScanStep) renderScanReadout(lastScanStep);
     renderSource();
@@ -124,7 +135,7 @@
     node.style.height = (bounds.y1 - bounds.y0) / app.config.height * 100 + '%';
   }
   function scanState(snapshot) {
-    const { state, tempo, steps } = snapshot;
+    const { state, tempo, steps, mode } = snapshot;
     byId('scan-play').textContent = app.text[
       state === 'starting' ? 'scanStarting' : state === 'playing' ? 'scanPause' :
         state === 'paused' ? 'scanResume' : 'scanPlay'];
@@ -142,10 +153,25 @@
       byId('scan-line').hidden = true;
       byId('scan-readout').textContent = app.text.scanIdle;
     }
+    if (state !== 'ended') byId('journey-ending').hidden = true;
+    if (state === 'ended' && mode === 'journey' && lastScanStep) {
+      const values = {
+        dust: number.format(lastScanStep.result.weights.dust),
+        seaSalt: number.format(lastScanStep.result.weights.seaSalt)
+      };
+      byId('journey-ending-text').textContent = app.format('journeyEnding', values);
+      byId('journey-ending').hidden = false;
+    }
     if (state !== previousScanState) {
       if (state === 'playing') announce(app.text.scanPlaying);
       if (state === 'paused') announce(app.text.scanPaused);
-      if (state === 'ended') announce(app.text.scanEnded);
+      if (state === 'ended') {
+        const ending = mode === 'journey' && lastScanStep ? app.format('journeyEndingAnnouncement', {
+          dust: number.format(lastScanStep.result.weights.dust),
+          seaSalt: number.format(lastScanStep.result.weights.seaSalt)
+        }) : app.text.scanEnded;
+        announce(ending);
+      }
     }
     previousScanState = state;
     audioState();
@@ -197,6 +223,7 @@
     announce(app.format('scanModeChanged', { mode: app.text[mode] }));
   }
   function selectCell(cell, speak, play) {
+    byId('rd-marker').hidden = true;
     currentCell = cell;
     byId('readout').textContent = cell.description;
     if (play) {
@@ -209,13 +236,33 @@
     if (!lastSource) { lastSource = { kind: 'grid', item: cell }; renderSource(); }
     if (speak) announce(cell.description + (!audio.ready ? ' ' + app.text.audioOff : audio.muted ? ' ' + app.text.muted : ''));
   }
+  function goToDominicanRepublic() {
+    if (!rdPoint || !controller) return;
+    scanner?.pause();
+    const row = Math.min(app.config.rows - 1,
+      Math.floor(rdPoint.y / app.config.height * app.config.rows));
+    const col = Math.min(app.config.cols - 1,
+      Math.floor(rdPoint.x / app.config.width * app.config.cols));
+    controller.selectIndex(row * app.config.cols + col);
+    currentCell = null;
+    lastSource = { kind: 'point', item: rdPoint };
+    const marker = byId('rd-marker');
+    marker.style.left = rdPoint.x / app.config.width * 100 + '%';
+    marker.style.top = rdPoint.y / app.config.height * 100 + '%';
+    marker.hidden = false;
+    byId('readout').textContent = describeRdPoint();
+    renderSource();
+    try { if (audio.ready) audio.play(rdPoint.result); }
+    catch { announce(app.text.audioError); return; }
+    announce(describeRdPoint() + (!audio.ready ? ' ' + app.text.audioOff : audio.muted ? ' ' + app.text.muted : ''));
+  }
   async function load() {
     if (loading) return;
     loading = true;
     ++audioRequest;
     byId('retry').setAttribute('aria-disabled', 'true');
     byId('image-panel').setAttribute('aria-busy', 'true');
-    for (const id of ['map', 'grid', 'current', 'grid-table', 'checks', 'scan-line', 'scan-band', 'scan-table']) byId(id).hidden = true;
+    for (const id of ['map', 'grid', 'current', 'grid-table', 'checks', 'scan-line', 'scan-band', 'rd-marker', 'scan-table']) byId(id).hidden = true;
     for (const id of ['audio-controls', 'direction-controls', 'scan-controls']) byId(id).disabled = true;
     scanner?.stop();
     scanner = null;
@@ -223,6 +270,7 @@
     profiles = null;
     lastSource = null;
     lastScanStep = null;
+    rdPoint = null;
     app.gridCells = [];
     renderSource();
     controller?.destroy();
@@ -241,6 +289,11 @@
         return;
       }
       app.gridCells = app.createGridCells(app.pixels);
+      const target = app.config.dominicanRepublic;
+      const rgb = app.readPoint(app.pixels, target.x, target.y);
+      const result = app.decompose(rgb);
+      rdPoint = { ...target, rgb, result };
+      app.rdPoint = rdPoint;
       controller = app.mountGrid(app.gridCells, selectCell, announce);
       profiles = Object.fromEntries(Object.keys(app.config.scan.modes)
         .map(mode => [mode, app.createScanProfile(app.pixels, mode)]));
@@ -303,6 +356,20 @@
   byId('scan-stop').addEventListener('click', stop);
   byId('scan-play').addEventListener('click', () => scanner?.toggle());
   byId('scan-repeat').addEventListener('click', () => scanner?.repeat());
+  byId('hear-ending-salt').addEventListener('click', () => {
+    if (!lastScanStep || scanner?.snapshot.state !== 'ended' || scanner.snapshot.mode !== 'journey') return;
+    // El botón promete repetir la columna final aunque la persona haya usado R
+    // después del barrido. Restauramos explícitamente ese contexto primero.
+    lastSource = { kind: 'scan', item: lastScanStep };
+    renderScanReadout(lastScanStep);
+    renderSource();
+    const changes = app.selection.has('seaSalt') ? [] : app.selection.set('seaSalt', true);
+    if (changes.length) changeSelection(changes);
+    else {
+      try { audio.play(lastScanStep.result); announce(app.text.endingSaltReplayed); }
+      catch { announce(app.text.audioError); }
+    }
+  });
   byId('scan-mode').addEventListener('change', event => changeMode(event.target.value));
   byId('tempo').addEventListener('input', event => scanner?.setTempo(event.target.value));
   document.addEventListener('visibilitychange', () => {
@@ -320,6 +387,7 @@
     });
   }
   byId('toggle-all').addEventListener('click', () => changeSelection(app.selection.toggleAll()));
+  byId('go-rd').addEventListener('click', goToDominicanRepublic);
   document.addEventListener('keydown', event => {
     if (event.ctrlKey || event.altKey || event.metaKey || event.repeat) return;
     if (event.key === 'Escape') { event.preventDefault(); stop(); return; }
@@ -330,6 +398,7 @@
       return;
     }
     if (event.target.closest('input, textarea, select, [contenteditable="true"]')) return;
+    if (event.key.toLowerCase() === 'r') { event.preventDefault(); goToDominicanRepublic(); return; }
     if (event.key.toLowerCase() === 'p' && scanner) { event.preventDefault(); scanner.toggle(); }
     if (event.key.toLowerCase() === 'v' && scanner) {
       event.preventDefault(); changeMode(byId('scan-mode').value === 'journey' ? 'world' : 'journey');

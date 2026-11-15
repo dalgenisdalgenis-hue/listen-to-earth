@@ -125,6 +125,10 @@
     select(0, false, false, false);
     return {
       replay: () => onSelect(cells[current], true, true),
+      // R necesita dejar preparada la celda que contiene a RD para que la
+      // siguiente flecha continúe desde allí. La lectura de R, sin embargo,
+      // se calcula aparte en el píxel exacto y no usa el centro de esta celda.
+      selectIndex: (index, focus = false) => select(index, focus, false, false),
       refresh: () => elements.forEach((node, index) => node.setAttribute('aria-label', cells[index].label)),
       destroy: () => listeners.forEach(remove => remove())
     };

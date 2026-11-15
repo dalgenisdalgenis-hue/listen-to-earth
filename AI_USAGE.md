@@ -5,7 +5,7 @@ Declaración conforme a los términos del NASA Space Apps Challenge 2026.
 ## Herramientas
 
 - **Claude (Anthropic)** — asistente de programación, de análisis de datos y de redacción de borradores. El equipo aporta la idea, define las reglas de sonificación, toma las decisiones y revisa cada entrega.
-- **Codex (OpenAI)** — implementación por etapas de canvas, descomposición NNLS, cuadrícula y controlador de audio; comparación JavaScript/SciPy y documentación de pruebas y pendientes. No se han realizado pruebas humanas ni de navegador durante estas entregas.
+- **Codex (OpenAI)** — implementación por etapas de canvas, descomposición NNLS, cuadrícula, controlador de audio, barrido, selector, tecla R y aviso final; comparación JavaScript/SciPy y documentación de pruebas y pendientes. No se han realizado pruebas humanas ni de navegador durante estas entregas.
 - (Completar durante el evento con cualquier otra herramienta utilizada.)
 
 ## Qué hizo la IA y qué hizo el equipo
@@ -36,7 +36,7 @@ Con la imagen oficial del SVS 5669 y su barra de colores descargadas por el equi
 ## Implementación y comprobaciones con Codex (14-nov-2026)
 
 - Los estudiantes proporcionaron el SPEC, las imágenes originales y `medir_imagen.py`. El SPEC actualizado se conserva íntegro; las versiones recibidas y documentos originales se archivan en `historial/`.
-- Se implementó NNLS por conjunto activo y se comparó con SciPy en 341 muestras, incluidas las 96 posiciones de exploración y las 30 columnas del barrido. Los perfiles se usan como comprobación, no como una melodía pregrabada que sustituya la imagen.
+- Se implementó NNLS por conjunto activo y se comparó con SciPy en 371 muestras, incluidas las 96 posiciones de exploración y las 30 columnas de cada modo de barrido. Los perfiles se usan como comprobación, no como una melodía pregrabada que sustituya la imagen.
 - La discrepancia de sal marina en RD se resolvió al explicitar la ventana de muestreo. También se registró la discrepancia pendiente de las longitudes de la tabla resumida del SPEC.
 - Se añadieron pruebas de navegación y audio con objetos simulados, identificadas como tales. No acreditan el sonido real ni la accesibilidad con NVDA/VoiceOver.
 - No se insertaron mediciones inventadas en la aplicación. La mezcla sintética 50/50 solo se usa en las pruebas.
@@ -57,6 +57,11 @@ pruebas. Se compararon 371 muestras JS/SciPy, incluidas las 30 columnas del
 modo mundial. Los perfiles se obtienen de la imagen y no se sustituyen por
 una lista de pesos escrita a mano. No se han ejecutado pruebas de navegador
 ni se presenta la validación de los controladores como prueba de audio real.
+
+Actualización de cierre de la pista 1: Codex añadió R sobre el píxel exacto
+(587,429) y el aviso final. Las pruebas simuladas verifican que el punto usa
+sal marina 0,608, que la franja final usa 0,300 y que la página nunca cambia
+automáticamente el aerosol elegido. MERRA-2 y las pistas 2 y 3 no se trabajaron.
 
 - Una etapa por solicitud; cada entrega incluye qué cambió, cómo comprobarlo y qué limitaciones quedan.
 - **No se afirma que una prueba pasó si no se ejecutó.**

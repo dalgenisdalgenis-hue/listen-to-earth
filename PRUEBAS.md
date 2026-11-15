@@ -31,7 +31,9 @@ resultados (371 muestras reales y cinco casos sintéticos). Comprueba que
 elegir capas no cambia pesos ni notas de las otras capas. También ejecuta
 app.js con el HTML real y el PNG decodificado por Pillow sobre DOM/Tone/reloj
 simulados: casillas, 4–8, volúmenes, foco, recarga y cambios sin reinicio del
-barrido. Sigue sin ser una prueba de navegador o acústica.
+barrido. También comprueba R en el píxel (587,429), sus valores y nota, el
+aviso final, la selección sin cambios automáticos y la repetición explícita
+de la última columna. Sigue sin ser una prueba de navegador o acústica.
 
 `verificar_barrido.cjs` usa reloj y activación de audio simulados: comprueba
 30 pasos/15 segundos ideales, pausas, repeticiones, tempo, cambios de modo,
@@ -79,13 +81,17 @@ puede impedir leer el canvas.
    los 30 valores en la tabla, la franja tropical y el recorrido de polo a polo.
 7. En el viaje del polvo, comprobar el final en 69,9°O y los últimos dos
    pasos con clic suave. La sal marina 0,300 es promedio de franja y no cambia
-   por sí sola el instrumento seleccionado. La tecla R aún está pendiente.
+   por sí sola el instrumento seleccionado. El aviso final debe aparecer sin
+   encender sal marina. Pulsar 7 o su botón debe repetir esa columna.
 8. Moverse por la cuadrícula durante el barrido: debe pausarse y sonar la
    celda elegida. Ocultar la pestaña debe pausar; volver no debe reanudarla.
 9. Iniciar y detener rápidamente mientras se activa el audio: una promesa
    tardía no debe arrancar el barrido después de detenerlo o cambiar modo.
 10. Silenciar y poner volumen cero: el progreso sigue avanzando sin notas.
     Reintentar la carga y confirmar que no quedan temporizadores duplicados.
+11. Pulsar R durante y después del recorrido. Debe pausarlo si está en marcha,
+    mostrar un marcador pequeño sobre RD y describir el punto 3×3: polvo 0,000,
+    sal marina aproximadamente 0,608. No debe presentarlo como la franja 0,300.
 
 ## Prueba manual pendiente del selector
 

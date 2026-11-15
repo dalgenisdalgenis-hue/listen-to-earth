@@ -123,7 +123,20 @@ const key = (key, target = body) => target.dispatch('keydown', { key });
   assert.equal(app.selection.types.length, 4); key('8'); assert.deepEqual(Array.from(app.selection.types), ['dust']);
   byId('activate').dispatch('click'); await flush(); assert.equal(app.audio.ready, true);
   assert.ok(plays.length > 0); const created = audioNodes.length;
-  cells[0].focus(); key('7', cells[0]);
+  const beforeRd = plays.length; key('r'); advance(30);
+  assert.equal(app.rdPoint.x, 587); assert.equal(app.rdPoint.y, 429);
+  assert.ok(app.rdPoint.result.weights.dust < 0.0005);
+  assert.ok(Math.abs(app.rdPoint.result.weights.seaSalt - 0.608) < 0.001);
+  assert.ok(byId('sound-source').textContent.includes('punto de República Dominicana'));
+  assert.equal(byId('rd-marker').hidden, false);
+  assert.ok(byId('readout').textContent.includes('ventana de 3 × 3'));
+  assert.equal(plays.length, beforeRd + 1); // Solo polvo: clic en el punto de RD.
+  const beforeSalt = plays.length; key('7');
+  assert.equal(plays.length, beforeSalt + 2); // Seno afinado + ruido rosa de sal marina.
+  assert.equal(plays.at(-2).args[0], 587.34);
+  key('7'); // Volvemos a solo polvo para las comprobaciones siguientes.
+  cells[0].focus(); key('Enter', cells[0]); key('7', cells[0]);
+  assert.equal(byId('rd-marker').hidden, true);
   assert.equal(document.activeElement, cells[0]); assert.equal(cells[0].tabIndex, 0);
   assert.equal(audioNodes.length, created); assert.ok(byId('sound-source').textContent.includes('fila 1'));
   const weights = JSON.stringify(app.gridCells.map(cell => cell.result));
@@ -144,11 +157,21 @@ const key = (key, target = body) => target.dispatch('keydown', { key });
   assert.equal(app.scanner.snapshot.state, 'ended');
   const last = plays.at(-1).node;
   assert.ok(last instanceof NoiseSynth && last.options.noise.type === 'white');
+  assert.equal(byId('journey-ending').hidden, false);
+  assert.ok(byId('journey-ending-text').textContent.includes('polvo'));
+  assert.ok(byId('journey-ending-text').textContent.includes('sal marina'));
+  assert.ok(Math.abs(app.scanner.snapshot.index - 29) < 0.001);
+  assert.deepEqual(Array.from(app.selection.types), ['dust']); // El final no cambia la selección.
   const endCount = plays.length; key('7');
   const preview = plays.slice(endCount);
   assert.equal(preview.length, 2);
   assert.equal(preview[0].args[0], 329.63); // Sal marina de la franja, no del punto de RD.
   assert.ok(byId('sound-source').textContent.includes('columna 30'));
+  key('r'); assert.ok(byId('sound-source').textContent.includes('punto de República Dominicana'));
+  const replayCount = plays.length; byId('hear-ending-salt').dispatch('click'); advance(30);
+  assert.equal(plays.length, replayCount + 2);
+  assert.ok(byId('sound-source').textContent.includes('columna 30'));
+  assert.ok(byId('status').textContent.includes('última columna'));
   byId('activate').dispatch('click'); await flush(); advance(30);
   assert.ok(byId('status').textContent.includes('columna 30'));
   assert.ok(!byId('status').textContent.includes('Fila 1 de'));

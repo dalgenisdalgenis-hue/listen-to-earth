@@ -104,6 +104,14 @@
       <label for="scan-progress" data-text="scanProgress"></label>
       <progress id="scan-progress" max="30" value="0"></progress>
       <p id="scan-readout" data-text="scanIdle"></p>
+      <section id="journey-ending" class="journey-ending"
+        aria-labelledby="journey-ending-title" hidden>
+        <h3 id="journey-ending-title" data-text="journeyEndingTitle"></h3>
+        <p id="journey-ending-text"></p>
+        <p data-text="journeyEndingAction"></p>
+        <button id="hear-ending-salt" type="button" aria-keyshortcuts="7"
+          data-text="hearEndingSalt"></button>
+      </section>
     </section>
 
     <section aria-labelledby="grid-title">
@@ -125,6 +133,7 @@
             aria-describedby="grid-help" aria-rowcount="8" aria-colcount="12" hidden></div>
           <div id="scan-band" aria-hidden="true" hidden></div>
           <div id="scan-line" aria-hidden="true" hidden></div>
+          <div id="rd-marker" aria-hidden="true" hidden></div>
         </div>
         <figcaption id="map-description" data-text="description"></figcaption>
       </figure>
@@ -142,6 +151,8 @@
           <button id="right" type="button" aria-controls="grid" data-text="right"></button>
           <button id="down" type="button" aria-controls="grid" data-text="down"></button>
         </div>
+        <button id="go-rd" type="button" aria-controls="grid current"
+          aria-keyshortcuts="R" data-text="goDominicanRepublic"></button>
       </fieldset>
       <p data-text="shortcuts"></p>
       <img class="colorbar" src="assets/aerosols_5669_colorbar.png"

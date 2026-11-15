@@ -41,6 +41,15 @@ equipo está en [SPEC.md](SPEC.md); no se ha modificado su contenido.
    en el próximo paso, sin reiniciar ni cambiar el reloj. Fuera del barrido,
    si el audio ya está activo, cambiar la selección vuelve a tocar la misma
    última muestra. Se muestra si esa muestra es una celda o una columna.
+6. **Consulta de RD y final de la pista 1:** R y un botón consultan el píxel
+   (587,429) con ventana 3×3, muestran un marcador pequeño y preparan la celda
+   que lo contiene para continuar con flechas. El resultado se identifica
+   siempre como punto: polvo 0,000 y sal marina aproximadamente 0,608.
+
+   Al terminar el viaje del polvo aparece un aviso distinto para el promedio
+   de la franja: polvo 0,000 y sal marina aproximadamente 0,300. La selección
+   no cambia automáticamente. La persona puede pulsar 7 o un botón para añadir
+   sal marina y repetir la columna por decisión propia.
 
 ## Decisiones y correcciones documentadas
 
@@ -48,7 +57,7 @@ equipo está en [SPEC.md](SPEC.md); no se ha modificado su contenido.
   0,714; 3×3 da 0,608; 5×5 da 0,478. El procedimiento vigente es 3×3.
 - En el barrido, el último paso representa una franja, no el dato puntual de
   RD. El script reproduce polvo 0 y sal marina 0,300 al terminar.
-- La futura tecla R usará (587,429) con ventana 3×3 y sal marina 0,608.
+- La tecla R usa (587,429) con ventana 3×3 y sal marina 0,608.
 - Se usa el mapeo lineal exacto del SPEC para la pista 1 y las 15 frecuencias
   indicadas. La escala mayor queda en una constante, provisional.
 - Las celdas no se clasifican por el color más parecido: conservan los
@@ -95,6 +104,11 @@ de foco, selección sin reiniciar el barrido, edición de texto y recarga.
 Después de acabar el recorrido tropical, seleccionar sal marina usa la
 columna final de la franja (0,300), no el punto de RD. Estos resultados no
 sustituyen una prueba de navegador o de audio real.
+
+**Actualización de R y el final:** la prueba de eventos verifica el píxel
+(587,429), polvo 0,000, sal marina 0,608 y la nota 587,34 Hz al seleccionar
+sal marina. También verifica que el aviso conserva solo polvo, presenta la
+franja final aparte y que 7 o el botón repiten la columna de sal marina 0,300.
 
 **Actualización del barrido:** se comparan ahora **371 muestras** con SciPy,
 incluidas 30 columnas mundiales adicionales. Se verifican los perfiles
@@ -158,16 +172,11 @@ descarta la muestra de preescucha anterior para no mezclar contextos.
 
 ## Siguiente paso
 
-Tecla R y aviso final, sin activar sal marina automáticamente. El final
-actual solo anuncia que acabaron los 30 pasos y
-conserva el texto de la última columna. El selector ya permite escuchar sal
-marina de esa columna por acción del usuario. La explicación del final y la
-consulta puntual de RD se incorporarán con R, según el orden solicitado.
-
-Quedan también las preferencias de accesibilidad (voz opcional, pantalla
+Publicar esta primera versión de la pista 1 y ejecutar su lista manual en
+navegadores y altavoz reales. Quedan también las preferencias de accesibilidad (voz opcional, pantalla
 oscura, tamaño de letra, contraste y movimiento reducido), las pruebas
-humanas y de navegador y la publicación en Pages. Las pistas 2 y 3 esperan
-el JSON real de MERRA-2; no se han inventado datos para sustituirlo.
+humanas y de navegador. Por instrucción del usuario, no se inicia MERRA-2 ni
+las pistas 2 y 3 hasta nuevo aviso; no se han inventado datos para sustituirlo.
 
 ## Comportamiento y límites del temporizador
 
