@@ -1,6 +1,6 @@
 # Registro de avances — Listen to Earth
 
-Actualizado: 14 de noviembre de 2026 (República Dominicana).
+Actualizado: 15 de noviembre de 2026 (República Dominicana).
 
 Este registro acompaña al código. Se distingue lo implementado de lo ejecutado
 en pruebas y de lo que requiere comprobación humana. La especificación del
