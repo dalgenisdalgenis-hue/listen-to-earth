@@ -172,8 +172,12 @@ descarta la muestra de preescucha anterior para no mezclar contextos.
 
 ## Siguiente paso
 
-Publicar esta primera versión de la pista 1 y ejecutar su lista manual en
-navegadores y altavoz reales. Quedan también las preferencias de accesibilidad (voz opcional, pantalla
+La primera versión de la pista 1 quedó publicada mediante GitHub Pages desde
+`main` → `/docs` en `https://dalgenisdalgenis-hue.github.io/listen-to-earth/`.
+El despliegue y los recursos públicos esenciales respondieron correctamente.
+
+El siguiente paso es ejecutar la lista manual en navegadores y altavoz reales.
+Quedan también las preferencias de accesibilidad (voz opcional, pantalla
 oscura, tamaño de letra, contraste y movimiento reducido), las pruebas
 humanas y de navegador. Por instrucción del usuario, no se inicia MERRA-2 ni
 las pistas 2 y 3 hasta nuevo aviso; no se han inventado datos para sustituirlo.

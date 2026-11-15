@@ -127,10 +127,12 @@ completa de cuatro colores y se conservan al encender o apagar capas.
 - `SPEC.md`: especificación actual proporcionada por el equipo.
 - `historial/`: versiones de documentos recibidas durante el trabajo.
 
-La primera versión de la pista 1 está integrada en `main`. GitHub Pages se
-configura desde **Settings → Pages → Deploy from a branch → main → /docs**.
-El sitio solo está publicado cuando GitHub muestre el despliegue correcto y
-el enlace `https://dalgenisdalgenis-hue.github.io/listen-to-earth/` responda.
+La primera versión de la pista 1 está publicada en:
+
+**https://dalgenisdalgenis-hue.github.io/listen-to-earth/**
+
+GitHub Pages despliega desde `main` → `/docs`. El enlace no depende de un
+entorno de IA y puede compartirse directamente con el jurado.
 
 Todo el cálculo y audio ocurren en el navegador. No hay backend, base de
 datos, claves, CDN ni API externa. La imagen se precarga y se mantiene en la
