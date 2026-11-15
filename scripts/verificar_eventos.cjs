@@ -41,6 +41,7 @@ class Element {
   set textContent(value) { this.text = String(value); this.replaceChildren(); }
   get textContent() { return this.text + this.children.map(child => child.textContent).join(''); }
   setAttribute(name, value) { this.attributes[name] = String(value); }
+  removeAttribute(name) { delete this.attributes[name]; }
   append(node) { node.parent = this; this.children.push(node); }
   replaceChildren() { for (const child of this.children) child.parent = null; this.children = []; }
   addEventListener(type, callback) { (this.listeners[type] ??= []).push(callback); }
@@ -116,13 +117,24 @@ const key = (key, target = body) => target.dispatch('keydown', { key });
   const cells = byId('grid').children.flatMap(row => row.children);
   assert.equal(cells.filter(cell => cell.tabIndex === 0).length, 1);
   assert.equal(byId('aerosol-dust').checked, true); assert.equal(byId('aerosol-seaSalt').checked, false);
+  assert.equal(byId('mode-journey').attributes['aria-pressed'], 'true');
+  byId('mode-world').dispatch('click');
+  assert.equal(byId('scan-mode').value, 'world');
+  assert.equal(byId('mode-world').attributes['aria-pressed'], 'true');
+  assert.equal(app.scanner.snapshot.mode, 'world');
+  byId('mode-journey').dispatch('click');
+  assert.equal(byId('scan-mode').value, 'journey');
+  const guideOpener = nodes.find(node => Object.hasOwn(node.attributes, 'data-guide-open'));
+  guideOpener.dispatch('click'); assert.equal(byId('guide-dialog').attributes.open, '');
+  byId('guide-close').dispatch('click'); assert.ok(!Object.hasOwn(byId('guide-dialog').attributes, 'open'));
   key('7'); assert.equal(byId('aerosol-seaSalt').checked, true); assert.equal(audioNodes.length, 0);
   byId('aerosol-dust').focus(); key('5', byId('aerosol-dust'));
   assert.equal(byId('aerosol-blackCarbon').checked, true);
   byId('aerosol-sulfate').checked = true; byId('aerosol-sulfate').dispatch('change');
   assert.equal(app.selection.types.length, 4); key('8'); assert.deepEqual(Array.from(app.selection.types), ['dust']);
   byId('activate').dispatch('click'); await flush(); assert.equal(app.audio.ready, true);
-  assert.ok(plays.length > 0); const created = audioNodes.length;
+  assert.equal(plays.length, 0); // Cambiar recorrido borra la muestra de preescucha anterior.
+  const created = audioNodes.length;
   const beforeRd = plays.length; key('r'); advance(30);
   assert.equal(app.rdPoint.x, 587); assert.equal(app.rdPoint.y, 429);
   assert.ok(app.rdPoint.result.weights.dust < 0.0005);

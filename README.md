@@ -16,6 +16,8 @@ escuchar polvo, carbono negro, sulfatos y sal marina, con volumen por capa.
 De entrada solo suena el polvo; el audio se activa con un botón o P por acción explícita del usuario.
 La tecla R consulta el punto exacto de República Dominicana y el final del
 recorrido explica por separado el promedio de la franja. Tone.js 15.1.22 está dentro del repo.
+La interfaz abre con una portada, ofrece una guía de uso y presenta los dos
+recorridos como opciones visibles: **Viaje del polvo** y **Planeta completo**.
 
 Ejecutados: 371 comparaciones JS/SciPy y pruebas de controladores con DOM,
 Tone y reloj simulados. **Pendientes: navegador, audio real, NVDA/VoiceOver y pruebas
@@ -55,9 +57,10 @@ canvas mediante `file://`.
 3. Entrar en la cuadrícula y usar flechas; Enter repite y Tab sale.
 4. Si el lector captura las flechas, usar los botones de dirección.
 5. M silencia; S o Esc detiene. Cada instrumento tiene su rango de volumen.
-6. P inicia o pausa el barrido; Repetir empieza desde el principio. Al tempo
+6. Elegir **Viaje del polvo** o **Planeta completo**. P inicia o pausa el barrido;
+   Repetir empieza desde el principio. Al tempo
    100 %, los 30 pasos duran nominalmente 15 segundos. +/− cambia el tempo.
-7. V cambia entre viaje del polvo y mundo entero, dejando el nuevo recorrido
+7. V cambia entre viaje del polvo y planeta completo, dejando el nuevo recorrido
    preparado para P. Usar las flechas pausa el barrido. Ocultar la pestaña
    también lo pausa; al volver se reanuda con P.
 8. 4 enciende/apaga polvo; 5 carbono negro; 6 sulfatos; 7 sal marina. También
@@ -67,6 +70,9 @@ canvas mediante `file://`.
    Al terminar el viaje del polvo, leer el aviso: la columna final tiene
    polvo 0,000 y sal marina aproximadamente 0,300. R muestra el punto del
    país por separado, donde la sal marina es aproximadamente 0,608.
+
+El botón **Cómo usar** abre una guía rápida con estos pasos y los atajos,
+sin salir de la experiencia.
 
 Durante el barrido las capas nuevas entran en el siguiente paso. Fuera del
 barrido se vuelve a tocar la última muestra si el audio ya está activado;

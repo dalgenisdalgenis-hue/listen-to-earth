@@ -63,6 +63,10 @@ Actualización de cierre de la pista 1: Codex añadió R sobre el píxel exacto
 sal marina 0,608, que la franja final usa 0,300 y que la página nunca cambia
 automáticamente el aerosol elegido. MERRA-2 y las pistas 2 y 3 no se trabajaron.
 
+Actualización de presentación: a partir del PDF enviado por el equipo, Codex
+reorganizó la interfaz con portada, guía de uso, tarjetas para los dos recorridos,
+mapa, mezclador y sección científica. No se cambiaron el algoritmo ni el audio.
+
 - Una etapa por solicitud; cada entrega incluye qué cambió, cómo comprobarlo y qué limitaciones quedan.
 - **No se afirma que una prueba pasó si no se ejecutó.**
 - Datos sintéticos de desarrollo siempre identificados y separados de la demo.

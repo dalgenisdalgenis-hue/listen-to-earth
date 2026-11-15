@@ -50,6 +50,12 @@ equipo está en [SPEC.md](SPEC.md); no se ha modificado su contenido.
    de la franja: polvo 0,000 y sal marina aproximadamente 0,300. La selección
    no cambia automáticamente. La persona puede pulsar 7 o un botón para añadir
    sal marina y repetir la columna por decisión propia.
+7. **Portada, guía y reorganización visual:** la página comienza con una
+   portada sobre la imagen NASA, llamada a comenzar y acceso a una guía en
+   diálogo. Los dos recorridos dejan de depender de un menú pequeño: aparecen
+   como tarjetas grandes, Viaje del polvo y Planeta completo, con estado
+   `aria-pressed`. Después siguen mapa interactivo, mezclador de aerosoles y
+   transparencia científica. Se conservan IDs, datos, teclas y audio.
 
 ## Decisiones y correcciones documentadas
 
@@ -109,6 +115,11 @@ sustituyen una prueba de navegador o de audio real.
 (587,429), polvo 0,000, sal marina 0,608 y la nota 587,34 Hz al seleccionar
 sal marina. También verifica que el aviso conserva solo polvo, presenta la
 franja final aparte y que 7 o el botón repiten la columna de sal marina 0,300.
+
+**Actualización visual:** la prueba de eventos verifica que las dos tarjetas
+de recorrido actualizan el modo real del barrido y que la guía abre y cierra.
+El usuario informó que el sonido se escucha bien; se registra como observación,
+no como una prueba acústica formal en varios navegadores y dispositivos.
 
 **Actualización del barrido:** se comparan ahora **371 muestras** con SciPy,
 incluidas 30 columnas mundiales adicionales. Se verifican los perfiles

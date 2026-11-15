@@ -8,6 +8,9 @@
   document.querySelectorAll('[data-alt]').forEach(node => {
     node.alt = app.text[node.dataset.alt];
   });
+  document.querySelectorAll('[data-label]').forEach(node => {
+    node.setAttribute('aria-label', app.text[node.dataset.label]);
+  });
   document.title = app.text.title;
   const byId = id => document.getElementById(id);
   const canvas = byId('map');
@@ -201,6 +204,8 @@
   }
   function scanProfileView(mode) {
     byId('scan-mode').value = mode;
+    byId('mode-journey').setAttribute('aria-pressed', String(mode === 'journey'));
+    byId('mode-world').setAttribute('aria-pressed', String(mode === 'world'));
     byId('scan-info').textContent = app.text[mode === 'journey' ? 'journeyInfo' : 'worldInfo'];
     const rows = byId('scan-rows');
     rows.replaceChildren();
@@ -259,6 +264,7 @@
   async function load() {
     if (loading) return;
     loading = true;
+    byId('retry').hidden = true;
     ++audioRequest;
     byId('retry').setAttribute('aria-disabled', 'true');
     byId('image-panel').setAttribute('aria-busy', 'true');
@@ -285,6 +291,7 @@
       canvas.hidden = false;
       if (!showChecks(app.pixels)) {
         byId('diagnostics').open = true;
+        byId('retry').hidden = false;
         announce(app.text.checkError);
         return;
       }
@@ -311,6 +318,7 @@
       for (const id of ['audio-controls', 'direction-controls', 'scan-controls']) byId(id).disabled = false;
       announce(app.text.ready);
     } catch (error) {
+      byId('retry').hidden = false;
       announce(app.text[error.message] || app.text.canvasError);
     } finally {
       loading = false;
@@ -370,7 +378,8 @@
       catch { announce(app.text.audioError); }
     }
   });
-  byId('scan-mode').addEventListener('change', event => changeMode(event.target.value));
+  byId('mode-journey').addEventListener('click', () => changeMode('journey'));
+  byId('mode-world').addEventListener('click', () => changeMode('world'));
   byId('tempo').addEventListener('input', event => scanner?.setTempo(event.target.value));
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) return;
@@ -388,6 +397,20 @@
   }
   byId('toggle-all').addEventListener('click', () => changeSelection(app.selection.toggleAll()));
   byId('go-rd').addEventListener('click', goToDominicanRepublic);
+  const guide = byId('guide-dialog');
+  document.querySelectorAll('[data-guide-open]').forEach(button => {
+    button.addEventListener('click', () => {
+      if (guide.showModal) guide.showModal();
+      else guide.setAttribute('open', '');
+    });
+  });
+  byId('guide-close').addEventListener('click', () => {
+    if (guide.close) guide.close();
+    else guide.removeAttribute('open');
+  });
+  guide.addEventListener('click', event => {
+    if (event.target === guide && guide.close) guide.close();
+  });
   document.addEventListener('keydown', event => {
     if (event.ctrlKey || event.altKey || event.metaKey || event.repeat) return;
     if (event.key === 'Escape') { event.preventDefault(); stop(); return; }

@@ -22,7 +22,7 @@ class Document(HTMLParser):
             self.ids.add(a['id'])
         for attr in ['aria-labelledby', 'aria-describedby', 'aria-controls', 'for']:
             self.references.extend(a.get(attr, '').split())
-        for attr in ['data-text', 'data-alt']:
+        for attr in ['data-text', 'data-alt', 'data-label']:
             if attr in a:
                 self.keys.append(a[attr])
         resource = a.get('src') or (a.get('href') if tag == 'link' else None)

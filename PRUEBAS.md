@@ -68,30 +68,43 @@ puede impedir leer el canvas.
 ## Prueba manual pendiente del barrido
 
 1. Recargar: no debe arrancar audio ni barrido automáticamente.
-2. Pulsar P o Reproducir barrido. Al tempo 100 %, comprobar los 30 pasos de
+2. Confirmar que Viaje del polvo aparece seleccionado. Elegir la tarjeta
+   Planeta completo y volver a Viaje del polvo; el estado visible y anunciado
+   debe coincidir. V debe alternar exactamente las mismas opciones.
+3. Pulsar P o Reproducir barrido. Al tempo 100 %, comprobar los 30 pasos de
    este a oeste y una duración aproximada de 15 segundos desde el primer paso.
-3. Pausar a mitad de un intervalo y esperar. El cursor y progreso deben
+4. Pausar a mitad de un intervalo y esperar. El cursor y progreso deben
    permanecer quietos y no deben sonar pasos nuevos. Continuar con P:
    conserva la fracción de intervalo y no repite la nota anterior.
-4. Detener con S/Esc y esperar: no deben reaparecer notas. Repetir debe tocar
+5. Detener con S/Esc y esperar: no deben reaparecer notas. Repetir debe tocar
    desde el paso 1, aunque antes estuviera en marcha o hubiera terminado.
-5. Probar tempo 50 %, 100 % y 150 %: duraciones nominales 30, 15 y 10 s.
+6. Probar tempo 50 %, 100 % y 150 %: duraciones nominales 30, 15 y 10 s.
    Cambiar tempo durante reproducción y pausa, sin saltos de índice.
-6. Con V cambiar recorrido: queda preparado para empezar de nuevo. Comprobar
+7. Con V cambiar recorrido: queda preparado para empezar de nuevo. Comprobar
    los 30 valores en la tabla, la franja tropical y el recorrido de polo a polo.
-7. En el viaje del polvo, comprobar el final en 69,9°O y los últimos dos
+8. En el viaje del polvo, comprobar el final en 69,9°O y los últimos dos
    pasos con clic suave. La sal marina 0,300 es promedio de franja y no cambia
    por sí sola el instrumento seleccionado. El aviso final debe aparecer sin
    encender sal marina. Pulsar 7 o su botón debe repetir esa columna.
-8. Moverse por la cuadrícula durante el barrido: debe pausarse y sonar la
+9. Moverse por la cuadrícula durante el barrido: debe pausarse y sonar la
    celda elegida. Ocultar la pestaña debe pausar; volver no debe reanudarla.
-9. Iniciar y detener rápidamente mientras se activa el audio: una promesa
+10. Iniciar y detener rápidamente mientras se activa el audio: una promesa
    tardía no debe arrancar el barrido después de detenerlo o cambiar modo.
-10. Silenciar y poner volumen cero: el progreso sigue avanzando sin notas.
+11. Silenciar y poner volumen cero: el progreso sigue avanzando sin notas.
     Reintentar la carga y confirmar que no quedan temporizadores duplicados.
-11. Pulsar R durante y después del recorrido. Debe pausarlo si está en marcha,
+12. Pulsar R durante y después del recorrido. Debe pausarlo si está en marcha,
     mostrar un marcador pequeño sobre RD y describir el punto 3×3: polvo 0,000,
     sal marina aproximadamente 0,608. No debe presentarlo como la franja 0,300.
+
+## Prueba manual pendiente de presentación y guía
+
+1. Confirmar que la portada muestra título, explicación y botón para comenzar.
+2. Abrir **Cómo usar** desde cabecera, portada y pie. Debe conservar el foco
+   dentro del diálogo, cerrar con su botón o Esc y devolver el foco al origen.
+3. Revisar que las secciones 01–04 tengan un orden comprensible y que las
+   tablas científicas permanezcan plegadas hasta pedirlas.
+4. Probar a 320 px, teléfono, tableta y escritorio; zoom 200 % y 400 %.
+5. Confirmar contraste, foco visible y que los controles no se superponen.
 
 ## Prueba manual pendiente del selector
 
