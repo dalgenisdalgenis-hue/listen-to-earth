@@ -31,6 +31,16 @@ equipo está en [SPEC.md](SPEC.md); no se ha modificado su contenido.
    cambia recorrido y lo deja preparado, +/− ajusta el tempo de 50 a 150 %.
    Se muestran columna muestreada, progreso, texto del paso y tabla de datos.
    El barrido puede activar el audio por acción explícita del usuario.
+5. **Selector de aerosoles:** casillas y teclas 4 polvo, 5 carbono negro,
+   6 sulfatos, 7 sal marina, 8 todos/solo polvo. De entrada solo está marcado
+   polvo. Cada instrumento tiene volumen propio. 8 cambia únicamente la
+   selección y conserva los volúmenes. Desde una selección parcial, 8 activa
+   todos; al volver a pulsarlo deja solo polvo.
+
+   Durante el barrido se silencian las capas desactivadas y las nuevas entran
+   en el próximo paso, sin reiniciar ni cambiar el reloj. Fuera del barrido,
+   si el audio ya está activo, cambiar la selección vuelve a tocar la misma
+   última muestra. Se muestra si esa muestra es una celda o una columna.
 
 ## Decisiones y correcciones documentadas
 
@@ -42,7 +52,8 @@ equipo está en [SPEC.md](SPEC.md); no se ha modificado su contenido.
 - Se usa el mapeo lineal exacto del SPEC para la pista 1 y las 15 frecuencias
   indicadas. La escala mayor queda en una constante, provisional.
 - Las celdas no se clasifican por el color más parecido: conservan los
-  cuatro pesos, aunque en esta etapa solo se sonifica el polvo.
+  cuatro pesos. El selector elige qué pesos sonificar; no vuelve a ajustar
+  RGB a una matriz reducida ni normaliza los pesos elegidos.
 - Para evitar anuncios duplicados, las flechas cambian el foco y dejan que
   el lector anuncie la celda. Los botones alternativos mantienen el foco en
   el botón y anuncian la nueva posición mediante aria-live.
@@ -67,6 +78,23 @@ Las pruebas normales de cálculo, navegador y sonido continúan durante el
 desarrollo. La validación específica con lectores de pantalla queda al final.
 
 ## Pruebas ejecutadas
+
+**Actualización del selector:** pasan las 16 combinaciones sobre 376
+resultados (371 muestras del PNG y cinco casos sintéticos de prueba),
+incluida mezcla 50/50, umbral y residuo exactos y ausencia de selección.
+Se comprueba que habilitar capas no cambia pesos, notas de las otras capas
+ni resultados de la cuadrícula. Se comprueban los atajos 4–8.
+
+El controlador de audio con Tone simulado comprueba las cuatro frecuencias
+base, las dos fuentes del oleaje, un solo clic de realimentación, volumen
+por capa, silencio y detener. No se crean nodos antes de activar el audio.
+
+Una prueba adicional ejecuta app.js con el HTML real, el PNG decodificado por
+Pillow, DOM/Tone/reloj simulados: casillas, atajos, volúmenes, conservación
+de foco, selección sin reiniciar el barrido, edición de texto y recarga.
+Después de acabar el recorrido tropical, seleccionar sal marina usa la
+columna final de la franja (0,300), no el punto de RD. Estos resultados no
+sustituyen una prueba de navegador o de audio real.
 
 **Actualización del barrido:** se comparan ahora **371 muestras** con SciPy,
 incluidas 30 columnas mundiales adicionales. Se verifican los perfiles
@@ -104,13 +132,37 @@ script: polvo 0,052 corresponde a 38,9°O; 0,556 a 45,1°O; 0,570 a 54,4°O.
 El script fija el muestreo reproducible y los perfiles completos coinciden.
 La tabla del SPEC se conserva sin corregirla por cuenta del equipo.
 
+## Sonido del selector
+
+La misma intensidad produce la misma nota base en todos los aerosoles,
+siempre con las dos guardas y el mapeo lineal del SPEC. Cambia el timbre:
+polvo con onda triangular y envolvente corta; carbono negro con tambor de
+membrana; sulfatos con síntesis FM de campana; sal marina con seno y ruido
+rosa filtrado alrededor de la misma nota. Todo se sintetiza localmente con
+Tone.js; no se descargan muestras de instrumentos.
+
+Los cuatro instrumentos pueden sonar a la vez con el mismo instante de
+ataque. Se mantiene una voz por instrumento, con un limitador compartido.
+Son timbres provisionales; todavía no se ha comprobado su identidad auditiva
+en navegador, en altavoz mono ni con personas usuarias.
+
+Si ninguna capa seleccionada supera las guardas, se emite un único clic.
+Con todas las casillas apagadas también queda ese clic de posición; M
+silencia el conjunto, incluido el clic. Un instrumento con volumen cero no
+se sustituye por un clic falso de ausencia de aerosol.
+
+La selección actualiza etiquetas y tablas sin reconstruir la cuadrícula ni
+volver a leer píxeles. Los cuatro pesos siguen visibles en las tablas,
+independientemente de qué capas estén activas. Al cambiar de recorrido se
+descarta la muestra de preescucha anterior para no mezclar contextos.
+
 ## Siguiente paso
 
-Selector de aerosoles; después, tecla R y aviso final, sin activar sal marina
-automáticamente. El final actual solo anuncia que acabaron los 30 pasos y
-conserva el texto de la última columna. La explicación de sal marina y su
-tecla se incorporarán cuando exista el selector, junto con R, según el orden
-de trabajo solicitado.
+Tecla R y aviso final, sin activar sal marina automáticamente. El final
+actual solo anuncia que acabaron los 30 pasos y
+conserva el texto de la última columna. El selector ya permite escuchar sal
+marina de esa columna por acción del usuario. La explicación del final y la
+consulta puntual de RD se incorporarán con R, según el orden solicitado.
 
 Quedan también las preferencias de accesibilidad (voz opcional, pantalla
 oscura, tamaño de letra, contraste y movimiento reducido), las pruebas

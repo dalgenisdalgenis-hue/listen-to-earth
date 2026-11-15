@@ -4,11 +4,32 @@ from pathlib import Path
 import json
 import subprocess
 import tempfile
+from html.parser import HTMLParser
 import numpy as np
 from PIL import Image
 import medir_imagen as m
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+class Markup(HTMLParser):
+    """Árbol mínimo del HTML real para las pruebas de eventos con DOM simulado."""
+    def __init__(self):
+        super().__init__()
+        self.root = {'tag': '#document', 'attrs': {}, 'children': []}
+        self.stack = [self.root]
+
+    def handle_starttag(self, tag, attrs):
+        node = {'tag': tag, 'attrs': dict(attrs), 'children': []}
+        self.stack[-1]['children'].append(node)
+        if tag not in {'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'}:
+            self.stack.append(node)
+
+    def handle_endtag(self, tag):
+        for index in range(len(self.stack) - 1, 0, -1):
+            if self.stack[index]['tag'] == tag:
+                del self.stack[index:]
+                break
 
 
 def main():
@@ -51,7 +72,14 @@ def main():
         folder = Path(tmp)
         (folder / 'fixtures.json').write_text(json.dumps(fixtures))
         (folder / 'image.rgba').write_bytes(im.convert('RGBA').tobytes())
+        markup = Markup()
+        markup.feed((ROOT / 'docs/index.html').read_text())
+        (folder / 'dom.json').write_text(json.dumps(markup.root))
         subprocess.run(['node', str(ROOT / 'scripts/verificar_nucleo.cjs'), str(folder)],
+                       cwd=ROOT, check=True)
+        subprocess.run(['node', str(ROOT / 'scripts/verificar_selector.cjs'), str(folder)],
+                       cwd=ROOT, check=True)
+        subprocess.run(['node', str(ROOT / 'scripts/verificar_eventos.cjs'), str(folder)],
                        cwd=ROOT, check=True)
 
 

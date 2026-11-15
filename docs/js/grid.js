@@ -2,7 +2,6 @@
 
 (() => {
   const app = window.ListenToEarth;
-  const number = new Intl.NumberFormat('es-DO', { maximumFractionDigits: 3 });
   const degrees = new Intl.NumberFormat('es-DO', { maximumFractionDigits: 2 });
   const percent = new Intl.NumberFormat('es-DO', { style: 'percent', maximumFractionDigits: 1 });
 
@@ -10,6 +9,19 @@
     row: Math.max(0, Math.min(app.config.rows - 1, row + dr)),
     col: Math.max(0, Math.min(app.config.cols - 1, col + dc))
   });
+
+  app.refreshGridCell = function (cell) {
+    const view = app.describeResult(cell.result);
+    cell.outcome = view.outcome;
+    cell.description = app.format('cellDescription', {
+      row: cell.row + 1, col: cell.col + 1, rows: app.config.rows, cols: app.config.cols,
+      coordinates: cell.coordinates, quantities: view.quantities,
+      residual: percent.format(cell.result.residual), outcome: view.outcome
+    });
+    cell.label = app.format('cellLabel', {
+      coordinates: cell.coordinates, quantities: view.quantities, outcome: view.outcome
+    });
+  };
 
   app.createGridCells = function (image) {
     const cells = [];
@@ -22,25 +34,15 @@
         const { x, y } = app.pixelFromCoordinates(lat, lon);
         const rgb = app.readPoint(image, x, y);
         const result = app.decompose(rgb);
-        const sound = app.soundFor(result);
         const coordinates = app.format('coordinates', {
           lat: degrees.format(Math.abs(90 - y / app.config.height * 180)),
           ns: app.text[y <= app.config.height / 2 ? 'north' : 'south'],
           lon: degrees.format(Math.abs(x / app.config.width * 360 - 180)),
           ew: app.text[x >= app.config.width / 2 ? 'east' : 'west']
         });
-        const outcome = result.residual > app.config.maxResidual ? app.text.unreliable :
-          sound.hz === null ? app.text.belowThreshold :
-            app.format('noteDescription', { index: sound.index + 1, hz: number.format(sound.hz) });
-        const description = app.format('cellDescription', {
-          row: row + 1, col: col + 1, rows: app.config.rows, cols: app.config.cols,
-          coordinates, weight: number.format(result.weights.dust),
-          residual: percent.format(result.residual), outcome
-        });
-        const label = app.format('cellLabel', {
-          coordinates, weight: number.format(result.weights.dust), outcome
-        });
-        cells.push({ row, col, x, y, rgb, result, sound, coordinates, outcome, description, label });
+        const cell = { row, col, x, y, rgb, result, coordinates };
+        app.refreshGridCell(cell);
+        cells.push(cell);
       }
     }
     return cells;
@@ -123,6 +125,7 @@
     select(0, false, false, false);
     return {
       replay: () => onSelect(cells[current], true, true),
+      refresh: () => elements.forEach((node, index) => node.setAttribute('aria-label', cells[index].label)),
       destroy: () => listeners.forEach(remove => remove())
     };
   };

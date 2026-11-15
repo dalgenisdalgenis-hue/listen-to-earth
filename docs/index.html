@@ -10,6 +10,7 @@
   <script defer src="js/config.js"></script>
   <script defer src="js/image-data.js"></script>
   <script defer src="js/decomposition.js"></script>
+  <script defer src="js/selection.js"></script>
   <script defer src="vendor/tone.js"></script>
   <script defer src="js/audio.js"></script>
   <script defer src="js/grid.js"></script>
@@ -24,6 +25,63 @@
     <p class="intro" data-text="introduction"></p>
     <p id="status" role="status" aria-live="polite" aria-atomic="true"></p>
     <button id="retry" type="button" data-text="retry"></button>
+
+    <section aria-labelledby="selection-title">
+      <h2 id="selection-title" data-text="selectionTitle"></h2>
+      <p id="selection-help" data-text="selectionHelp"></p>
+      <fieldset id="aerosol-controls" aria-describedby="selection-help">
+        <legend data-text="selectionTitle"></legend>
+        <div class="aerosol-row">
+          <div class="instrument-choice">
+            <input id="aerosol-dust" type="checkbox" checked aria-keyshortcuts="4">
+            <label for="aerosol-dust" data-text="toggleDust"></label>
+          </div>
+          <div class="instrument-volume">
+            <label for="volume-dust" data-text="volumeDust"></label>
+            <input id="volume-dust" type="range" min="0" max="100" step="1" value="50">
+            <output id="volume-value-dust" for="volume-dust"></output>
+          </div>
+        </div>
+        <div class="aerosol-row">
+          <div class="instrument-choice">
+            <input id="aerosol-blackCarbon" type="checkbox" aria-keyshortcuts="5">
+            <label for="aerosol-blackCarbon" data-text="toggleBlackCarbon"></label>
+          </div>
+          <div class="instrument-volume">
+            <label for="volume-blackCarbon" data-text="volumeBlackCarbon"></label>
+            <input id="volume-blackCarbon" type="range" min="0" max="100" step="1" value="50">
+            <output id="volume-value-blackCarbon" for="volume-blackCarbon"></output>
+          </div>
+        </div>
+        <div class="aerosol-row">
+          <div class="instrument-choice">
+            <input id="aerosol-sulfate" type="checkbox" aria-keyshortcuts="6">
+            <label for="aerosol-sulfate" data-text="toggleSulfate"></label>
+          </div>
+          <div class="instrument-volume">
+            <label for="volume-sulfate" data-text="volumeSulfate"></label>
+            <input id="volume-sulfate" type="range" min="0" max="100" step="1" value="50">
+            <output id="volume-value-sulfate" for="volume-sulfate"></output>
+          </div>
+        </div>
+        <div class="aerosol-row">
+          <div class="instrument-choice">
+            <input id="aerosol-seaSalt" type="checkbox" aria-keyshortcuts="7">
+            <label for="aerosol-seaSalt" data-text="toggleSeaSalt"></label>
+          </div>
+          <div class="instrument-volume">
+            <label for="volume-seaSalt" data-text="volumeSeaSalt"></label>
+            <input id="volume-seaSalt" type="range" min="0" max="100" step="1" value="50">
+            <output id="volume-value-seaSalt" for="volume-seaSalt"></output>
+          </div>
+        </div>
+        <button id="toggle-all" type="button" aria-keyshortcuts="8" data-text="allAerosols"></button>
+      </fieldset>
+      <p id="selection-summary"></p>
+      <p data-text="selectionTiming"></p>
+      <p data-text="timbreNote"></p>
+      <p id="sound-source" class="source-info" data-text="sourceEmpty"></p>
+    </section>
 
     <section aria-labelledby="scan-title">
       <h2 id="scan-title" data-text="scanTitle"></h2>
@@ -54,9 +112,6 @@
       <fieldset id="audio-controls" disabled>
         <legend data-text="soundControls"></legend>
         <button id="activate" type="button" data-text="activate"></button>
-        <label for="volume" data-text="volumeLabel"></label>
-        <input id="volume" type="range" min="0" max="100" step="1" value="50">
-        <output id="volume-value" for="volume"></output>
         <button id="mute" type="button" aria-pressed="false" data-text="mute"></button>
         <button id="stop" type="button" data-text="stop"></button>
       </fieldset>
@@ -100,7 +155,10 @@
             <thead><tr>
               <th scope="col" data-text="position"></th>
               <th scope="col" data-text="coordinatesHeading"></th>
+              <th scope="col" data-text="blackCarbon"></th>
               <th scope="col" data-text="dust"></th>
+              <th scope="col" data-text="seaSalt"></th>
+              <th scope="col" data-text="sulfate"></th>
               <th scope="col" data-text="residual"></th>
               <th scope="col" data-text="soundHeading"></th>
             </tr></thead>

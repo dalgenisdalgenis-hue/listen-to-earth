@@ -12,7 +12,7 @@
         region.east + (region.west - region.east) * index / (app.config.scan.steps - 1);
       const { rgb, bounds } = app.readScanStep(image, lon, region.south, region.north);
       const result = app.decompose(rgb);
-      return { index, mode, lon, rgb, bounds, result, sound: app.soundFor(result) };
+      return { index, mode, lon, rgb, bounds, result };
     });
   };
 

@@ -19,6 +19,7 @@
   const percent = new Intl.NumberFormat('es-DO', { style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1 });
   let loading = false, activating = false, controller, currentCell, announcement;
   let scanner, profiles, previousScanState = 'idle', audioRequest = 0;
+  let lastSource = null, lastScanStep = null;
 
   function announce(message) {
     clearTimeout(announcement);
@@ -39,6 +40,64 @@
       row.append(cell);
     });
     parent.append(row);
+  }
+  function sourceLabel() {
+    if (!lastSource) return app.text.sourceEmpty;
+    return lastSource.kind === 'grid' ? app.format('sourceGrid', {
+      row: lastSource.item.row + 1, col: lastSource.item.col + 1
+    }) : app.format('sourceScan', {
+      step: lastSource.item.index + 1, mode: app.text[lastSource.item.mode]
+    });
+  }
+  function renderSource() {
+    const view = lastSource ? app.describeResult(lastSource.item.result) : null;
+    byId('sound-source').textContent = sourceLabel() + (view ? ' ' + view.quantities + '. ' + view.outcome : '');
+  }
+  function renderSelector() {
+    for (const type of app.config.instrumentOrder) {
+      byId('aerosol-' + type).checked = app.selection.has(type);
+      const volume = audio.getVolume(type);
+      byId('volume-' + type).value = volume;
+      const label = app.format('volumeValue', { value: volume });
+      byId('volume-value-' + type).textContent = label;
+      byId('volume-' + type).setAttribute('aria-valuetext', label);
+    }
+    byId('selection-summary').textContent = app.format('selectionSummary', {
+      types: app.selection.types.map(type => app.text[type]).join(', ') || app.text.none
+    });
+    byId('toggle-all').textContent = app.selection.types.length === 4 ? app.text.onlyDust : app.text.allAerosols;
+  }
+  function renderGridTable() {
+    const rows = byId('grid-rows');
+    rows.replaceChildren();
+    (app.gridCells || []).forEach(cell => addRow(rows, [
+      app.format('positionShort', { row: cell.row + 1, col: cell.col + 1 }), cell.coordinates,
+      ...Object.keys(app.config.aerosols).map(type => number.format(cell.result.weights[type])),
+      percent.format(cell.result.residual), cell.outcome
+    ]));
+  }
+  function changeSelection(changes) {
+    audio.selectionChanged();
+    renderSelector();
+    // Solo se actualiza la presentación: se conservan datos, foco y reloj.
+    for (const cell of app.gridCells || []) app.refreshGridCell(cell);
+    controller?.refresh();
+    renderGridTable();
+    if (currentCell) byId('readout').textContent = currentCell.description;
+    if (profiles && scanner) scanProfileView(byId('scan-mode').value);
+    if (lastScanStep) renderScanReadout(lastScanStep);
+    renderSource();
+    if (!changes.length) return;
+    let error = '';
+    const running = ['playing', 'starting'].includes(scanner?.snapshot.state);
+    // En marcha las capas nuevas esperan al siguiente paso. Fuera del
+    // barrido se compara la misma muestra, sin iniciar audio por primera vez.
+    if (!running && audio.ready && lastSource) {
+      try { audio.play(lastSource.item.result); }
+      catch { error = ' ' + app.text.audioError; }
+    }
+    announce(changes.map(change => app.text[(change.enabled ? 'on_' : 'off_') + change.type]).join(' ') +
+      ' ' + byId('selection-summary').textContent + (!running && lastSource ? ' ' + sourceLabel() : '') + error);
   }
   function showChecks(image) {
     const rows = byId('check-rows');
@@ -78,6 +137,7 @@
     byId('tempo-value').textContent = label;
     byId('tempo').setAttribute('aria-valuetext', label);
     if (state === 'idle') {
+      lastScanStep = null;
       byId('scan-progress').value = 0;
       byId('scan-line').hidden = true;
       byId('scan-readout').textContent = app.text.scanIdle;
@@ -91,20 +151,24 @@
     audioState();
   }
   function scanOutcome(step) {
-    if (step.result.residual > app.config.maxResidual) return app.text.unreliable;
-    return step.sound.hz === null ? app.text.scanNoDust : app.format('noteDescription', {
-      index: step.sound.index + 1, hz: number.format(step.sound.hz)
+    return app.describeResult(step.result).outcome;
+  }
+  function renderScanReadout(step) {
+    const longitude = number.format(Math.abs(step.lon));
+    const view = app.describeResult(step.result);
+    byId('scan-readout').textContent = app.format('scanReadout', {
+      step: step.index + 1, steps: app.config.scan.steps, lon: longitude,
+      direction: app.text[step.lon < 0 ? 'west' : 'east'],
+      quantities: view.quantities,
+      residual: percent.format(step.result.residual), outcome: view.outcome
     });
   }
   function scanStep(step) {
     audio.play(step.result);
-    const longitude = number.format(Math.abs(step.lon));
-    byId('scan-readout').textContent = app.format('scanReadout', {
-      step: step.index + 1, steps: app.config.scan.steps, lon: longitude,
-      direction: app.text[step.lon < 0 ? 'west' : 'east'],
-      weight: number.format(step.result.weights.dust),
-      residual: percent.format(step.result.residual), outcome: scanOutcome(step)
-    });
+    lastScanStep = step;
+    lastSource = { kind: 'scan', item: step };
+    renderScanReadout(step);
+    renderSource();
     byId('scan-progress').value = step.index + 1;
     scanBox(byId('scan-line'), step.bounds);
     byId('scan-line').hidden = false;
@@ -127,6 +191,8 @@
     if (!scanner) return;
     ++audioRequest;
     scanner.setProfile(profiles[mode]);
+    lastSource = null;
+    renderSource();
     scanProfileView(mode);
     announce(app.format('scanModeChanged', { mode: app.text[mode] }));
   }
@@ -135,9 +201,12 @@
     byId('readout').textContent = cell.description;
     if (play) {
       scanner?.pause();
+      lastSource = { kind: 'grid', item: cell };
+      renderSource();
       try { audio.play(cell.result); }
       catch { announce(app.text.audioError); return; }
     }
+    if (!lastSource) { lastSource = { kind: 'grid', item: cell }; renderSource(); }
     if (speak) announce(cell.description + (!audio.ready ? ' ' + app.text.audioOff : audio.muted ? ' ' + app.text.muted : ''));
   }
   async function load() {
@@ -151,6 +220,11 @@
     scanner?.stop();
     scanner = null;
     app.scanner = null;
+    profiles = null;
+    lastSource = null;
+    lastScanStep = null;
+    app.gridCells = [];
+    renderSource();
     controller?.destroy();
     controller = null;
     currentCell = null;
@@ -179,13 +253,7 @@
       app.scanner = scanner;
       scanner.setTempo(Number(byId('tempo').value));
       scanProfileView(mode);
-      const rows = byId('grid-rows');
-      rows.replaceChildren();
-      app.gridCells.forEach(cell => addRow(rows, [
-        app.format('positionShort', { row: cell.row + 1, col: cell.col + 1 }),
-        cell.coordinates, number.format(cell.result.weights.dust),
-        percent.format(cell.result.residual), cell.outcome
-      ]));
+      renderGridTable();
       for (const id of ['grid', 'current', 'grid-table', 'scan-table']) byId(id).hidden = false;
       for (const id of ['audio-controls', 'direction-controls', 'scan-controls']) byId(id).disabled = false;
       announce(app.text.ready);
@@ -208,9 +276,9 @@
       await audio.start();
       if (token !== audioRequest || document.hidden) return;
       byId('activate').textContent = app.text.reactivate;
-      if (currentCell && !['playing', 'starting'].includes(scanner?.snapshot.state)) audio.play(currentCell.result);
+      if (lastSource && !['playing', 'starting'].includes(scanner?.snapshot.state)) audio.play(lastSource.item.result);
       announce(app.text.audioReady + (audio.muted ? ' ' + app.text.muted : '') +
-        (currentCell ? ' ' + currentCell.description : ''));
+        (lastSource ? ' ' + sourceLabel() + ' ' + app.describeResult(lastSource.item.result).quantities : ''));
     } catch { if (token === audioRequest) announce(app.text.audioError); }
     finally {
       activating = false;
@@ -242,17 +310,25 @@
     ++audioRequest;
     if (scanner?.pause()) announce(app.text.scanHidden);
   });
-  byId('volume').addEventListener('input', event => {
-    audio.setVolume(event.target.value);
-    const label = app.format('volumeValue', { value: event.target.value });
-    byId('volume-value').textContent = label;
-    event.target.setAttribute('aria-valuetext', label);
-  });
-  byId('volume-value').textContent = app.format('volumeValue', { value: 50 });
-  byId('volume').setAttribute('aria-valuetext', byId('volume-value').textContent);
+  for (const type of app.config.instrumentOrder) {
+    byId('aerosol-' + type).addEventListener('change', event => {
+      changeSelection(app.selection.set(type, event.target.checked));
+    });
+    byId('volume-' + type).addEventListener('input', event => {
+      audio.setVolume(type, event.target.value);
+      renderSelector();
+    });
+  }
+  byId('toggle-all').addEventListener('click', () => changeSelection(app.selection.toggleAll()));
   document.addEventListener('keydown', event => {
     if (event.ctrlKey || event.altKey || event.metaKey || event.repeat) return;
     if (event.key === 'Escape') { event.preventDefault(); stop(); return; }
+    const editing = event.target.closest('textarea, select, [contenteditable="true"], input:not([type="checkbox"]):not([type="range"])');
+    if (!editing && (app.config.aerosolShortcuts[event.key] || event.key === '8')) {
+      event.preventDefault();
+      changeSelection(event.key === '8' ? app.selection.toggleAll() : app.selection.toggle(app.config.aerosolShortcuts[event.key]));
+      return;
+    }
     if (event.target.closest('input, textarea, select, [contenteditable="true"]')) return;
     if (event.key.toLowerCase() === 'p' && scanner) { event.preventDefault(); scanner.toggle(); }
     if (event.key.toLowerCase() === 'v' && scanner) {
@@ -267,5 +343,6 @@
     if (event.key.toLowerCase() === 's') { event.preventDefault(); stop(); }
   });
   audioState();
+  renderSelector();
   load();
 })();

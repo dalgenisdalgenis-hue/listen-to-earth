@@ -6,7 +6,7 @@ const assert = require('node:assert/strict');
 const root = path.resolve(__dirname, '..');
 const context = { window: {} };
 vm.createContext(context);
-for (const file of ['strings.es.js', 'config.js', 'image-data.js', 'decomposition.js', 'audio.js', 'grid.js', 'scan.js']) {
+for (const file of ['strings.es.js', 'config.js', 'image-data.js', 'decomposition.js', 'selection.js', 'audio.js', 'grid.js', 'scan.js']) {
   vm.runInContext(fs.readFileSync(path.join(root, 'docs/js', file), 'utf8'), context);
 }
 const app = context.window.ListenToEarth;
@@ -74,7 +74,7 @@ for (const mode of ['journey', 'world']) {
   if (mode === 'journey') {
     assert.equal(profile[28].result.weights.dust, 0);
     assert.equal(profile[29].result.weights.dust, 0);
-    assert.equal(profile[29].sound.hz, null);
+    assert.equal(app.soundFor(profile[29].result, 'dust').hz, null);
     assert.ok(Math.abs(profile[29].result.weights.seaSalt - .300) < .0005);
   } else {
     assert.equal(profile[0].bounds.x1 - profile[0].bounds.x0, 4);

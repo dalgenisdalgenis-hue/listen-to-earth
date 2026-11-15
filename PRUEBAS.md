@@ -26,6 +26,13 @@ Tone **simulados**. Comprueban las decisiones
 de los controladores; no comprueban el navegador, la salida de sonido, la
 política de activación ni un lector de pantalla.
 
+El segundo comando ejecuta además el selector sobre 16 combinaciones × 376
+resultados (371 muestras reales y cinco casos sintéticos). Comprueba que
+elegir capas no cambia pesos ni notas de las otras capas. También ejecuta
+app.js con el HTML real y el PNG decodificado por Pillow sobre DOM/Tone/reloj
+simulados: casillas, 4–8, volúmenes, foco, recarga y cambios sin reinicio del
+barrido. Sigue sin ser una prueba de navegador o acústica.
+
 `verificar_barrido.cjs` usa reloj y activación de audio simulados: comprueba
 30 pasos/15 segundos ideales, pausas, repeticiones, tempo, cambios de modo,
 errores, callbacks tardíos y cancelación de un arranque pendiente. No mide
@@ -79,6 +86,33 @@ puede impedir leer el canvas.
    tardía no debe arrancar el barrido después de detenerlo o cambiar modo.
 10. Silenciar y poner volumen cero: el progreso sigue avanzando sin notas.
     Reintentar la carga y confirmar que no quedan temporizadores duplicados.
+
+## Prueba manual pendiente del selector
+
+1. Recargar: solo debe estar marcado polvo, con volumen 50 %. Antes de
+   activar audio, usar casillas y teclas 4–8: no deben crearse sonidos.
+2. Activar audio y explorar una celda. Con 4–7 y las casillas, comparar la
+   misma muestra con distintas capas; revisar el origen mostrado (celda o
+   columna). No debe presentarse un promedio de franja como dato puntual de RD.
+3. Pulsar 8 desde una selección parcial: activa todos. Pulsarlo otra vez:
+   solo polvo. Comprobar que conserva los cuatro volúmenes elegidos.
+4. Poner una capa a volumen cero y repetir una muestra donde su peso supere
+   las guardas: no debe inventarse un clic en sustitución de esa nota.
+   Si ninguna capa supera las guardas, debe haber solo un clic, no uno por capa.
+5. Apagar las cuatro casillas: solo queda el clic de posición. M debe
+   silenciarlo también. Encender un instrumento con residuo alto no debe
+   permitir una nota que las guardas habían rechazado.
+6. Iniciar el barrido. Añadir o quitar capas no debe reiniciar ni saltar el
+   progreso. Una capa quitada deja de sonar; una nueva entra al próximo paso.
+7. Conservar solo polvo y terminar el viaje tropical. Pulsar 7: debe oírse
+   sal marina de la última columna, aproximadamente 0,300, sin iniciar de
+   nuevo el barrido ni presentar el valor puntual de RD (0,608).
+8. Cambiar de recorrido y recargar la imagen; comprobar selección, volumen,
+   foco y ausencia de listeners o notas duplicados. La recarga de imagen
+   conserva ajustes; una carga nueva de la página empieza con solo polvo.
+9. Escuchar cada instrumento por separado y juntos en altavoz mono. Evaluar
+   si se reconocen cuerda, tambor, campanas y oleaje y si la mezcla tapa alguno.
+   Esta evaluación musical y acústica no la acreditan los objetos simulados.
 
 ## Etapa final: modo de uso sin mirar y lectores de pantalla
 

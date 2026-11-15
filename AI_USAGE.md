@@ -44,6 +44,13 @@ Con la imagen oficial del SVS 5669 y su barra de colores descargadas por el equi
 
 ## Reglas de trabajo durante el evento
 
+Actualización del selector: Codex añadió las casillas 4–7, el atajo 8,
+volumen independiente y cuatro timbres sintetizados sin archivos de audio
+externos. El selector conserva los pesos NNLS; solo cambia qué capas se oyen.
+Se probaron las 16 combinaciones, la mezcla 50/50 y los eventos de app.js con
+DOM/Tone/reloj simulados. Se documenta la distinción entre último promedio
+de columna y consulta puntual; la escucha real de timbres sigue pendiente.
+
 Actualización de implementación: Codex añadió el barrido automático en ambos
 modos, sus controles y una máquina de estados con reloj simulado para las
 pruebas. Se compararon 371 muestras JS/SciPy, incluidas las 30 columnas del

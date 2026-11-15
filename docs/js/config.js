@@ -12,6 +12,8 @@
     maxResidual: 0.10,
     rows: 8,
     cols: 12,
+    instrumentOrder: ['dust', 'blackCarbon', 'sulfate', 'seaSalt'],
+    aerosolShortcuts: { '4': 'dust', '5': 'blackCarbon', '6': 'sulfate', '7': 'seaSalt' },
     scan: {
       steps: 30,
       stepMs: 500,

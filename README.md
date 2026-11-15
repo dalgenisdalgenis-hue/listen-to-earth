@@ -11,15 +11,16 @@ Convierte la visualización oficial SVS 5669 de aerosoles en sonido explorable.
 Implementados: lectura del PNG 1920×1080 en canvas, descomposición NNLS,
 cuadrícula de 8 filas × 12 columnas, exploración con flechas, botones
 alternativos y tabla textual. El barrido automático ofrece viaje del polvo y
-mundo entero, con 30 pasos, pausa, repetición y tempo. Solo suena el polvo;
-el audio se activa con un botón o P por acción explícita del usuario.
+mundo entero, con 30 pasos, pausa, repetición y tempo. El selector permite
+escuchar polvo, carbono negro, sulfatos y sal marina, con volumen por capa.
+De entrada solo suena el polvo; el audio se activa con un botón o P por acción explícita del usuario.
 Tone.js 15.1.22 está dentro del repo.
 
 Ejecutados: 371 comparaciones JS/SciPy y pruebas de controladores con DOM,
 Tone y reloj simulados. **Pendientes: navegador, audio real, NVDA/VoiceOver y pruebas
 con voluntarios.** No se afirma validación con usuarios.
 
-Siguiente: selector de aerosoles y después tecla R con el aviso final.
+Siguiente: tecla R con el aviso final.
 La configuración del modo sin mirar la pantalla y las pruebas
 con lectores de pantalla se reservan para la última etapa, según la nueva
 instrucción del usuario registrada en REGISTRO_CAMBIOS.md. Se mantienen las
@@ -51,12 +52,21 @@ canvas mediante `file://`.
 2. Llegar con Tab a **Activar sonido** y pulsar Enter.
 3. Entrar en la cuadrícula y usar flechas; Enter repite y Tab sale.
 4. Si el lector captura las flechas, usar los botones de dirección.
-5. M silencia; S o Esc detiene. El rango controla el volumen del polvo.
+5. M silencia; S o Esc detiene. Cada instrumento tiene su rango de volumen.
 6. P inicia o pausa el barrido; Repetir empieza desde el principio. Al tempo
    100 %, los 30 pasos duran nominalmente 15 segundos. +/− cambia el tempo.
 7. V cambia entre viaje del polvo y mundo entero, dejando el nuevo recorrido
    preparado para P. Usar las flechas pausa el barrido. Ocultar la pestaña
    también lo pausa; al volver se reanuda con P.
+8. 4 enciende/apaga polvo; 5 carbono negro; 6 sulfatos; 7 sal marina. También
+   hay casillas. 8 activa todos; desde todos, vuelve a solo polvo. Los cuatro
+   controles de volumen mantienen sus ajustes al cambiar la selección.
+
+Durante el barrido las capas nuevas entran en el siguiente paso. Fuera del
+barrido se vuelve a tocar la última muestra si el audio ya está activado;
+se indica si es celda o columna. No se inicia audio al marcar una casilla
+antes de la primera activación. Sin capas elegidas queda el clic de posición;
+M silencia también ese clic.
 
 No se captura ninguna voz ni se inicia narración automática.
 
@@ -76,6 +86,11 @@ python scripts/verificar_archivos.py
 
 Ver [PRUEBAS.md](PRUEBAS.md) para la prueba manual pendiente.
 
+El comando de comparación también prueba las 16 combinaciones del selector
+y los eventos de app.js sobre DOM/Tone/reloj simulados. No es una prueba de
+navegador ni de sonido real. La identidad de los cuatro timbres y la mezcla
+en altavoz mono siguen pendientes de evaluación por el equipo.
+
 ## Qué representa el sonido
 
 Se promedia RGB en una ventana de 3×3 en el centro de cada casilla. NNLS
@@ -93,6 +108,11 @@ La intensidad relativa se convierte linealmente en una de las 15 notas
 pentatónicas del SPEC. La escala mayor y el timbre son provisionales para que
 el equipo los evalúe escuchando. Los pesos de una imagen no son µg/m³ ni una
 medida de lo que se respira; el mapa de fondo y las mezclas añaden error.
+
+Cada aerosol usa la misma regla de nota y su propio timbre: cuerda sintetizada
+para polvo, tambor para carbono negro, campanas para sulfatos y oleaje con
+una componente afinada para sal marina. Los pesos se calculan sobre la matriz
+completa de cuatro colores y se conservan al encender o apagar capas.
 
 ## Estructura y publicación prevista
 
