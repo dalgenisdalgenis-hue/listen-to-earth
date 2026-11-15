@@ -6,6 +6,10 @@ Proyecto del Liceo Científico Dr. Miguel Canela Lázaro (República Dominicana)
 para NASA Space Apps Challenge 2026, reto *The Earth Information Jukebox*.
 Convierte la visualización oficial SVS 5669 de aerosoles en sonido explorable.
 
+Versión pública vigente: https://dalgenisdalgenis-hue.github.io/listen-to-earth/
+La configuración y la decisión de conservar esta dirección se documentan en
+[PUBLICACION.md](PUBLICACION.md).
+
 ## Estado de esta entrega
 
 Implementados: lectura del PNG 1920×1080 en canvas, descomposición NNLS,
@@ -53,6 +57,7 @@ con las pistas 2 y 3.
 - [Brief y alcance](PROJECT_BRIEF.md).
 - [Fuentes y licencias](SOURCES.md).
 - [Uso de IA](AI_USAGE.md).
+- [Estado de publicación y enlace](PUBLICACION.md).
 - [Detalle técnico de las imágenes](docs/assets/README.md).
 - [Versiones anteriores recibidas](historial/).
 

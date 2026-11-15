@@ -136,6 +136,12 @@ conservan en [historial/](historial/).
     positivos y la mezcla 50/50 se conservan. Carbono negro mundial queda en
     21 de 60 longitudes y 44 de 720 zonas; el penúltimo paso tropical conserva
     polvo 0,071 en 1/5 zonas y el final continúa en 0/5.
+16. **Documentación de la versión pública:** se revisan README, SPEC,
+    metodología, pruebas, fuentes, créditos y guía para que la versión vigente
+    describa 60 pasos, fondo neutro y evidencia mínima. Las cifras anteriores
+    se conservan únicamente en entradas históricas. `PUBLICACION.md` registra
+    el enlace actual y la decisión del equipo de conservarlo sin mover el
+    repositorio, configurar un dominio ni añadir una redirección.
 
 ## Decisiones y correcciones documentadas
 
