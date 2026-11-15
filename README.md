@@ -10,8 +10,8 @@ Convierte la visualización oficial SVS 5669 de aerosoles en sonido explorable.
 
 Implementados: lectura del PNG 1920×1080 en canvas, descomposición NNLS,
 cuadrícula de 8 filas × 12 columnas, exploración con flechas, botones
-alternativos y tabla textual. El barrido automático ofrece viaje del polvo y
-mundo entero, con 30 pasos, pausa, repetición y tempo. El selector permite
+alternativos y tabla textual. El barrido automático ofrece Viaje del polvo
+con 30 pasos y Planeta completo con 60, además de pausa, repetición y tempo. El selector permite
 escuchar polvo, carbono negro, sulfatos y sal marina, con volumen por capa.
 De entrada solo suena el polvo; el audio se activa con un botón o P por acción explícita del usuario.
 Una textura sostenida representa la intensidad total válida de la muestra y
@@ -25,7 +25,7 @@ Cada experiencia tiene una URL propia. Guía y créditos también son páginas
 independientes. La portada ofrece una ambientación artística opcional,
 sintetizada localmente y separada de los sonidos de los datos.
 
-Ejecutados: 311 muestras puntuales y **510 bandas de recorrido** comparadas
+Ejecutados: 311 muestras puntuales y **870 bandas de recorrido** comparadas
 entre JavaScript y SciPy, además de pruebas de controladores con DOM,
 Tone y reloj simulados. **Pendientes: navegador, audio real, NVDA/VoiceOver y pruebas
 con voluntarios.** No se afirma validación con usuarios.
@@ -76,7 +76,8 @@ canvas mediante `file://`.
 5. M silencia; S o Esc detiene. Cada instrumento tiene su rango de volumen.
 6. Elegir **Viaje del polvo** o **Planeta completo**. P inicia o pausa el barrido;
    Repetir empieza desde el principio. Al tempo
-   100 %, los 30 pasos duran nominalmente 15 segundos. +/− cambia el tempo.
+   100 %, Viaje del polvo dura nominalmente 15 segundos y Planeta completo,
+   con 60 pasos, aproximadamente 30 segundos. +/− cambia el tempo.
 7. V cambia entre viaje del polvo y planeta completo, dejando el nuevo recorrido
    preparado para P. Usar las flechas pausa el barrido. Ocultar la pestaña
    también lo pausa; al volver se reanuda con P.
@@ -133,7 +134,7 @@ El barrido lee franjas de 9 píxeles de ancho y las divide antes de NNLS: cinco
 bandas dentro de 12–22°N para el viaje y doce bandas de polo a polo para el
 mundo. Para cada aerosol conserva dos datos: intensidad media en las bandas
 válidas y cobertura o fracción de bandas donde aparece. En el recorrido mundial
-el carbono negro aparece en 15 de 30 longitudes y 31 de 360 zonas; con el
+el carbono negro aparece en 28 de 60 longitudes y 55 de 720 zonas; con el
 promedio anterior solo superaba las guardas en un paso.
 
 La altura representa intensidad. El nivel del instrumento se multiplica por

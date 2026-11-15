@@ -115,6 +115,14 @@ conservan en [historial/](historial/).
     carbono negro 0 en 0/5, polvo 0 en 0/5, sal marina 0,291 en 2/5 y sulfatos
     0,073 en 1/5. El penúltimo paso conserva polvo 0,061 en 2/5, que el promedio
     anterior borraba. La interfaz muestra intensidad y zonas activas.
+14. **Más pasos para Planeta completo:** el recorrido mundial pasa de 30 a 60
+    pasos sin cambiar la ruta tropical, que conserva 30. Cada paso mundial
+    mantiene 12 zonas de latitud y 0,50 s al tempo normal, por lo que el viaje
+    completo dura aproximadamente 30 segundos y analiza 720 zonas. JavaScript
+    coincide con SciPy en las 870 bandas vigentes (720 mundiales y 150
+    tropicales). Carbono negro aparece en 28 de 60 longitudes y 55 de 720
+    zonas. Se actualizan progreso, mensajes, tablas, guía y pruebas para que el
+    total se derive del perfil elegido y no de una constante compartida.
 
 ## Decisiones y correcciones documentadas
 

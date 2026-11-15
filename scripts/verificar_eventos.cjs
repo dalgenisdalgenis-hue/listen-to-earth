@@ -131,8 +131,12 @@ const key = (key, target = body) => target.dispatch('keydown', { key });
   assert.equal(byId('scan-mode').value, 'world');
   assert.equal(byId('mode-world').attributes['aria-pressed'], 'true');
   assert.equal(app.scanner.snapshot.mode, 'world');
+  assert.equal(app.scanner.snapshot.steps, 60);
+  assert.equal(byId('scan-progress').max, 60);
   byId('mode-journey').dispatch('click');
   assert.equal(byId('scan-mode').value, 'journey');
+  assert.equal(app.scanner.snapshot.steps, 30);
+  assert.equal(byId('scan-progress').max, 30);
   key('7'); assert.deepEqual(Array.from(app.selection.types), ['seaSalt']); assert.equal(audioNodes.length, 0);
   byId('aerosol-dust').focus(); key('5', byId('aerosol-dust'));
   assert.deepEqual(Array.from(app.selection.types), ['blackCarbon']);
@@ -150,7 +154,12 @@ const key = (key, target = body) => target.dispatch('keydown', { key });
   assert.equal(app.audio.imageLayerEnabled, true);
   byId('volume-image-layer').value = 42; byId('volume-image-layer').dispatch('input');
   assert.equal(app.audio.getImageLayerVolume(), 42);
-  assert.equal(plays.length, 0); // Cambiar recorrido borra la muestra de preescucha anterior.
+  // El total visible debe pertenecer al perfil activo, no a la antigua
+  // constante compartida de 30 pasos.
+  byId('mode-world').dispatch('click'); key('p'); await flush();
+  assert.ok(byId('scan-readout').textContent.includes('Paso 1 de 60'));
+  key('s'); byId('mode-journey').dispatch('click');
+  assert.equal(byId('sound-source').textContent, app.text.sourceEmpty); // Cambiar recorrido borra la preescucha.
   const created = audioNodes.length;
   const beforeRd = plays.length; key('r'); advance(30);
   assert.equal(app.rdPoint.x, 587); assert.equal(app.rdPoint.y, 429);

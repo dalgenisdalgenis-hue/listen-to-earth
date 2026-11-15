@@ -49,11 +49,11 @@ def main():
                            ('RD', 18.47, -69.90)]:
         x, y = m.px(lat, lon)
         add(name, m.leer_punto(a, x, y), point=[x, y])
-    for mode, east, west, south, north, count in [
-        ('journey', 20, -69.9, 12, 22, m.ZONAS_VIAJE),
-        ('world', 180, -180, -90, 90, m.ZONAS_MUNDO),
+    for mode, east, west, south, north, count, steps in [
+        ('journey', 20, -69.9, 12, 22, m.ZONAS_VIAJE, 30),
+        ('world', 180, -180, -90, 90, m.ZONAS_MUNDO, 60),
     ]:
-        for i, lon in enumerate(np.linspace(east, west, 30)):
+        for i, lon in enumerate(np.linspace(east, west, steps)):
             colors = m.leer_paso_barrido_zonas(a, lon, south, north, count)
             summary = m.resumir_zonas(colors)
             scan_fixtures.append({

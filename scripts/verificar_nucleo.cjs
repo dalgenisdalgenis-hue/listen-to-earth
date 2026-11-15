@@ -87,7 +87,8 @@ const scanFixtures = JSON.parse(fs.readFileSync(path.join(folder, 'scan-fixtures
 let zoneComparisons = 0;
 for (const mode of ['journey', 'world']) {
   const profile = app.createScanProfile(image, mode);
-  assert.equal(profile.length, 30);
+  const expectedSteps = app.config.scan.modes[mode].steps || app.config.scan.steps;
+  assert.equal(profile.length, expectedSteps);
   assert.equal(profile[0].lon, app.config.scan.modes[mode].east);
   assert.equal(profile.at(-1).lon, app.config.scan.modes[mode].west);
   profile.forEach((step, index) => {
@@ -122,11 +123,11 @@ for (const mode of ['journey', 'world']) {
     assert.ok(profile[29].result.activeZones.seaSalt > 0);
   } else {
     assert.equal(profile[0].bounds.x1 - profile[0].bounds.x0, 4);
-    assert.equal(profile[29].bounds.x1 - profile[29].bounds.x0, 5);
+    assert.equal(profile.at(-1).bounds.x1 - profile.at(-1).bounds.x0, 5);
   }
 }
 const world = app.createScanProfile(image, 'world');
-assert.equal(world.filter(step => step.result.activeZones.blackCarbon > 0).length, 15);
-assert.equal(world.reduce((sum, step) => sum + step.result.activeZones.blackCarbon, 0), 31);
+assert.equal(world.filter(step => step.result.activeZones.blackCarbon > 0).length, 28);
+assert.equal(world.reduce((sum, step) => sum + step.result.activeZones.blackCarbon, 0), 55);
 console.log(`PASS: ${zoneComparisons} bandas JS/SciPy; perfiles zonales, cobertura, extremos y recorte.`);
-console.log('PASS: carbono negro mundial en 15 de 30 longitudes y 31 de 360 zonas.');
+console.log('PASS: carbono negro mundial en 28 de 60 longitudes y 55 de 720 zonas.');

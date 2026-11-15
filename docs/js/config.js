@@ -29,8 +29,8 @@
       maxTempo: 150,
       tempoStep: 10,
       modes: {
-        journey: { east: 20, west: -69.9, south: 12, north: 22, zones: 5 },
-        world: { east: 180, west: -180, south: -90, north: 90, zones: 12 }
+        journey: { east: 20, west: -69.9, south: 12, north: 22, zones: 5, steps: 30 },
+        world: { east: 180, west: -180, south: -90, north: 90, zones: 12, steps: 60 }
       }
     },
     scaleMode: 'major', // Provisional: el equipo debe escucharla con datos reales.

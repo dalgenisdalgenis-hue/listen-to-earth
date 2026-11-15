@@ -35,10 +35,11 @@
   app.createScanProfile = function (image, mode) {
     const region = app.config.scan.modes[mode];
     if (!region) throw new Error('sampleError');
-    return Array.from({ length: app.config.scan.steps }, (_, index) => {
+    const steps = region.steps || app.config.scan.steps;
+    return Array.from({ length: steps }, (_, index) => {
       // Incluye ambos extremos: el último paso tropical llega a 69,9°O.
-      const lon = index === app.config.scan.steps - 1 ? region.west :
-        region.east + (region.west - region.east) * index / (app.config.scan.steps - 1);
+      const lon = index === steps - 1 ? region.west :
+        region.east + (region.west - region.east) * index / (steps - 1);
       const { rgb, bounds, zones } = app.readScanStepZones(
         image, lon, region.south, region.north, region.zones);
       for (const zone of zones) zone.result = app.decompose(zone.rgb);
@@ -92,7 +93,8 @@
       }
       // Un paso por callback y una espera completa después: si el navegador
       // se retrasa, no soltamos varias notas juntas para "recuperar" el tiempo.
-      // El final llega después de mantener también el último paso: 30 × 500 ms.
+      // El final llega después de mantener también el último paso: un intervalo
+      // completo por cada elemento del perfil (30 tropicales o 60 mundiales).
       schedule(interval());
     }
     async function play(restart = false) {

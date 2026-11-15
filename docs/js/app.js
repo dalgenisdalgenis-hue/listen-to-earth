@@ -234,7 +234,7 @@
           sulfate: number.format(lastScanStep.result.weights.sulfate),
           sulfateActive: lastScanStep.result.activeZones.sulfate,
           zones: lastScanStep.result.zoneCount
-        }) : app.text.scanEnded;
+        }) : app.format('scanEnded', { steps });
         announce(ending);
       }
     }
@@ -254,7 +254,7 @@
     const longitude = number.format(Math.abs(step.lon));
     const view = app.describeResult(step.result);
     byId('scan-readout').textContent = app.format('scanReadout', {
-      step: step.index + 1, steps: app.config.scan.steps, lon: longitude,
+      step: step.index + 1, steps: profiles[step.mode].length, lon: longitude,
       direction: app.text[step.lon < 0 ? 'west' : 'east'],
       quantities: view.quantities,
       residual: percent.format(step.result.residual), outcome: view.outcome
@@ -275,6 +275,7 @@
     byId('mode-journey').setAttribute('aria-pressed', String(mode === 'journey'));
     byId('mode-world').setAttribute('aria-pressed', String(mode === 'world'));
     byId('scan-info').textContent = app.text[mode === 'journey' ? 'journeyInfo' : 'worldInfo'];
+    byId('scan-progress').max = profiles[mode].length;
     const rows = byId('scan-rows');
     rows.replaceChildren();
     profiles[mode].forEach(step => addRow(rows, [step.index + 1,

@@ -22,7 +22,7 @@ python scripts/verificar_archivos.py
 ```
 
 El primer comando imprime cuatro comprobaciones correctas. El segundo compara
-311 muestras puntuales y **510 bandas de recorrido** con SciPy: 360 del mundo
+311 muestras puntuales y **870 bandas de recorrido** con SciPy: 720 del mundo
 y 150 del viaje. También comprueba intensidad, cobertura, límites de
 movimiento, guardas y mapeo a notas.
 
@@ -47,7 +47,7 @@ aviso final, la selección sin cambios automáticos y la repetición explícita
 del último resumen zonal. Sigue sin ser una prueba de navegador o acústica.
 
 `verificar_barrido.cjs` usa reloj y activación de audio simulados: comprueba
-30 pasos/15 segundos ideales, pausas, repeticiones, tempo, cambios de modo,
+la máquina de 30 pasos/15 segundos ideales, pausas, repeticiones, tempo, cambios de modo,
 errores, callbacks tardíos y cancelación de un arranque pendiente. No mide
 la precisión temporal ni el sonido de un navegador real.
 
@@ -86,17 +86,19 @@ puede impedir leer el canvas.
 2. Abrir Viaje del polvo y Planeta completo desde sus páginas propias. El
    estado visible y anunciado debe coincidir con la URL. V debe navegar a la
    otra experiencia automática.
-3. Pulsar P o Reproducir barrido. Al tempo 100 %, comprobar los 30 pasos de
-   este a oeste y una duración aproximada de 15 segundos desde el primer paso.
+3. Pulsar P o Reproducir barrido. Al tempo 100 %, comprobar 30 pasos y unos
+   15 segundos en Viaje del polvo; 60 pasos y unos 30 segundos en Planeta completo.
 4. Pausar a mitad de un intervalo y esperar. El cursor y progreso deben
    permanecer quietos y no deben sonar pasos nuevos. Continuar con P:
    conserva la fracción de intervalo y no repite la nota anterior.
 5. Detener con S/Esc y esperar: no deben reaparecer notas. Repetir debe tocar
    desde el paso 1, aunque antes estuviera en marcha o hubiera terminado.
-6. Probar tempo 50 %, 100 % y 150 %: duraciones nominales 30, 15 y 10 s.
+6. Probar tempo 50 %, 100 % y 150 %: en Viaje del polvo las duraciones
+   nominales son 30, 15 y 10 s; en Planeta completo son 60, 30 y 20 s.
    Cambiar tempo durante reproducción y pausa, sin saltos de índice.
 7. Con V cambiar recorrido: queda preparado para empezar de nuevo. Comprobar
-   los 30 valores en la tabla, la franja tropical y el recorrido de polo a polo.
+   los 30 valores tropicales o los 60 mundiales en la tabla, la franja tropical
+   y el recorrido de polo a polo.
 8. En el viaje del polvo, comprobar el final en 69,9°O. El penúltimo paso
    conserva polvo 0,061 en 2/5 zonas y el último tiene polvo 0 en 0/5. La sal
    marina final es 0,291 en 2/5 zonas y no cambia por sí sola el instrumento
@@ -114,13 +116,13 @@ puede impedir leer el canvas.
 
 ## Comprobación de la revisión por bandas
 
-1. **Aprobado:** JavaScript y SciPy coinciden para las 360 bandas mundiales y
+1. **Aprobado:** JavaScript y SciPy coinciden para las 720 bandas mundiales y
    las 150 tropicales, además de bordes y casos sintéticos.
 2. **Aprobado:** 12 bandas de 15° y 5 de 2°, sin
    huecos, solapamientos ni pérdida de píxeles por redondeo.
 3. **Aprobado:** intensidad media elegible,
    cobertura y guardas. Una banda con residuo mayor de 0,10 no cuenta.
-4. **Aprobado:** carbono negro mundial en 15 de 30 longitudes y 31 de 360 zonas.
+4. **Aprobado:** carbono negro mundial en 28 de 60 longitudes y 55 de 720 zonas.
 5. **Aprobado en el punto de control:** el Pacífico limpio no produce nota. En
    la escucha manual se debe vigilar que el mapa base
    o las luces urbanas no activan mezclas espurias de forma sistemática.

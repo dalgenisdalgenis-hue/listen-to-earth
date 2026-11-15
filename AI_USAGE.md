@@ -49,8 +49,8 @@ Con la imagen oficial del SVS 5669 y su barra de colores descargadas por el equi
   `medir_imagen.py`. Las versiones recibidas se conservan sin reescribir en
   `historial/`; el `SPEC.md` activo sí se actualiza cuando el equipo aprueba una
   decisión posterior.
-- Se implementó NNLS por conjunto activo. La versión zonal se comparó con
-  SciPy en 311 muestras puntuales y 510 bandas de recorrido, incluidas las 96
+- Se implementó NNLS por conjunto activo. La versión zonal vigente se comparó con
+  SciPy en 311 muestras puntuales y 870 bandas de recorrido, incluidas las 96
   posiciones de exploración. Los perfiles se calculan desde el PNG y no son
   una melodía pregrabada.
 - La discrepancia de sal marina en RD se resolvió al explicitar la ventana de muestreo. También se registró la discrepancia pendiente de las longitudes de la tabla resumida del SPEC.
@@ -124,8 +124,17 @@ Implementación zonal (15-nov-2026): Codex dividió cada franja de 9 píxeles en
 resumió intensidad media válida y cobertura. La altura usa intensidad; el
 nivel usa la raíz cuadrada de la cobertura; las notas automáticas duran 0,45 s.
 Se actualizaron tablas, lectura textual, aviso final, guía, fuentes y pruebas.
-JavaScript coincidió con SciPy en 510 bandas. Tone y el reloj simulados
+JavaScript coincidió con SciPy en las 510 bandas que tenía esa primera versión
+(30 pasos mundiales y 30 tropicales). Tone y el reloj simulados
 comprobaron la regla, pero no acreditan timbre ni volumen percibido.
+
+Ampliación del recorrido mundial (15-nov-2026): por solicitud del equipo,
+«Planeta completo» pasó de 30 a 60 pasos, manteniendo 12 zonas de latitud por
+paso, franjas de 9 píxeles y el intervalo de 0,50 s. «Viaje del polvo» conserva
+30 pasos. La comprobación vigente compara 870 bandas con SciPy: 720 mundiales
+y 150 tropicales. Con esta resolución, el carbono negro aparece en 28 de 60
+longitudes y 55 de 720 zonas. La duración mundial nominal es de unos 30 s al
+tempo normal.
 
 - Una etapa por solicitud; cada entrega incluye qué cambió, cómo comprobarlo y qué limitaciones quedan.
 - **No se afirma que una prueba pasó si no se ejecutó.**

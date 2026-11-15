@@ -4,7 +4,7 @@
 sin consultar nada más. Revisión del equipo: 15-nov-2026.*
 
 > **Estado de la revisión:** la sonificación por bandas de latitud descrita en
-> este documento está implementada. Se compararon 510 bandas entre JavaScript
+> este documento está implementada. Se compararon 870 bandas entre JavaScript
 > y SciPy. La escucha en navegador real y altavoz mono sigue pendiente.
 
 ---
@@ -194,13 +194,15 @@ Solo los controles de la pista activa deben quedar expuestos al lector de pantal
 
 La imagen global convertida en sonido.
 
-**Barrido automático** (es lo principal): una línea cruza la imagen de **este a oeste**, siguiendo el polvo de África hacia el Caribe, en **~30 pasos** y **unos 15 segundos**. Se puede pausar, repetir e ir más lento.
+**Barrido automático** (es lo principal): una línea cruza la imagen de **este
+a oeste**. Viaje del polvo usa **30 pasos y unos 15 segundos**; Planeta completo
+usa **60 pasos y unos 30 segundos**. Se puede pausar, repetir e ir más lento.
 
 Dos modos, que se cambian con una tecla:
 - **«El viaje del polvo»** (por defecto): franja tropical **12°N a 22°N**, de
   **20°E a 69,9°O**. Cada paso divide esa franja en 5 bandas de 2°.
 - **«El mundo entero»**: barre todo el planeta y divide cada paso en 12 bandas
-  de 15°.
+  de 15°. Usa 60 longitudes, separadas aproximadamente 6,1°.
 
 En cada banda se promedia RGB, se ejecuta NNLS y se aplican las dos guardas.
 Para cada aerosol, la **intensidad** del paso es la media de los pesos en las
@@ -212,6 +214,9 @@ debe mostrar ambos números.
 audible el carbono negro en solo 1 de 30 pasos. Las mismas columnas divididas
 en 12 bandas lo encuentran en 15 longitudes y 31 de 360 zonas. El promedio
 vertical estaba ocultando plumas localizadas.
+
+Con los 60 pasos vigentes, carbono negro aparece en 28 longitudes y 55 de 720
+zonas. La mayor resolución temporal no cambia las guardas ni la regla sonora.
 
 ⚠️ **El final del barrido y la tecla R son dos lugares distintos, y hay que decirlo.**
 - El **último resumen zonal** de la franja 12°N–22°N tiene polvo **0,000 en

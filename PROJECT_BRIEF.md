@@ -23,7 +23,7 @@ Partimos de la visualización oficial de aerosoles del Earth Information Center 
 
 ## Experiencias y alcance futuro
 
-1. **Visualización global de aerosoles** — la imagen del SVS 5669 convertida en sonido mediante tres páginas: «Viaje del polvo», «Planeta completo» y «Exploración manual». Cada tipo de aerosol es un instrumento: polvo, carbono negro, sulfatos y sal marina. Los recorridos automáticos usan 30 pasos; la exploración usa una cuadrícula de 8 × 12 y la tecla **R** lleva a RD.
+1. **Visualización global de aerosoles** — la imagen del SVS 5669 convertida en sonido mediante tres páginas: «Viaje del polvo», «Planeta completo» y «Exploración manual». Cada tipo de aerosol es un instrumento: polvo, carbono negro, sulfatos y sal marina. Viaje del polvo usa 30 pasos; Planeta completo usa 60; la exploración usa una cuadrícula de 8 × 12 y la tecla **R** lleva a RD.
 2. **Compara años** — con MERRA-2 sobre RD: elegir años con botones o con un rango; «Mes a mes» (hasta 4 años, cada uno con su timbre) y «Comparar picos» (el mes de máximo polvo de cada año).
 3. **Escucha 45 años** — cada nota es un mes, de 1980 a 2024, con un golpe grave en cada enero y la opción de oír solo los veranos.
 
@@ -52,10 +52,12 @@ Sáhara da 0,874 de polvo y 1,9 % de residuo. Una nota requiere peso de al menos
 entre aerosoles sea único.
 
 La primera versión promedió cada columna completa antes de NNLS. La revisión
-del 15-nov-2026 demostró que ese orden diluye plumas localizadas: el carbono
-negro mundial resulta audible en 1 de 30 pasos, pero aparece en 15 longitudes
-al dividir las franjas en 12 bandas. El equipo aprobó descomponer localmente y
-después resumir intensidad y cobertura. Ver `METODOLOGIA_SONIFICACION.md`.
+del 15-nov-2026 demostró que ese orden diluye plumas localizadas: en el perfil
+histórico de 30 pasos, el carbono negro mundial resultaba audible en un solo
+paso, pero aparecía en 15 longitudes al dividir las franjas en 12 bandas. El
+equipo aprobó descomponer localmente y después resumir intensidad y cobertura.
+La versión vigente amplía el mundo a 60 pasos y lo encuentra en 28 longitudes
+y 55 de 720 zonas. Ver `METODOLOGIA_SONIFICACION.md`.
 
 En la pista 1 el mapeo de intensidad relativa a las 15 notas es **lineal**, con la fórmula del SPEC. El mapeo logarítmico corresponde a MERRA-2 en las pistas 2 y 3.
 
@@ -101,8 +103,8 @@ En la pista 1 el mapeo de intensidad relativa a las 15 notas es **lineal**, con 
 
 **Estado de esta entrega:** implementada la pista 1 con canvas, descomposición,
 cuadrícula, barrido zonal automático, selector, tecla R y aviso final. Se
-compararon con SciPy 311 muestras puntuales y 510 bandas; carbono negro aparece
-en 15 longitudes mundiales y 31 de 360 zonas. El audio simulado comprueba
+compararon con SciPy 311 muestras puntuales y 870 bandas; carbono negro aparece
+en 28 longitudes mundiales y 55 de 720 zonas. El audio simulado comprueba
 cobertura, duración de 0,45 s y silencio, pero las pruebas en navegador y de
 audio real siguen pendientes. Las pistas 2 y 3 quedan detenidas. Ver
 [REGISTRO_CAMBIOS.md](REGISTRO_CAMBIOS.md),

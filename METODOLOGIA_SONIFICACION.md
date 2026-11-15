@@ -67,9 +67,11 @@ imagen; demuestra que el promedio de polo a polo destruye detalle espacial.
 
 ## Regla aprobada para los recorridos automáticos
 
-Se conservan 30 pasos de este a oeste y franjas de 9 píxeles de ancho.
+Se conservan franjas de 9 píxeles de ancho. Viaje del polvo usa 30 pasos y
+Planeta completo usa 60 para ofrecer mayor resolución longitudinal.
 
-1. **Planeta completo:** cada franja se divide en 12 bandas de latitud de 15°.
+1. **Planeta completo:** 60 pasos; cada franja se divide en 12 bandas de
+   latitud de 15°.
 2. **Viaje del polvo:** la franja 12–22°N se divide en 5 bandas de 2°.
 3. En cada banda se promedia RGB localmente y después se ejecuta la misma
    descomposición NNLS sobre los cuatro colores de la leyenda.
@@ -108,7 +110,8 @@ propiedad controla cada sonido.
 
 - Colores RGB oficiales, NNLS, umbral 0,05 y residuo máximo 0,10.
 - Consulta puntual de República Dominicana con ventana 3×3.
-- Treinta longitudes, dirección este→oeste y tempo ajustable.
+- Dirección este→oeste y tempo ajustable; 30 longitudes en el viaje tropical
+  y 60 en el recorrido mundial.
 - Misma escala y misma regla de altura para los cuatro aerosoles.
 - Silencio cuando ninguna banda elegible contiene el aerosol seleccionado.
 - Cálculo local en el navegador, sin API, backend ni datos descargados durante
@@ -119,8 +122,8 @@ propiedad controla cada sonido.
 La metodología está **implementada**. Antes de declararla validada con personas
 se mantiene esta lista:
 
-1. JavaScript ya se comparó con Python para las 510 bandas;
-2. carbono negro mundial aparece en 15 longitudes y 31 zonas, sin habilitar el
+1. JavaScript ya se comparó con Python para las 870 bandas;
+2. carbono negro mundial aparece en 28 longitudes y 55 zonas, sin habilitar el
    punto de control del Pacífico limpio;
 3. intensidad y cobertura ya aparecen en texto y tablas;
 4. escuchar cada aerosol aislado y todos juntos en un navegador real;
