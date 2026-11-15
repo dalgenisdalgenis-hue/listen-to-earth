@@ -71,14 +71,15 @@
   }
   function accessibilityPosition() {
     if (lastSource?.kind === 'point') return app.text.helpPointStatus;
-    const cell = lastSource?.kind === 'grid' ? lastSource.item : currentCell;
-    if (cell) return app.format('helpCellStatus', { row: cell.row + 1, col: cell.col + 1 });
     const step = lastSource?.kind === 'scan' ? lastSource.item : null;
     if (step) return app.format('helpStepStatus', {
       step: step.index + 1,
       steps: profiles?.[step.mode]?.length || scanner?.snapshot.steps || 0
     });
-    return '';
+    const cell = lastSource?.kind === 'grid' ? lastSource.item :
+      pageMode === 'explorar' ? currentCell : null;
+    if (cell) return app.format('helpCellStatus', { row: cell.row + 1, col: cell.col + 1 });
+    return app.text.helpNoPosition;
   }
   function accessibilityPlayback() {
     if (!audio.ready) return 'off';
