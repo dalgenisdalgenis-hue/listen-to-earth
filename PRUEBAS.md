@@ -24,7 +24,7 @@ python scripts/verificar_archivos.py
 El primer comando imprime cuatro comprobaciones correctas. El segundo compara
 311 muestras puntuales y **870 bandas de recorrido** con SciPy: 720 del mundo
 y 150 del viaje. También comprueba intensidad, cobertura, límites de
-movimiento, guardas y mapeo a notas.
+movimiento, fondo neutro, evidencia, guardas y mapeo a notas.
 
 Las pruebas `verificar_teclado.cjs` y `verificar_audio.cjs` usan un DOM y un
 Tone **simulados**. Comprueban las decisiones
@@ -37,8 +37,8 @@ antes de activar Tone, usa los cuatro pesos independientemente del selector,
 limita la intensidad a 1, respeta umbral y residuo, suaviza volumen/filtro y
 responde a su interruptor y volumen. No acredita que la mezcla sea clara al oído.
 
-El segundo comando ejecuta además el selector sobre 16 combinaciones × 316
-resultados (311 muestras reales y cinco casos sintéticos). Comprueba que
+El segundo comando ejecuta además el selector sobre 16 combinaciones × 317
+resultados (311 muestras reales y seis casos sintéticos). Comprueba que
 elegir capas no cambia pesos ni notas de las otras capas. También ejecuta
 app.js con la plantilla real de las experiencias y el PNG decodificado por Pillow sobre DOM/Tone/reloj
 simulados: casillas, 4–8, volúmenes, foco, recarga y cambios sin reinicio del
@@ -100,7 +100,7 @@ puede impedir leer el canvas.
    los 30 valores tropicales o los 60 mundiales en la tabla, la franja tropical
    y el recorrido de polo a polo.
 8. En el viaje del polvo, comprobar el final en 69,9°O. El penúltimo paso
-   conserva polvo 0,061 en 2/5 zonas y el último tiene polvo 0 en 0/5. La sal
+   conserva polvo 0,071 en 1/5 zonas y el último tiene polvo 0 en 0/5. La sal
    marina final es 0,291 en 2/5 zonas y no cambia por sí sola el instrumento
    seleccionado. El aviso debe incluir también sulfatos 0,073 en 1/5.
 9. Moverse por la cuadrícula durante el barrido: debe pausarse y sonar la
@@ -120,9 +120,11 @@ puede impedir leer el canvas.
    las 150 tropicales, además de bordes y casos sintéticos.
 2. **Aprobado:** 12 bandas de 15° y 5 de 2°, sin
    huecos, solapamientos ni pérdida de píxeles por redondeo.
-3. **Aprobado:** intensidad media elegible,
-   cobertura y guardas. Una banda con residuo mayor de 0,10 no cuenta.
-4. **Aprobado:** carbono negro mundial en 28 de 60 longitudes y 55 de 720 zonas.
+3. **Aprobado:** intensidad media elegible, cobertura y tres guardas. Una banda
+   con residuo mayor de 0,10 o evidencia menor de 0,01 no cuenta.
+4. **Aprobado:** carbono negro mundial en 21 de 60 longitudes y 44 de 720 zonas.
+   Un gris sintético y la zona gris antártica usada como control se asignan al
+   fondo silencioso y no activan instrumentos.
 5. **Aprobado en el punto de control:** el Pacífico limpio no produce nota. En
    la escucha manual se debe vigilar que el mapa base
    o las luces urbanas no activan mezclas espurias de forma sistemática.

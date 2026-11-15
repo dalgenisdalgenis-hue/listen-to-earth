@@ -38,7 +38,9 @@ La barra de colores oficial de la misma visualización. Define los cuatro tipos 
 
 - Son **intensidad relativa por tipo**, no concentración en µg/m³.
 - Representan **toda la columna de aire**, no lo que se respira a nivel del suelo.
-- La imagen lleva debajo un mapa base de la Tierra con luces de ciudad: sobre tierra y zonas urbanas la lectura del color está contaminada por ese fondo. Sobre mar, que es donde ocurre el viaje del polvo del Sahara, la lectura es limpia.
+- La imagen lleva debajo un mapa base de la Tierra con hielo y luces de ciudad.
+  La aplicación incluye un fondo neutro silencioso y exige evidencia cromática
+  para reducir confusiones, pero una imagen compuesta conserva incertidumbre.
 
 La aplicación sonifica **esta visualización renderizada**, no los campos
 numéricos originales de GEOS. Por eso una lectura correcta debe conservar tanto

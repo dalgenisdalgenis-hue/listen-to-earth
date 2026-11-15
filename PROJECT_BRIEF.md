@@ -44,20 +44,24 @@ con MERRA-2 permanecen detenidas hasta nueva instrucción del equipo.
 
 ### El algoritmo central: de color a cantidad
 
-La imagen pinta cada tipo de aerosol de un color distinto. Para cada punto hacemos una **descomposición no negativa** del color sobre los cuatro colores de la leyenda oficial: se calcula cuánto hay de cada tipo **a la vez**, así que donde se mezclan dos aerosoles suenan dos instrumentos.
+La imagen pinta cada tipo de aerosol de un color distinto. Para cada punto
+hacemos una **descomposición no negativa** sobre los cuatro colores oficiales
+y un fondo neutro silencioso. Donde dos aerosoles tienen evidencia cromática
+pueden sonar dos instrumentos; el gris del mapa no tiene instrumento.
 
 La consulta puntual usa **RGB promedio de 3×3 antes de descomponer**: sobre el
 Sáhara da 0,874 de polvo y 1,9 % de residuo. Una nota requiere peso de al menos
-0,05 y residuo de hasta 0,10; un residuo bajo tampoco garantiza que el reparto
-entre aerosoles sea único.
+0,05, residuo de hasta 0,10 y evidencia de al menos 0,01: retirar ese aerosol
+debe empeorar el ajuste. Un residuo bajo por sí solo no basta.
 
 La primera versión promedió cada columna completa antes de NNLS. La revisión
 del 15-nov-2026 demostró que ese orden diluye plumas localizadas: en el perfil
 histórico de 30 pasos, el carbono negro mundial resultaba audible en un solo
 paso, pero aparecía en 15 longitudes al dividir las franjas en 12 bandas. El
 equipo aprobó descomponer localmente y después resumir intensidad y cobertura.
-La versión vigente amplía el mundo a 60 pasos y lo encuentra en 28 longitudes
-y 55 de 720 zonas. Ver `METODOLOGIA_SONIFICACION.md`.
+La versión vigente amplía el mundo a 60 pasos y, después de filtrar el fondo
+neutro, lo encuentra en 21 longitudes y 44 de 720 zonas. Ver
+`METODOLOGIA_SONIFICACION.md`.
 
 En la pista 1 el mapeo de intensidad relativa a las 15 notas es **lineal**, con la fórmula del SPEC. El mapeo logarítmico corresponde a MERRA-2 en las pistas 2 y 3.
 
@@ -104,7 +108,7 @@ En la pista 1 el mapeo de intensidad relativa a las 15 notas es **lineal**, con 
 **Estado de esta entrega:** implementada la pista 1 con canvas, descomposición,
 cuadrícula, barrido zonal automático, selector, tecla R y aviso final. Se
 compararon con SciPy 311 muestras puntuales y 870 bandas; carbono negro aparece
-en 28 longitudes mundiales y 55 de 720 zonas. El audio simulado comprueba
+en 21 longitudes mundiales y 44 de 720 zonas. El audio simulado comprueba
 cobertura, duración de 0,45 s y silencio, pero las pruebas en navegador y de
 audio real siguen pendientes. Las pistas 2 y 3 quedan detenidas. Ver
 [REGISTRO_CAMBIOS.md](REGISTRO_CAMBIOS.md),

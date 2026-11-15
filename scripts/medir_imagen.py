@@ -26,6 +26,8 @@ LEYENDA = {
 }
 TIPOS = list(LEYENDA)
 M = np.stack([np.array(LEYENDA[k], float) for k in TIPOS], axis=1)  # 3x4
+FONDO_NEUTRO = np.array([255, 255, 255], float)
+BASES = np.column_stack([M, FONDO_NEUTRO])
 
 W, H = 1920, 1080
 UMBRAL = 0.05
@@ -38,15 +40,17 @@ ANCHO_BARRIDO = 9   # cada paso del barrido: columna de 9 px de ancho
 ZONAS_VIAJE = 5     # bandas de 2 grados dentro de 12N--22N
 ZONAS_MUNDO = 12    # bandas de 15 grados entre los polos
 
-# Dos guardas para que suene. Hacen falta LAS DOS:
+# Tres guardas para que suene. Hacen falta LAS TRES:
 #   1. peso >= UMBRAL          -> hay suficiente aerosol
 #   2. residuo <= MAX_RESIDUO  -> la descomposicion es de fiar
-# La segunda es necesaria porque el sistema esta subdeterminado (4 aerosoles,
-# 3 canales de color): en pixeles oscuros encuentra repartos que ajustan mal.
+#   3. evidencia >= 0.01       -> retirar ese aerosol empeora el ajuste
+# El fondo neutro absorbe brillo gris. La evidencia evita conservar una base
+# de aerosol que no haga falta para explicar el color compuesto.
 # El oceano limpio del Pacifico sur, por ejemplo, da sal marina 0.089 (pasaria
 # la primera guarda) pero con 20% de residuo. Las zonas de aerosol real tienen
 # entre 1% y 4%.
 MAX_RESIDUO = 0.10
+MIN_EVIDENCIA = 0.01
 # ============================================================================
 
 
@@ -55,15 +59,36 @@ def y_de_lat(lat): return (90.0 - lat) / 180.0 * H
 def px(lat, lon):  return int(round(x_de_lon(lon))), int(round(y_de_lat(lat)))
 
 
-def descomponer(rgb):
-    """Reparte un color entre los cuatro aerosoles. Devuelve pesos >= 0."""
-    w, _ = nnls(M, np.asarray(rgb, float))
-    return w
-
-
-def residuo(rgb, w):
+def analizar(rgb):
+    """Ajusta aerosoles y fondo; mide la evidencia exclusiva de cada aerosol."""
     v = np.asarray(rgb, float)
-    return float(np.linalg.norm(v - M @ w) / max(np.linalg.norm(v), 1e-9))
+    norma = max(np.linalg.norm(v), 1e-9)
+    pesos, error = nnls(BASES, v)
+    residual = float(error / norma)
+    evidencia = []
+    for indice in range(len(TIPOS)):
+        _, error_sin_tipo = nnls(np.delete(BASES, indice, axis=1), v)
+        evidencia.append(max(0.0, float(error_sin_tipo / norma - residual)))
+    return {
+        'weights': pesos[:len(TIPOS)],
+        'neutral_weight': float(pesos[-1]),
+        'residual': residual,
+        'evidence': np.asarray(evidencia),
+    }
+
+
+def descomponer(rgb):
+    """Compatibilidad: devuelve solo los cuatro pesos de aerosoles."""
+    return analizar(rgb)['weights']
+
+
+def residuo(rgb, _w=None):
+    """Residuo del ajuste vigente, incluido el fondo neutro silencioso."""
+    return analizar(rgb)['residual']
+
+
+def puede_sonar(peso, residual, evidencia):
+    return peso >= UMBRAL and residual <= MAX_RESIDUO and evidencia >= MIN_EVIDENCIA
 
 
 def leer_punto(a, x, y, n=VENTANA_PUNTO):
@@ -108,14 +133,12 @@ def leer_paso_barrido_zonas(a, lon, lat_sur, lat_norte, zonas,
 
 def resumir_zonas(colores):
     """Resume intensidad y cobertura después de validar cada zona."""
-    resultados = []
-    for rgb in colores:
-        w = descomponer(rgb)
-        resultados.append((w, residuo(rgb, w)))
+    resultados = [analizar(rgb) for rgb in colores]
     pesos, coberturas, activas = [], [], []
     for indice in range(len(TIPOS)):
-        validos = [w[indice] for w, r in resultados
-                   if w[indice] >= UMBRAL and r <= MAX_RESIDUO]
+        validos = [r['weights'][indice] for r in resultados
+                   if puede_sonar(r['weights'][indice], r['residual'],
+                                  r['evidence'][indice])]
         activas.append(len(validos))
         coberturas.append(len(validos) / len(resultados))
         pesos.append(float(np.mean(validos)) if validos else 0.0)
@@ -124,7 +147,7 @@ def resumir_zonas(colores):
         "coverage": coberturas,
         "active_zones": activas,
         "zone_count": len(resultados),
-        "residual": float(np.mean([r for _, r in resultados])),
+        "residual": float(np.mean([r['residual'] for r in resultados])),
         "zones": resultados,
     }
 
@@ -149,12 +172,13 @@ def main():
 
     # ---- 2. Valor de referencia de RD (tecla R) ----
     v = leer_punto(a, X, Y)
-    w = descomponer(v)
+    resultado = analizar(v)
+    w = resultado['weights']
     print(f"=== TECLA R: valor puntual de RD, ventana {VENTANA_PUNTO}x{VENTANA_PUNTO} ===")
-    print(f"  RGB = {tuple(v.round(0).astype(int))}   residuo {residuo(v,w)*100:.1f}%")
-    for t, wi in zip(TIPOS, w):
-        suena = "" if wi >= UMBRAL else "   (bajo el umbral: no suena)"
-        print(f"    {t:14s} {wi:.3f}{suena}")
+    print(f"  RGB = {tuple(v.round(0).astype(int))}   residuo {resultado['residual']*100:.1f}%")
+    for t, wi, ei in zip(TIPOS, w, resultado['evidence']):
+        suena = "" if puede_sonar(wi, resultado['residual'], ei) else "   (sin evidencia suficiente: no suena)"
+        print(f"    {t:14s} {wi:.3f}   evidencia {ei:.3f}{suena}")
 
     # ---- 3. El barrido ----
     LAT_S, LAT_N = 12.0, 22.0
@@ -197,10 +221,10 @@ def main():
     for nombre, lat, lon, esperado in pruebas:
         x, y = px(lat, lon)
         v = leer_punto(a, x, y)
-        w = descomponer(v)
-        r = residuo(v, w)
-        # Las dos guardas: peso suficiente Y descomposicion de fiar
-        gana = TIPOS[int(np.argmax(w))] if (w.max() >= UMBRAL and r <= MAX_RESIDUO) else None
+        resultado = analizar(v)
+        w, r, e = resultado['weights'], resultado['residual'], resultado['evidence']
+        elegibles = [i for i in range(len(TIPOS)) if puede_sonar(w[i], r, e[i])]
+        gana = TIPOS[max(elegibles, key=lambda i: w[i])] if elegibles else None
         bien = gana == esperado
         fallos += 0 if bien else 1
         print(f"  {'OK ' if bien else '!! '}{nombre:30s} domina: {str(gana):14s} "

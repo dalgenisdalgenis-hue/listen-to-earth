@@ -25,8 +25,12 @@ for (const fixture of fixtures) {
     const difference = Math.abs(result.weights[key] - fixture.weights[i]);
     maxError = Math.max(maxError, difference);
     assert.ok(difference < 1e-7, fixture.name + ' ' + key);
+    assert.ok(Math.abs(result.evidence[key] - fixture.evidence[i]) < 1e-7,
+      fixture.name + ' evidencia ' + key);
     assert.ok(result.weights[key] >= 0);
   });
+  assert.ok(Math.abs(result.neutralWeight - fixture.neutralWeight) < 1e-7,
+    fixture.name + ' fondo neutro');
   assert.ok(Math.abs(result.residual - fixture.residual) < 1e-10, fixture.name + ' residuo');
   const imageLayer = app.imageLayerFor(result);
   assert.ok(imageLayer.intensity >= 0 && imageLayer.intensity <= 1, fixture.name + ' capa total');
@@ -34,29 +38,41 @@ for (const fixture of fixtures) {
   const check = app.config.checks.find(check => check.id === fixture.name);
   if (check) assert.equal(result.dominant, check.expected);
 }
-assert.equal(app.canPlay(.05, .1), true);
-assert.equal(app.canPlay(.049999, .01), false);
-assert.equal(app.canPlay(.8, .100001), false);
+assert.equal(app.canPlay(.05, .1, .01), true);
+assert.equal(app.canPlay(.049999, .01, .5), false);
+assert.equal(app.canPlay(.8, .100001, .5), false);
+assert.equal(app.canPlay(.8, .01, .009999), false);
+const neutralGray = app.decompose([30, 30, 30]);
+assert.ok(neutralGray.neutralWeight > .11);
+keys.forEach(key => {
+  assert.ok(neutralGray.weights[key] < 1e-10);
+  assert.equal(app.canPlay(neutralGray.weights[key], neutralGray.residual,
+    neutralGray.evidence[key]), false);
+});
 assert.equal(app.noteFromIntensity(.049999), null);
 assert.equal(app.noteFromIntensity(.05), 0);
 assert.equal(app.noteFromIntensity(1), 14);
 assert.equal(app.noteFromIntensity(2), 14);
-assert.equal(app.soundFor({ weights: { dust: .8 }, residual: .2 }).hz, null);
-assert.equal(app.soundFor({ weights: { dust: 1 }, residual: 0 }).hz, 1318.53);
+assert.equal(app.soundFor({ weights: { dust: .8 }, evidence: { dust: .5 }, residual: .2 }).hz, null);
+assert.equal(app.soundFor({ weights: { dust: 1 }, evidence: { dust: .5 }, residual: 0 }).hz, 1318.53);
 const emptyLayer = app.imageLayerFor({
-  weights: { dust: .04, blackCarbon: .04, seaSalt: .04, sulfate: .04 }, residual: .01
+  weights: { dust: .04, blackCarbon: .04, seaSalt: .04, sulfate: .04 },
+  evidence: { dust: .5, blackCarbon: .5, seaSalt: .5, sulfate: .5 }, residual: .01
 });
 assert.equal(emptyLayer.intensity, 0);
 assert.equal(emptyLayer.volumeDb, -60);
 assert.equal(emptyLayer.cutoff, 280);
 assert.equal(app.imageLayerFor({
-  weights: { dust: .2, blackCarbon: 0, seaSalt: 0, sulfate: 0 }, residual: .01
+  weights: { dust: .2, blackCarbon: 0, seaSalt: 0, sulfate: 0 },
+  evidence: { dust: .5, blackCarbon: 0, seaSalt: 0, sulfate: 0 }, residual: .01
 }).intensity, .2);
 assert.equal(app.imageLayerFor({
-  weights: { dust: .8, blackCarbon: .8, seaSalt: .8, sulfate: .8 }, residual: .01
+  weights: { dust: .8, blackCarbon: .8, seaSalt: .8, sulfate: .8 },
+  evidence: { dust: .5, blackCarbon: .5, seaSalt: .5, sulfate: .5 }, residual: .01
 }).intensity, 1);
 assert.equal(app.imageLayerFor({
-  weights: { dust: .8, blackCarbon: .8, seaSalt: .8, sulfate: .8 }, residual: .2
+  weights: { dust: .8, blackCarbon: .8, seaSalt: .8, sulfate: .8 },
+  evidence: { dust: .5, blackCarbon: .5, seaSalt: .5, sulfate: .5 }, residual: .2
 }).intensity, 0);
 const spatialResult = {
   weights: { dust: .8, blackCarbon: .8, seaSalt: .8, sulfate: .8 }, residual: .9,
@@ -100,6 +116,9 @@ for (const mode of ['journey', 'world']) {
         assert.ok(Math.abs(value - expected.rgb[channel]) < 1e-12));
       keys.forEach((key, keyIndex) =>
         assert.ok(Math.abs(zone.result.weights[key] - expected.weights[keyIndex]) < 1e-7));
+      keys.forEach((key, keyIndex) =>
+        assert.ok(Math.abs(zone.result.evidence[key] - expected.evidence[keyIndex]) < 1e-7));
+      assert.ok(Math.abs(zone.result.neutralWeight - expected.neutralWeight) < 1e-7);
       assert.ok(Math.abs(zone.result.residual - expected.residual) < 1e-10);
       zoneComparisons++;
     });
@@ -115,8 +134,8 @@ for (const mode of ['journey', 'world']) {
     step.zones.slice(1).forEach((zone, i) => assert.equal(zone.bounds.y0, step.zones[i].bounds.y1));
   });
   if (mode === 'journey') {
-    assert.ok(profile[28].result.weights.dust > .06);
-    assert.equal(profile[28].result.activeZones.dust, 2);
+    assert.ok(profile[28].result.weights.dust > .07);
+    assert.equal(profile[28].result.activeZones.dust, 1);
     assert.equal(profile[29].result.weights.dust, 0);
     assert.equal(app.soundFor(profile[29].result, 'dust').hz, null);
     assert.equal(profile[29].result.activeZones.dust, 0);
@@ -127,7 +146,12 @@ for (const mode of ['journey', 'world']) {
   }
 }
 const world = app.createScanProfile(image, 'world');
-assert.equal(world.filter(step => step.result.activeZones.blackCarbon > 0).length, 28);
-assert.equal(world.reduce((sum, step) => sum + step.result.activeZones.blackCarbon, 0), 55);
+assert.equal(world.filter(step => step.result.activeZones.blackCarbon > 0).length, 21);
+assert.equal(world.reduce((sum, step) => sum + step.result.activeZones.blackCarbon, 0), 44);
+// Zona casi gris sobre la Antártida que el método anterior convertía en
+// polvo y sulfato. Ahora el fondo silencioso absorbe la señal neutral.
+const antarcticGray = world[17].zones[10].result;
+assert.equal(antarcticGray.eligible.length, 0);
+assert.ok(antarcticGray.neutralWeight > .07);
 console.log(`PASS: ${zoneComparisons} bandas JS/SciPy; perfiles zonales, cobertura, extremos y recorte.`);
-console.log('PASS: carbono negro mundial en 28 de 60 longitudes y 55 de 720 zonas.');
+console.log('PASS: carbono negro mundial en 21 de 60 longitudes y 44 de 720 zonas.');

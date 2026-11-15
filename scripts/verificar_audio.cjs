@@ -45,7 +45,10 @@ const plays = () => events.filter(event => event.event === 'play');
   const app = context.window.ListenToEarth, selection = app.selection;
   const order = Array.from(app.config.instrumentOrder);
   const audio = app.createAudio(selection);
-  const result = { weights: Object.fromEntries(order.map(type => [type, .8])), residual: .01 };
+  const result = {
+    weights: Object.fromEntries(order.map(type => [type, .8])),
+    evidence: Object.fromEntries(order.map(type => [type, .5])), residual: .01
+  };
   audio.play(result); audio.setVolume('dust', 40); audio.selectionChanged();
   assert.equal(events.length, 0, 'Se creó audio antes de activar');
   audio.setVolume('dust', 50);

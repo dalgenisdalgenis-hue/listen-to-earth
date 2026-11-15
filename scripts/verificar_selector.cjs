@@ -18,21 +18,25 @@ assert.equal(app.pageModeFromSearch('?modo=otro'), null);
 const order = Array.from(app.config.instrumentOrder);
 const basis = Object.keys(app.config.aerosols);
 const selection = app.selection;
+const strongEvidence = () => Object.fromEntries(order.map(type => [type, .5]));
 assert.deepEqual(Array.from(selection.types), ['dust']);
 assert.deepEqual(JSON.parse(JSON.stringify(app.config.aerosolShortcuts)), {
   '4': 'dust', '5': 'blackCarbon', '6': 'sulfate', '7': 'seaSalt'
 });
 const cases = [
-  { name: 'iguales', weights: Object.fromEntries(order.map(type => [type, .5])), residual: 0 },
-  { name: 'residuo alto', weights: Object.fromEntries(order.map(type => [type, .8])), residual: .100001 },
-  { name: 'umbral exacto', weights: Object.fromEntries(order.map(type => [type, .05])), residual: .1 },
-  { name: 'bajo umbral', weights: Object.fromEntries(order.map(type => [type, .049999])), residual: 0 },
-  { name: 'negro', weights: Object.fromEntries(order.map(type => [type, 0])), residual: 0 }
+  { name: 'iguales', weights: Object.fromEntries(order.map(type => [type, .5])), evidence: strongEvidence(), residual: 0 },
+  { name: 'residuo alto', weights: Object.fromEntries(order.map(type => [type, .8])), evidence: strongEvidence(), residual: .100001 },
+  { name: 'umbral exacto', weights: Object.fromEntries(order.map(type => [type, .05])), evidence: strongEvidence(), residual: .1 },
+  { name: 'bajo umbral', weights: Object.fromEntries(order.map(type => [type, .049999])), evidence: strongEvidence(), residual: 0 },
+  { name: 'evidencia baja', weights: Object.fromEntries(order.map(type => [type, .8])), evidence: Object.fromEntries(order.map(type => [type, .009999])), residual: 0 },
+  { name: 'negro', weights: Object.fromEntries(order.map(type => [type, 0])), evidence: strongEvidence(), residual: 0 }
 ];
 if (process.argv[2]) {
   const fixtures = JSON.parse(fs.readFileSync(path.join(process.argv[2], 'fixtures.json')));
   for (const fixture of fixtures) cases.push({ name: fixture.name,
-    weights: Object.fromEntries(basis.map((type, i) => [type, fixture.weights[i]])), residual: fixture.residual });
+    weights: Object.fromEntries(basis.map((type, i) => [type, fixture.weights[i]])),
+    evidence: Object.fromEntries(basis.map((type, i) => [type, fixture.evidence[i]])),
+    residual: fixture.residual });
 }
 for (const result of cases) {
   const before = JSON.stringify(result);
@@ -47,7 +51,8 @@ for (const result of cases) {
       assert.equal(note.weight, result.weights[note.type]);
       assert.equal(note.hz, complete.get(note.type).hz);
       assert.equal(note.index, complete.get(note.type).index);
-      assert.equal(note.hz === null, result.weights[note.type] < .05 || result.residual > .10);
+      assert.equal(note.hz === null, result.weights[note.type] < .05 ||
+        result.residual > .10 || result.evidence[note.type] < .01);
       if (result.name === 'iguales') { assert.equal(note.index, 7); assert.equal(note.hz, 493.89); }
       if (result.name === 'umbral exacto') { assert.equal(note.index, 0); assert.equal(note.hz, 196); }
     }

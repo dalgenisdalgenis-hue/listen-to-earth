@@ -12,7 +12,7 @@ conservan en [historial/](historial/).
 1. **Lectura de imagen:** canvas con tamaño interno 1920×1080, carga desde el
    mismo sitio, estados de carga/error y comprobación de dimensiones. PNG y
    leyenda originales conservados sin redimensionar.
-2. **Descomposición:** NNLS mediante conjunto activo, con los cuatro colores
+2. **Primera descomposición:** NNLS mediante conjunto activo, con los cuatro colores
    exactos. Se promedia RGB antes de descomponer. Consulta puntual 3×3; la
    rutina de promediar regiones permite comprobar columnas de 9 píxeles.
    Peso mínimo 0,05 Y residuo máximo 0,10. Los pesos no se fuerzan a sumar uno.
@@ -123,6 +123,19 @@ conservan en [historial/](historial/).
     tropicales). Carbono negro aparece en 28 de 60 longitudes y 55 de 720
     zonas. Se actualizan progreso, mensajes, tablas, guía y pruebas para que el
     total se derive del perfil elegido y no de una constante compartida.
+15. **Fondo neutro y evidencia cromática:** después de oír notas en zonas sin
+    un contaminante visible, se compararon 30 y 60 pasos. La proporción de
+    zonas sonoras casi grises fue prácticamente igual (20 % y 19,8 %), por lo
+    que volver a 30 no corregía la clasificación. El equipo aprobó conservar
+    60 pasos y añadir una quinta base `[255,255,255]` sin instrumento.
+
+    Cada aerosol debe cumplir peso ≥ 0,05, residuo ≤ 0,10 y evidencia ≥ 0,01.
+    La evidencia es el aumento del residuo al repetir NNLS sin ese aerosol.
+    JavaScript coincide con SciPy en 311 muestras y 870 bandas. Un gris
+    sintético y la zona antártica de control quedan en silencio. Los controles
+    positivos y la mezcla 50/50 se conservan. Carbono negro mundial queda en
+    21 de 60 longitudes y 44 de 720 zonas; el penúltimo paso tropical conserva
+    polvo 0,071 en 1/5 zonas y el final continúa en 0/5.
 
 ## Decisiones y correcciones documentadas
 
@@ -137,6 +150,9 @@ conservan en [historial/](historial/).
 - Las celdas no se clasifican por el color más parecido: conservan los
   cuatro pesos. El selector elige qué pesos sonificar; no vuelve a ajustar
   RGB a una matriz reducida ni normaliza los pesos elegidos.
+- El fondo neutral forma parte del ajuste pero no del selector, la tabla de
+  aerosoles ni el audio. Un peso de aerosol no basta: debe aportar evidencia
+  cromática propia de al menos 0,01.
 - Para evitar anuncios duplicados, las flechas cambian el foco y dejan que
   el lector anuncie la celda. Los botones alternativos mantienen el foco en
   el botón y anuncian la nueva posición mediante aria-live.
@@ -171,13 +187,13 @@ desarrollo. La validación específica con lectores de pantalla queda al final.
 
 ## Pruebas ejecutadas
 
-**Actualización zonal vigente:** JavaScript coincide con SciPy en 311 muestras
-puntuales y 510 bandas (360 mundiales y 150 tropicales). Se verifican límites
-sin huecos ni solapamientos, intensidad, cobertura, residuos y carbono negro
-mundial en 15 longitudes y 31 zonas. El selector pasa 16 combinaciones sobre
-316 resultados. Tone simulado comprueba `√cobertura` y notas automáticas de
-0,45 s. La prueba de eventos comprueba el penúltimo paso con polvo y el resumen
-final con cuatro aerosoles. Estas pruebas no acreditan percepción acústica.
+**Actualización vigente:** JavaScript coincide con SciPy en 311 muestras
+puntuales y 870 bandas (720 mundiales y 150 tropicales). Se verifican límites,
+intensidad, cobertura, fondo neutral, residuo y evidencia. Carbono negro
+mundial aparece en 21 longitudes y 44 zonas. El selector pasa 16 combinaciones
+sobre 317 resultados. Tone simulado comprueba `√cobertura` y notas de 0,45 s.
+La prueba de eventos comprueba el penúltimo paso con polvo y el resumen final.
+Estas pruebas no acreditan percepción acústica.
 
 Los bloques siguientes conservan resultados de etapas anteriores para mostrar
 la evolución y no deben confundirse con el algoritmo zonal vigente.
@@ -244,17 +260,17 @@ verificado aún Web Audio, Chrome/Safari/Firefox, NVDA/VoiceOver, altavoz mono,
 red lenta, contraste forzado ni voluntarios. La aplicación no se presenta
 como validada con usuarios.
 
-## Pendiente documental del SPEC
+## Trazabilidad del SPEC
 
-La tabla resumida de longitudes no coincide con los pasos uniformes del
-script: polvo 0,052 corresponde a 38,9°O; 0,556 a 45,1°O; 0,570 a 54,4°O.
-El script fija el muestreo reproducible y los perfiles completos coinciden.
-La tabla del SPEC se conserva sin corregirla por cuenta del equipo.
+El perfil vigente del SPEC se regeneró con el script después de que el equipo
+aprobara el fondo neutro y la evidencia. Las versiones anteriores, incluida la
+tabla previa de longitudes, se conservan en `historial/` y en las entregas
+numeradas de este registro.
 
 ## Sonido del selector
 
 La misma intensidad produce la misma nota base en todos los aerosoles,
-siempre con las dos guardas y el mapeo lineal del SPEC. Cambia el timbre:
+siempre con las tres guardas y el mapeo lineal del SPEC. Cambia el timbre:
 polvo con onda triangular y envolvente corta; carbono negro con tambor de
 membrana; sulfatos con síntesis FM de campana; sal marina con seno y ruido
 rosa filtrado alrededor de la misma nota. Todo se sintetiza localmente con

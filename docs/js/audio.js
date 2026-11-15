@@ -13,7 +13,7 @@
     if (result.spatial) {
       return result.activeZones?.[type] > 0 && result.weights[type] >= app.config.minWeight;
     }
-    return app.canPlay(result.weights[type], result.residual);
+    return app.canPlay(result.weights[type], result.residual, result.evidence[type]);
   };
   app.soundFor = function (result, type = 'dust') {
     const weight = result.weights[type];
@@ -24,6 +24,7 @@
   app.soundPlan = (result, types = app.selection.types) => types.map(type => ({
     type,
     weight: result.weights[type],
+    evidence: result.spatial ? null : result.evidence[type],
     coverage: result.spatial ? result.coverage[type] : 1,
     activeZones: result.spatial ? result.activeZones[type] : null,
     zoneCount: result.spatial ? result.zoneCount : null,
@@ -36,8 +37,10 @@
         type: app.text[note.type], weight: number.format(note.weight),
         active: note.activeZones, total: note.zoneCount
       }) : app.format(
-        note.weight === 0 ? 'aerosolZero' : note.weight < app.config.minWeight ? 'aerosolBelow' : 'aerosolAmount',
-        { type: app.text[note.type], weight: number.format(note.weight) }
+        note.weight === 0 ? 'aerosolZero' : note.weight < app.config.minWeight ? 'aerosolBelow' :
+          note.evidence < app.config.minEvidence ? 'aerosolNoEvidence' : 'aerosolAmount',
+        { type: app.text[note.type], weight: number.format(note.weight),
+          evidence: number.format(note.evidence) }
       )).join('; ') : app.text.noSelection;
     const audible = plan.filter(note => note.hz !== null);
     const outcome = !plan.length ? app.text.noSelectionClick :

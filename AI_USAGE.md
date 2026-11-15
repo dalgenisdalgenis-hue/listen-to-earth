@@ -132,9 +132,19 @@ Ampliación del recorrido mundial (15-nov-2026): por solicitud del equipo,
 «Planeta completo» pasó de 30 a 60 pasos, manteniendo 12 zonas de latitud por
 paso, franjas de 9 píxeles y el intervalo de 0,50 s. «Viaje del polvo» conserva
 30 pasos. La comprobación vigente compara 870 bandas con SciPy: 720 mundiales
-y 150 tropicales. Con esta resolución, el carbono negro aparece en 28 de 60
-longitudes y 55 de 720 zonas. La duración mundial nominal es de unos 30 s al
-tempo normal.
+y 150 tropicales. Antes de incorporar el filtro de fondo, el carbono negro
+aparecía en 28 de 60 longitudes y 55 de 720 zonas. La duración mundial nominal
+es de unos 30 s al tempo normal.
+
+Corrección de falsos positivos (15-nov-2026): el equipo observó sonidos en
+zonas sin un color de aerosol claro. Codex auditó 30 y 60 pasos: en ambos casos
+cerca del 20 % de las zonas sonoras eran casi grises, por lo que reducir pasos
+no resolvía la causa. Se propuso y el equipo aprobó una quinta base neutral
+`[255,255,255]` sin instrumento y una evidencia mínima de 0,01, calculada como
+el aumento de residuo al retirar cada aerosol. Con las tres guardas vigentes,
+carbono negro aparece en 21 de 60 longitudes y 44 de 720 zonas. Un gris
+sintético y una zona antártica gris quedan en silencio, mientras los controles
+de Sáhara, India, África austral, RD y la mezcla 50/50 conservan sus señales.
 
 - Una etapa por solicitud; cada entrega incluye qué cambió, cómo comprobarlo y qué limitaciones quedan.
 - **No se afirma que una prueba pasó si no se ejecutó.**

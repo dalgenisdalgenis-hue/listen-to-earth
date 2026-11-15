@@ -40,9 +40,12 @@ def main():
     scan_fixtures = []
 
     def add(name, rgb, **more):
-        w = m.descomponer(rgb)
+        result = m.analizar(rgb)
         fixtures.append(dict(name=name, rgb=np.asarray(rgb).tolist(),
-                             weights=w.tolist(), residual=m.residuo(rgb, w), **more))
+                             weights=result['weights'].tolist(),
+                             evidence=result['evidence'].tolist(),
+                             neutralWeight=result['neutral_weight'],
+                             residual=result['residual'], **more))
 
     for name, lat, lon in [('sahara', 22, 5), ('india', 25, 78),
                            ('africa', -10, 22), ('pacific', -45, -130),
@@ -60,8 +63,11 @@ def main():
                 'name': f'{mode}-{i+1}', 'mode': mode, 'lon': float(lon),
                 'zones': [
                     {'rgb': np.asarray(rgb).tolist(),
-                     'weights': weights.tolist(), 'residual': residual}
-                    for rgb, (weights, residual) in zip(colors, summary['zones'])
+                     'weights': result['weights'].tolist(),
+                     'evidence': result['evidence'].tolist(),
+                     'neutralWeight': result['neutral_weight'],
+                     'residual': result['residual']}
+                    for rgb, result in zip(colors, summary['zones'])
                 ],
                 'weights': summary['weights'],
                 'coverage': summary['coverage'],

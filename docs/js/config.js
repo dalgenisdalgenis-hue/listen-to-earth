@@ -14,6 +14,10 @@
     scanWidth: 9,
     minWeight: 0.05,
     maxResidual: 0.10,
+    // Un color compuesto solo suena si esa base mejora el ajuste frente al
+    // mismo cálculo sin ella. El fondo neutro absorbe brillo gris sin sonido.
+    minEvidence: 0.01,
+    neutralColor: [255, 255, 255],
     rows: 8,
     cols: 12,
     // Punto fijado por el equipo para la consulta puntual de RD. No se

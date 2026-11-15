@@ -33,7 +33,9 @@ con voluntarios.** No se afirma validación con usuarios.
 **Revisión científica implementada:** cada paso se divide antes de descomponer
 el color: 12 bandas en Planeta completo y 5 en Viaje del polvo. La intensidad
 controla la altura y la cobertura espacial controla el volumen. Esta revisión
-evita que el promedio de polo a polo oculte plumas localizadas. La decisión,
+evita que el promedio de polo a polo oculte plumas localizadas. Un fondo
+neutro silencioso y una prueba de evidencia evitan convertir grises del mapa
+en aerosoles. La decisión,
 sus mediciones y las referencias de NASA están en
 [METODOLOGIA_SONIFICACION.md](METODOLOGIA_SONIFICACION.md).
 
@@ -126,15 +128,16 @@ en altavoz mono siguen pendientes de evaluación por el equipo.
 ## Qué representa el sonido
 
 Se promedia RGB en una ventana de 3×3 en el centro de cada casilla. NNLS
-reparte ese color entre los cuatro colores oficiales sin pesos negativos.
-Solo se habilita una nota si el peso seleccionado es al menos 0,05 y el
-residuo de reconstrucción es como máximo 0,10. En otro caso hay silencio.
+reparte ese color entre los cuatro colores oficiales y un fondo neutro
+silencioso, sin pesos negativos. Solo se habilita una nota si el peso es al
+menos 0,05, el residuo es como máximo 0,10 y retirar ese aerosol empeora el
+ajuste al menos 0,01. En otro caso hay silencio.
 
 El barrido lee franjas de 9 píxeles de ancho y las divide antes de NNLS: cinco
 bandas dentro de 12–22°N para el viaje y doce bandas de polo a polo para el
 mundo. Para cada aerosol conserva dos datos: intensidad media en las bandas
 válidas y cobertura o fracción de bandas donde aparece. En el recorrido mundial
-el carbono negro aparece en 28 de 60 longitudes y 55 de 720 zonas; con el
+el carbono negro aparece en 21 de 60 longitudes y 44 de 720 zonas; con el
 promedio anterior solo superaba las guardas en un paso.
 
 La altura representa intensidad. El nivel del instrumento se multiplica por
@@ -149,11 +152,12 @@ medida de lo que se respira; el mapa de fondo y las mezclas añaden error.
 
 Cada aerosol usa la misma regla de nota y su propio timbre: cuerda sintetizada
 para polvo, tambor para carbono negro, campanas para sulfatos y oleaje con
-una componente afinada para sal marina. Los pesos se calculan sobre la matriz
-completa de cuatro colores y se conservan al encender o apagar capas.
+una componente afinada para sal marina. Los pesos se calculan sobre las cuatro
+bases de aerosol más el fondo neutro; se conservan al encender o apagar capas
+y el fondo nunca tiene instrumento.
 
-La capa de imagen completa suma únicamente los pesos que cumplen peso mínimo
-0,05 y residuo máximo 0,10, limita el total al intervalo 0–1 y lo convierte
+La capa de imagen completa suma únicamente los pesos que cumplen las tres
+guardas, limita el total al intervalo 0–1 y lo convierte
 en volumen y frecuencia de corte de un acorde sostenido. No asigna otra nota
 ni depende del contaminante seleccionado. Se inspira metodológicamente en la
 sonificación de Caldwell 73 de SYSTEM Sounds (M. Russo y A. Santaguida), sin

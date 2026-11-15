@@ -196,7 +196,7 @@ const key = (key, target = body) => target.dispatch('keydown', { key });
   const beforeSilentEnd = plays.length;
   advance(1500);
   assert.equal(app.scanner.snapshot.state, 'ended');
-  assert.equal(plays.length, beforeSilentEnd + 1); // El penúltimo paso conserva polvo en 2/5 zonas.
+  assert.equal(plays.length, beforeSilentEnd + 1); // El penúltimo paso conserva polvo en 1/5 zonas.
   assert.equal(byId('journey-ending').hidden, false);
   assert.ok(byId('journey-ending-text').textContent.toLowerCase().includes('polvo'));
   assert.ok(byId('journey-ending-text').textContent.toLowerCase().includes('sal marina'));

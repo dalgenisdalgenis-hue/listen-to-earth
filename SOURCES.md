@@ -36,9 +36,11 @@ Verificado contra Cabo Agulhas (34,8°S 20°E): predicho (1067, 749), observado 
 El muestreo reproducible se define en `scripts/medir_imagen.py`: promedio RGB
 3×3 para consultas puntuales y franjas de 9 píxeles divididas en 12 bandas de
 latitud en el mundo o 5 en la ruta tropical. La implementación y su fundamento
-se documentan en `METODOLOGIA_SONIFICACION.md`.
+se documentan en `METODOLOGIA_SONIFICACION.md`. El ajuste incluye una base
+neutral silenciosa y evidencia mínima 0,01; son decisiones del equipo, no una
+regla publicada por NASA.
 
-**Qué miden estos colores, y qué no.** Son **intensidad relativa por tipo**, no concentración en µg/m³, y representan **toda la columna de aire**, no lo que se respira a nivel del suelo. La imagen lleva debajo un mapa base de la Tierra con luces de ciudad, así que sobre tierra y zonas urbanas la lectura del color está contaminada por ese fondo; sobre mar es limpia.
+**Qué miden estos colores, y qué no.** Son **intensidad relativa por tipo**, no concentración en µg/m³, y representan **toda la columna de aire**, no lo que se respira a nivel del suelo. La imagen lleva debajo un mapa base de la Tierra, hielo y luces de ciudad. El filtro neutral reduce esa interferencia, pero no convierte el PNG en los campos numéricos originales.
 
 ---
 

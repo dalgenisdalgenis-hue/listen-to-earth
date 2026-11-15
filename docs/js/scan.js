@@ -9,7 +9,8 @@
     const weights = {}, coverage = {}, activeZones = {};
     for (const type of keys) {
       const active = zones.filter(zone =>
-        app.canPlay(zone.result.weights[type], zone.result.residual));
+        app.canPlay(zone.result.weights[type], zone.result.residual,
+          zone.result.evidence[type]));
       activeZones[type] = active.length;
       coverage[type] = active.length / zones.length;
       weights[type] = active.length ? active.reduce((sum, zone) =>

@@ -21,8 +21,9 @@ La leyenda oficial relaciona cuatro colores con cuatro tipos de aerosol:
 | Sulfato (*Sulfate*) | verde brillante | 83, 220, 52 | síntesis FM, brillante y metálica |
 
 La imagen también contiene un mapa base, tierra, hielo y luces urbanas. La
-descomposición de color reduce errores, pero no puede convertir el PNG de nuevo
-en el campo científico original sin incertidumbre.
+descomposición incluye una base neutral silenciosa y una prueba de evidencia
+para reducir falsos positivos, pero no puede convertir el PNG de nuevo en el
+campo científico original sin incertidumbre.
 
 ## Qué aprendimos de las referencias de NASA
 
@@ -73,14 +74,18 @@ Planeta completo usa 60 para ofrecer mayor resolución longitudinal.
 1. **Planeta completo:** 60 pasos; cada franja se divide en 12 bandas de
    latitud de 15°.
 2. **Viaje del polvo:** la franja 12–22°N se divide en 5 bandas de 2°.
-3. En cada banda se promedia RGB localmente y después se ejecuta la misma
-   descomposición NNLS sobre los cuatro colores de la leyenda.
-4. Un resultado local es elegible si el peso del aerosol es al menos 0,05 y
-   el residuo relativo de reconstrucción es como máximo 0,10.
-5. Para cada aerosol y paso:
+3. En cada banda se promedia RGB localmente y después se ejecuta NNLS sobre
+   los cuatro colores de la leyenda más una base neutra `[255,255,255]`. Esa
+   quinta base representa brillo o fondo y nunca produce sonido.
+4. Para cada aerosol se repite el ajuste sin su color. La **evidencia** es el
+   aumento del residuo al retirarlo: si no empeora el ajuste, el color no lo
+   necesita aunque NNLS le haya asignado peso.
+5. Un resultado local es elegible si el peso es al menos 0,05, el residuo es
+   como máximo 0,10 y la evidencia es al menos 0,01.
+6. Para cada aerosol y paso:
    - **intensidad** = media de sus pesos en las bandas elegibles;
    - **cobertura** = bandas elegibles / bandas totales.
-6. La correspondencia sonora es:
+7. La correspondencia sonora es:
    - este→oeste = avance temporal;
    - tipo de aerosol = timbre;
    - intensidad relativa = altura, con el mapeo lineal de 15 notas;
@@ -109,6 +114,8 @@ propiedad controla cada sonido.
 ## Qué permanece igual
 
 - Colores RGB oficiales, NNLS, umbral 0,05 y residuo máximo 0,10.
+- Fondo neutro silencioso y evidencia mínima 0,01 para evitar convertir grises
+  del mapa en aerosoles.
 - Consulta puntual de República Dominicana con ventana 3×3.
 - Dirección este→oeste y tempo ajustable; 30 longitudes en el viaje tropical
   y 60 en el recorrido mundial.
@@ -123,7 +130,7 @@ La metodología está **implementada**. Antes de declararla validada con persona
 se mantiene esta lista:
 
 1. JavaScript ya se comparó con Python para las 870 bandas;
-2. carbono negro mundial aparece en 28 longitudes y 55 zonas, sin habilitar el
+2. carbono negro mundial aparece en 21 longitudes y 44 zonas, sin habilitar el
    punto de control del Pacífico limpio;
 3. intensidad y cobertura ya aparecen en texto y tablas;
 4. escuchar cada aerosol aislado y todos juntos en un navegador real;

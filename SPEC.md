@@ -125,57 +125,71 @@ Todas son correctas; miden cosas distintas. **El SPEC fija estas reglas:**
 
 ### 3.1 El método
 
-Para cada punto de la imagen hay que sacar cuánto hay de cada aerosol. **Se usa descomposición no negativa**, no «el color más parecido».
+Para cada punto de la imagen hay que sacar cuánto hay de cada aerosol. **Se usa descomposición no negativa con un fondo neutro silencioso**, no «el color más parecido».
 
 ```
 Dado el color del píxel p = [R, G, B],
-encontrar pesos w = [wBC, wDust, wSeaSalt, wSulfate] >= 0
-que minimicen || M·w − p ||,
-donde M es la matriz 3×4 con los cuatro colores en columnas.
+encontrar u = [wBC, wDust, wSeaSalt, wSulfate, wNeutral] >= 0
+que minimice || B·u − p ||,
+donde B es la matriz 3×5 con los cuatro colores y [255,255,255].
 ```
 
-En JavaScript: 4 incógnitas, 3 ecuaciones, con restricción de no negatividad. Sirve un descenso de gradiente proyectado de pocas iteraciones, o un *active set* sencillo. Precalcularlo en Python (SciPy tiene `scipy.optimize.nnls`) y guardar los valores en JSON también es válido, y hace la página más ligera.
+La quinta base absorbe brillo gris del mapa y nunca tiene instrumento. Para
+cada aerosol se repite el ajuste sin su columna. Su **evidencia** es cuánto
+aumenta el residuo al retirarlo: `e_i = residuo_sin_i − residuo_completo`.
+La implementación usa un conjunto activo NNLS en el navegador y lo compara
+con `scipy.optimize.nnls` en desarrollo.
 
 **Por qué no el color más parecido.** Se probó con mezclas conocidas: con 50 % polvo y 50 % sal marina, el método del parecido responde «polvo» y **borra la sal marina entera**. Eso haría mentir al selector de contaminantes. La descomposición recupera las dos.
 
 **Qué tan bien funciona** (medido sobre la imagen real, error de reconstrucción):
 
-| Zona | Resultado | Error |
-|---|---|---|
-| Polvo sobre el Sáhara (22°N 5°E) | 0,885 de polvo | 1,1 % |
-| Sulfato sobre India (25°N 78°E) | 0,867 de sulfato | 0,6 % |
-| Polvo en el Atlántico N (25°N 35°O) | 0,738 de polvo | 3,5 % |
-| Carbono negro, sur de África (10°S 22°E) | 0,674 | 3,8 % |
+| Zona | Resultado | Error | Evidencia |
+|---|---|---:|---:|
+| Polvo sobre el Sáhara (22°N 5°E) | 0,874 de polvo | 1,9 % | 0,141 |
+| Sulfato sobre India (25°N 78°E) | 0,880 de sulfato | 1,0 % | 0,478 |
+| Carbono negro, sur de África (10°S 22°E) | 0,701 | 3,9 % | 0,439 |
+| Sal marina en RD (18,47°N 69,9°O) | 0,608 | 1,5 % | 0,075 |
 
-### 3.2 Las dos guardas para que algo suene
+### 3.2 Las tres guardas para que algo suene
 
-**Hacen falta las dos. Con una sola, el océano vacío produce notas falsas.**
+**Hacen falta las tres. El residuo por sí solo puede aceptar gris como aerosol.**
 
 ```js
 const UMBRAL = 0.05;        // peso mínimo
 const MAX_RESIDUO = 0.10;   // error de reconstrucción máximo
+const MIN_EVIDENCIA = 0.01; // aporte cromático mínimo
 
-function suena(peso, residuo) {
-  return peso >= UMBRAL && residuo <= MAX_RESIDUO;
+function suena(peso, residuo, evidencia) {
+  return peso >= UMBRAL && residuo <= MAX_RESIDUO &&
+         evidencia >= MIN_EVIDENCIA;
 }
-// residuo = || M·w − p || / || p ||
+// evidencia = residuo_sin_ese_aerosol − residuo_completo
 ```
 
-**Por qué la segunda.** El sistema está subdeterminado (cuatro aerosoles, tres canales de color), así que en píxeles oscuros encuentra repartos que ajustan mal. Ejemplo real: el océano limpio del Pacífico sur da sal marina **0,089**, que pasaría el umbral, pero con **20,5 % de residuo**. Las zonas de aerosol real tienen entre **1 % y 4 %**. El residuo es la señal de que no hay que fiarse.
+**Por qué residuo y evidencia.** El Pacífico limpio da sal marina **0,089**,
+pero con **20,5 % de residuo**, así que la segunda guarda lo silencia. Sin el
+fondo neutro, un gris `[30,30,30]` podía reconstruirse con residuo 0 % como
+polvo y sulfato. Con la base neutral se convierte en fondo; la tercera guarda
+exige además que cada aerosol sea necesario para explicar el color.
 
-Si no pasa las dos guardas: silencio para ese aerosol. El equipo retiró el clic
+Si no pasa las tres guardas: silencio para ese aerosol. El equipo retiró el clic
 porque se confundía con los sonidos de los datos.
 
 ### 3.3 Limitaciones del método (hay que declararlas en la página)
 
 1. **Leemos una imagen de los datos, no los datos.** Devolver un color a un número tiene error.
-2. **El sistema está subdeterminado:** cuatro aerosoles y solo tres canales de color. La solución no es única. Funciona bien porque los píxeles reales suelen estar dominados por uno o dos tipos, pero en píxeles oscuros o muy mezclados el reparto no es fiable. De ahí la guarda del residuo.
+2. **El sistema está subdeterminado:** cinco bases y solo tres canales de
+   color. La solución no es única. El fondo silencioso y la evidencia reducen
+   falsos positivos, pero no recuperan los datos numéricos originales.
 3. **Polvo y sal marina son el par difícil:** sus colores están a solo **10,9°** de separación. Con ruido realista, una mezcla mitad y mitad se estima en 0,55 ± 0,12 y 0,41 ± 0,18. Sirve para saber qué domina, no para una cifra fina.
-4. **El fondo contamina sobre tierra.** La imagen lleva debajo un mapa de la Tierra con luces de ciudad: 15,8 % de los píxeles son gris neutro (tierra/hielo) y 0,23 % son luces casi blancas. Sobre mar —que es donde ocurre el viaje del polvo— la lectura es limpia (océano limpio ≈ RGB 9, 27, 17).
+4. **El fondo sigue siendo una fuente de incertidumbre.** La imagen lleva un
+   mapa, hielo y luces. La base neutral absorbe grises, pero no puede separar
+   perfectamente un fondo coloreado de un aerosol del mismo tono.
 
 ### 3.4 Comprobaciones que tu implementación debe pasar
 
-Con ventana 3×3 y las dos guardas (`scripts/medir_imagen.py` las ejecuta):
+Con ventana 3×3 y las tres guardas (`scripts/medir_imagen.py` las ejecuta):
 
 | Zona | lat, lon | Debe dominar | Peso | Residuo |
 |---|---|---|---|---|
@@ -204,7 +218,8 @@ Dos modos, que se cambian con una tecla:
 - **«El mundo entero»**: barre todo el planeta y divide cada paso en 12 bandas
   de 15°. Usa 60 longitudes, separadas aproximadamente 6,1°.
 
-En cada banda se promedia RGB, se ejecuta NNLS y se aplican las dos guardas.
+En cada banda se promedia RGB, se ejecuta NNLS con fondo neutro y se aplican
+las tres guardas.
 Para cada aerosol, la **intensidad** del paso es la media de los pesos en las
 bandas elegibles y la **cobertura** es la fracción de bandas elegibles. La
 intensidad controla la nota; la cobertura controla el volumen. La interfaz
@@ -215,7 +230,7 @@ audible el carbono negro en solo 1 de 30 pasos. Las mismas columnas divididas
 en 12 bandas lo encuentran en 15 longitudes y 31 de 360 zonas. El promedio
 vertical estaba ocultando plumas localizadas.
 
-Con los 60 pasos vigentes, carbono negro aparece en 28 longitudes y 55 de 720
+Con los 60 pasos vigentes, carbono negro aparece en 21 longitudes y 44 de 720
 zonas. La mayor resolución temporal no cambia las guardas ni la regla sonora.
 
 ⚠️ **El final del barrido y la tecla R son dos lugares distintos, y hay que decirlo.**
@@ -241,10 +256,10 @@ Medido sobre la imagen real, el perfil del polvo en la franja tropical:
 
 | Punto | Longitud | Polvo |
 |---|---|---|
-| Máximo, saliendo de África | 16,9°E | **0,871** |
-| Descenso en el Atlántico | ~38,9°O | 0,117 |
+| Máximo, saliendo de África | 10,7°E | **0,850** |
+| Descenso en el Atlántico | ~38,9°O | 0,137 |
 | Repuntes posteriores | ~45,1°O y ~54,4°O | 0,555 y 0,570 |
-| Penúltimo paso | ~66,8°O | **0,061 en 2/5 zonas** |
+| Penúltimo paso | ~66,8°O | **0,071 en 1/5 zonas** |
 | Último paso | 69,9°O | **0,000 en 0/5 zonas** |
 
 **Ese día el polvo no llegó al país.** Ni en el resumen zonal final (0,000 en
@@ -258,20 +273,20 @@ partículas queda en silencio y el texto dice «polvo: nada».
 **No acortar el barrido para que termine en un pico.** Elegir una franja de la imagen es una cosa; elegir el final para que los datos digan otra cosa es distinto, y el reto premia la fidelidad.
 
 **Perfil zonal completo medido, 30 pasos de 20°E a 69,9°O**, franja
-12°N–22°N. Cada valor es la intensidad media en las zonas que pasan las dos
+12°N–22°N. Cada valor es la intensidad media en las zonas que pasan las tres
 guardas. Sirve para verificar la implementación.
 
 Polvo:
 ```
-0.842 0.871 0.852 0.867 0.815 0.714 0.685 0.682 0.680 0.642
-0.661 0.736 0.638 0.754 0.710 0.743 0.499 0.451 0.219 0.117
-0.271 0.555 0.302 0.359 0.570 0.495 0.298 0.173 0.061 0.000
+0.813 0.830 0.831 0.850 0.721 0.786 0.734 0.750 0.788 0.736
+0.717 0.592 0.551 0.754 0.710 0.743 0.611 0.451 0.219 0.137
+0.271 0.555 0.302 0.359 0.570 0.495 0.298 0.173 0.071 0.000
 ```
 Sal marina en los mismos pasos:
 ```
-0.000 0.000 0.000 0.000 0.000 0.153 0.172 0.193 0.191 0.199
-0.182 0.135 0.295 0.228 0.225 0.276 0.229 0.164 0.296 0.436
-0.427 0.117 0.162 0.128 0.000 0.096 0.096 0.203 0.253 0.291
+0.000 0.000 0.000 0.000 0.000 0.153 0.172 0.193 0.191 0.253
+0.232 0.216 0.295 0.369 0.225 0.480 0.382 0.312 0.296 0.436
+0.427 0.151 0.197 0.128 0.000 0.096 0.113 0.203 0.253 0.291
 ```
 
 ### Pista 2 — «Compara años»
