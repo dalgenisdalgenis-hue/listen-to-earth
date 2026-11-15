@@ -18,7 +18,7 @@
   };
 
   // Ningún nodo de audio se crea al cargar la página. start() solo se llama
-  // desde el botón Activar sonido, incluido su clic generado con teclado.
+  // desde Activar sonido o Reproducir barrido/P, por acción del usuario.
   app.createAudio = function () {
     let synth, click, master, limiter;
     let ready = false;

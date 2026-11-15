@@ -44,6 +44,13 @@ Con la imagen oficial del SVS 5669 y su barra de colores descargadas por el equi
 
 ## Reglas de trabajo durante el evento
 
+Actualización de implementación: Codex añadió el barrido automático en ambos
+modos, sus controles y una máquina de estados con reloj simulado para las
+pruebas. Se compararon 371 muestras JS/SciPy, incluidas las 30 columnas del
+modo mundial. Los perfiles se obtienen de la imagen y no se sustituyen por
+una lista de pesos escrita a mano. No se han ejecutado pruebas de navegador
+ni se presenta la validación de los controladores como prueba de audio real.
+
 - Una etapa por solicitud; cada entrega incluye qué cambió, cómo comprobarlo y qué limitaciones quedan.
 - **No se afirma que una prueba pasó si no se ejecutó.**
 - Datos sintéticos de desarrollo siempre identificados y separados de la demo.

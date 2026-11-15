@@ -12,6 +12,17 @@
     maxResidual: 0.10,
     rows: 8,
     cols: 12,
+    scan: {
+      steps: 30,
+      stepMs: 500,
+      minTempo: 50,
+      maxTempo: 150,
+      tempoStep: 10,
+      modes: {
+        journey: { east: 20, west: -69.9, south: 12, north: 22 },
+        world: { east: 180, west: -180, south: -90, north: 90 }
+      }
+    },
     scaleMode: 'major', // Provisional: el equipo debe escucharla con datos reales.
     scales: {
       major: [196.00, 220.00, 246.94, 293.67, 329.63,

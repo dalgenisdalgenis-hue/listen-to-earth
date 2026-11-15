@@ -7,7 +7,7 @@ h2, h3 { line-height: 1.3; }
 p, figcaption { max-width: 75ch; }
 .brand { font-size: 1.15rem; letter-spacing: .04em; color: #b8e5f5; }
 .intro { font-size: 1.15rem; }
-button, input { font: inherit; }
+button, input, select { font: inherit; }
 button { min-height: 44px; padding: .65rem 1rem; border: 2px solid #b8e5f5; border-radius: .3rem; background: #173646; color: #fff; cursor: pointer; }
 button[aria-pressed="true"] { background: #f5f7fa; color: #101820; }
 button:disabled { opacity: .6; cursor: default; }
@@ -25,6 +25,13 @@ canvas { display: block; width: 100%; height: auto; }
 figcaption { margin-top: .75rem; }
 fieldset { border: 1px solid #738591; margin-block: 1rem; padding: 1rem; }
 #audio-controls { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; }
+#scan-controls { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; }
+select { max-width: 100%; min-height: 44px; color: #fff; background: #173646; border: 2px solid #b8e5f5; padding: .5rem; }
+#scan-progress { display: block; width: min(100%, 35rem); height: 1.25rem; accent-color: #ffdc75; }
+#scan-readout { border-left: 4px solid #ffdc75; padding: .5rem 1rem; background: #17303d; }
+#scan-band, #scan-line { position: absolute; pointer-events: none; }
+#scan-band { border: 1px dashed #ffdc75; }
+#scan-line { border: 1px solid #fff; box-shadow: 0 0 0 2px #ffdc75; background: rgb(255 220 117 / 40%); }
 input[type="range"] { min-height: 44px; max-width: 100%; accent-color: #ffdc75; }
 #current { border-left: 4px solid #b8e5f5; padding: .5rem 1rem; background: #17303d; }
 #current h3 { margin-top: 0; }

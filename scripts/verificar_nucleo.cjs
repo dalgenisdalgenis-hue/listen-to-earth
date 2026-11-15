@@ -6,7 +6,7 @@ const assert = require('node:assert/strict');
 const root = path.resolve(__dirname, '..');
 const context = { window: {} };
 vm.createContext(context);
-for (const file of ['strings.es.js', 'config.js', 'image-data.js', 'decomposition.js', 'audio.js', 'grid.js']) {
+for (const file of ['strings.es.js', 'config.js', 'image-data.js', 'decomposition.js', 'audio.js', 'grid.js', 'scan.js']) {
   vm.runInContext(fs.readFileSync(path.join(root, 'docs/js', file), 'utf8'), context);
 }
 const app = context.window.ListenToEarth;
@@ -20,10 +20,8 @@ for (const fixture of fixtures) {
   let rgb = fixture.rgb;
   if (fixture.point) rgb = app.readPoint(image, ...fixture.point);
   else if (fixture.lon !== undefined) {
-    const { x } = app.pixelFromCoordinates(0, fixture.lon);
-    const north = app.pixelFromCoordinates(22, fixture.lon).y;
-    const south = app.pixelFromCoordinates(12, fixture.lon).y;
-    rgb = app.readRegion(image, x - 4, north, x + 5, south);
+    const region = app.config.scan.modes[fixture.mode];
+    rgb = app.readScanStep(image, fixture.lon, region.south, region.north).rgb;
   }
   rgb.forEach((value, i) => assert.ok(Math.abs(value - fixture.rgb[i]) < 1e-12, fixture.name + ' RGB'));
   const result = app.decompose(rgb);
@@ -63,3 +61,24 @@ for (const [row, col, dr, dc, expected] of [
 }
 console.log(`PASS: ${fixtures.length} muestras JS/SciPy; diferencia máxima de peso ${maxError}.`);
 console.log('PASS: 96 centros de celda, límites de movimiento, guardas y mapeo lineal a notas.');
+for (const mode of ['journey', 'world']) {
+  const profile = app.createScanProfile(image, mode);
+  assert.equal(profile.length, 30);
+  assert.equal(profile[0].lon, app.config.scan.modes[mode].east);
+  assert.equal(profile.at(-1).lon, app.config.scan.modes[mode].west);
+  profile.forEach((step, index) => {
+    const fixture = fixtures.find(f => f.name === `${mode === 'journey' ? 'scan' : 'world'}-${index+1}`);
+    keys.forEach((key, i) => assert.ok(Math.abs(step.result.weights[key] - fixture.weights[i]) < 1e-7));
+    assert.equal(step.bounds.y1 - step.bounds.y0, mode === 'journey' ? 60 : 1080);
+  });
+  if (mode === 'journey') {
+    assert.equal(profile[28].result.weights.dust, 0);
+    assert.equal(profile[29].result.weights.dust, 0);
+    assert.equal(profile[29].sound.hz, null);
+    assert.ok(Math.abs(profile[29].result.weights.seaSalt - .300) < .0005);
+  } else {
+    assert.equal(profile[0].bounds.x1 - profile[0].bounds.x0, 4);
+    assert.equal(profile[29].bounds.x1 - profile[29].bounds.x0, 5);
+  }
+}
+console.log('PASS: perfiles tropical y mundial, extremos, recorte en bordes y dos clics finales de polvo.');

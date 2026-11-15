@@ -10,15 +10,17 @@ Convierte la visualización oficial SVS 5669 de aerosoles en sonido explorable.
 
 Implementados: lectura del PNG 1920×1080 en canvas, descomposición NNLS,
 cuadrícula de 8 filas × 12 columnas, exploración con flechas, botones
-alternativos y tabla textual. Solo suena el polvo; el audio se activa con un
-botón, incluido su uso mediante teclado. Tone.js 15.1.22 está dentro del repo.
+alternativos y tabla textual. El barrido automático ofrece viaje del polvo y
+mundo entero, con 30 pasos, pausa, repetición y tempo. Solo suena el polvo;
+el audio se activa con un botón o P por acción explícita del usuario.
+Tone.js 15.1.22 está dentro del repo.
 
-Ejecutados: 341 comparaciones JS/SciPy y pruebas de controladores con DOM y
-Tone simulados. **Pendientes: navegador, audio real, NVDA/VoiceOver y pruebas
+Ejecutados: 371 comparaciones JS/SciPy y pruebas de controladores con DOM,
+Tone y reloj simulados. **Pendientes: navegador, audio real, NVDA/VoiceOver y pruebas
 con voluntarios.** No se afirma validación con usuarios.
 
-Siguiente: barrido automático; después selector de aerosoles y tecla R con
-el aviso final. La configuración del modo sin mirar la pantalla y las pruebas
+Siguiente: selector de aerosoles y después tecla R con el aviso final.
+La configuración del modo sin mirar la pantalla y las pruebas
 con lectores de pantalla se reservan para la última etapa, según la nueva
 instrucción del usuario registrada en REGISTRO_CAMBIOS.md. Se mantienen las
 etiquetas y el teclado existentes. Las pistas 2 y 3 esperan el JSON real de MERRA-2.
@@ -50,6 +52,11 @@ canvas mediante `file://`.
 3. Entrar en la cuadrícula y usar flechas; Enter repite y Tab sale.
 4. Si el lector captura las flechas, usar los botones de dirección.
 5. M silencia; S o Esc detiene. El rango controla el volumen del polvo.
+6. P inicia o pausa el barrido; Repetir empieza desde el principio. Al tempo
+   100 %, los 30 pasos duran nominalmente 15 segundos. +/− cambia el tempo.
+7. V cambia entre viaje del polvo y mundo entero, dejando el nuevo recorrido
+   preparado para P. Usar las flechas pausa el barrido. Ocultar la pestaña
+   también lo pausa; al volver se reanuda con P.
 
 No se captura ninguna voz ni se inicia narración automática.
 
@@ -63,6 +70,7 @@ python scripts/medir_imagen.py docs/assets/aerosols_5669_1920x1080.png
 python scripts/verificar_imagen.py
 node scripts/verificar_teclado.cjs
 node scripts/verificar_audio.cjs
+node scripts/verificar_barrido.cjs
 python scripts/verificar_archivos.py
 ```
 
@@ -74,6 +82,12 @@ Se promedia RGB en una ventana de 3×3 en el centro de cada casilla. NNLS
 reparte ese color entre los cuatro colores oficiales sin pesos negativos.
 Solo se habilita una nota si el peso seleccionado es al menos 0,05 y el
 residuo de reconstrucción es como máximo 0,10. En otro caso hay un clic suave.
+
+El barrido promedia columnas de 9 píxeles, con altura de 12–22°N en el viaje
+del polvo y de polo a polo en el mundo entero. El muestreo y el recorrido se
+calculan en el navegador. En los bordes del PNG se recorta la columna como
+en Python. El último paso tropical llega a 69,9°O aunque el polvo sea cero;
+su promedio de la franja no se presenta como el dato puntual de RD.
 
 La intensidad relativa se convierte linealmente en una de las 15 notas
 pentatónicas del SPEC. La escala mayor y el timbre son provisionales para que

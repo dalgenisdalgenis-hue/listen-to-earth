@@ -12,17 +12,24 @@ python scripts/medir_imagen.py docs/assets/aerosols_5669_1920x1080.png
 python scripts/verificar_imagen.py
 node scripts/verificar_teclado.cjs
 node scripts/verificar_audio.cjs
+node scripts/verificar_barrido.cjs
 python scripts/verificar_archivos.py
 ```
 
 El primer comando debe imprimir cuatro comprobaciones correctas. El segundo
-compara 341 muestras JS con SciPy, incluidos los centros de las 96 casillas.
+compara 371 muestras JS con SciPy, incluidos los centros de las 96 casillas
+y las 30 columnas de cada modo de barrido.
 También comprueba límites de movimiento, guardas y mapeo a notas.
 
 Las pruebas `verificar_teclado.cjs` y `verificar_audio.cjs` usan un DOM y un
 Tone **simulados**. Comprueban las decisiones
 de los controladores; no comprueban el navegador, la salida de sonido, la
 política de activación ni un lector de pantalla.
+
+`verificar_barrido.cjs` usa reloj y activación de audio simulados: comprueba
+30 pasos/15 segundos ideales, pausas, repeticiones, tempo, cambios de modo,
+errores, callbacks tardíos y cancelación de un arranque pendiente. No mide
+la precisión temporal ni el sonido de un navegador real.
 
 ## Prueba manual pendiente en navegador
 
@@ -48,6 +55,30 @@ puede impedir leer el canvas.
    Renombrar temporalmente la imagen para comprobar el mensaje de error.
 9. Escuchar en altavoz mono. Comparar claridad de nota y clic, volumen cómodo
    y escala mayor provisional con el equipo.
+
+## Prueba manual pendiente del barrido
+
+1. Recargar: no debe arrancar audio ni barrido automáticamente.
+2. Pulsar P o Reproducir barrido. Al tempo 100 %, comprobar los 30 pasos de
+   este a oeste y una duración aproximada de 15 segundos desde el primer paso.
+3. Pausar a mitad de un intervalo y esperar. El cursor y progreso deben
+   permanecer quietos y no deben sonar pasos nuevos. Continuar con P:
+   conserva la fracción de intervalo y no repite la nota anterior.
+4. Detener con S/Esc y esperar: no deben reaparecer notas. Repetir debe tocar
+   desde el paso 1, aunque antes estuviera en marcha o hubiera terminado.
+5. Probar tempo 50 %, 100 % y 150 %: duraciones nominales 30, 15 y 10 s.
+   Cambiar tempo durante reproducción y pausa, sin saltos de índice.
+6. Con V cambiar recorrido: queda preparado para empezar de nuevo. Comprobar
+   los 30 valores en la tabla, la franja tropical y el recorrido de polo a polo.
+7. En el viaje del polvo, comprobar el final en 69,9°O y los últimos dos
+   pasos con clic suave. La sal marina 0,300 es promedio de franja y no cambia
+   por sí sola el instrumento seleccionado. La tecla R aún está pendiente.
+8. Moverse por la cuadrícula durante el barrido: debe pausarse y sonar la
+   celda elegida. Ocultar la pestaña debe pausar; volver no debe reanudarla.
+9. Iniciar y detener rápidamente mientras se activa el audio: una promesa
+   tardía no debe arrancar el barrido después de detenerlo o cambiar modo.
+10. Silenciar y poner volumen cero: el progreso sigue avanzando sin notas.
+    Reintentar la carga y confirmar que no quedan temporizadores duplicados.
 
 ## Etapa final: modo de uso sin mirar y lectores de pantalla
 

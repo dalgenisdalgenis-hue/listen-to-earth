@@ -63,4 +63,19 @@
     const half = Math.floor(config.pointWindow / 2);
     return app.readRegion(image, x - half, y - half, x + half + 1, y + half + 1);
   };
+
+  app.readScanStep = function (image, lon, south, north) {
+    const { x } = app.pixelFromCoordinates(0, lon);
+    const y0 = app.pixelFromCoordinates(north, lon).y;
+    const y1 = app.pixelFromCoordinates(south, lon).y;
+    const half = Math.floor(config.scanWidth / 2);
+    // Se recorta en los bordes del PNG, igual que los slices de Python.
+    // En los extremos del modo mundial la columna tendrá menos de 9 píxeles.
+    const bounds = {
+      x0: Math.max(0, x - half), x1: Math.min(image.width, x + half + 1),
+      y0: Math.max(0, y0), y1: Math.min(image.height, y1)
+    };
+    const rgb = app.readRegion(image, bounds.x0, bounds.y0, bounds.x1, bounds.y1);
+    return { rgb, bounds };
+  };
 })();

@@ -83,7 +83,7 @@ En la pista 1 el mapeo de intensidad relativa a las 15 notas es **lineal**, con 
 
 ## Validación
 
-**Estado de esta entrega:** implementados canvas, descomposición y cuadrícula con sonificación del polvo. Se ejecutaron comparaciones numéricas de 341 muestras y pruebas de controladores con DOM/Tone simulados. Las pruebas en navegador, de audio real y con lectores de pantalla siguen pendientes. Ver [REGISTRO_CAMBIOS.md](REGISTRO_CAMBIOS.md) y [PRUEBAS.md](PRUEBAS.md).
+**Estado de esta entrega:** implementados canvas, descomposición, cuadrícula y barrido automático en los dos modos con sonificación del polvo. Se ejecutaron comparaciones numéricas de 371 muestras y pruebas de controladores con DOM/Tone/reloj simulados. Las pruebas en navegador y de audio real siguen pendientes; la configuración y validación específica con lectores de pantalla quedan al final por instrucción posterior del usuario. Ver [REGISTRO_CAMBIOS.md](REGISTRO_CAMBIOS.md) y [PRUEBAS.md](PRUEBAS.md).
 
 Al menos 5 voluntarios exploran ~5 minutos y cuentan qué sintieron y entendieron. Con consentimiento; sin nombres, voces ni imágenes; autorización de tutores si hay menores. Si no participan personas ciegas o con baja visión, esa validación se declara pendiente. **No se afirman efectos educativos y no se presenta la plataforma como «validada con usuarios» mientras las pruebas no se hayan hecho.**
 

@@ -21,6 +21,16 @@ equipo está en [SPEC.md](SPEC.md); no se ha modificado su contenido.
    Tone.js local 15.1.22; activación explícita, volumen del polvo, silencio
    y detener. Solo está seleccionado el polvo. El timbre sintetizado es
    provisional y debe escucharlo el equipo antes de darlo por bueno.
+4. **Barrido automático:** 30 pasos de este a oeste, nominalmente 15 segundos
+   al tempo 100 %. Recorrido tropical de 20°E a 69,9°O, franja 12–22°N, y
+   recorrido mundial de 180°E a 180°O, de polo a polo. Los perfiles se calculan
+   desde RGB promedio de columnas de 9 píxeles al cargar la imagen; no se
+   reproducen listas de pesos copiadas del SPEC. Ambos extremos se incluyen.
+
+   Controles: P reproduce/pausa, Repetir empieza de nuevo, S/Esc detiene, V
+   cambia recorrido y lo deja preparado, +/− ajusta el tempo de 50 a 150 %.
+   Se muestran columna muestreada, progreso, texto del paso y tabla de datos.
+   El barrido puede activar el audio por acción explícita del usuario.
 
 ## Decisiones y correcciones documentadas
 
@@ -58,6 +68,17 @@ desarrollo. La validación específica con lectores de pantalla queda al final.
 
 ## Pruebas ejecutadas
 
+**Actualización del barrido:** se comparan ahora **371 muestras** con SciPy,
+incluidas 30 columnas mundiales adicionales. Se verifican los perfiles
+generados por la aplicación, el extremo 69,9°O y los dos pasos finales sin
+nota de polvo. Los dos perfiles tropicales siguen coincidiendo con el SPEC.
+
+La máquina de estados del barrido se ejecutó con reloj simulado: 30 pasos y
+final a 15.000 ms en condiciones ideales; pausa con conservación de la
+fracción restante, reanudación, repetir/detener, cambio de tempo, retrasos,
+cambio de modo, errores y cancelación de un Tone.start pendiente. Estos
+15.000 ms no son una medición de reproducción real en un navegador.
+
 - El script original del equipo pasa sus cuatro comprobaciones sobre el PNG
   recibido. Los dos perfiles de 30 pasos coinciden con el SPEC a tres decimales.
 - JavaScript y SciPy se compararon sobre **341 muestras**: las 245 de la
@@ -85,11 +106,34 @@ La tabla del SPEC se conserva sin corregirla por cuenta del equipo.
 
 ## Siguiente paso
 
-Barrido automático: 30 pasos de este a oeste, unos 15 segundos, modo tropical
-12–22°N de 20°E a 69,9°O y modo mundial. Después: selector de aerosoles y,
-por último, tecla R y aviso final, sin activar sal marina automáticamente.
+Selector de aerosoles; después, tecla R y aviso final, sin activar sal marina
+automáticamente. El final actual solo anuncia que acabaron los 30 pasos y
+conserva el texto de la última columna. La explicación de sal marina y su
+tecla se incorporarán cuando exista el selector, junto con R, según el orden
+de trabajo solicitado.
 
 Quedan también las preferencias de accesibilidad (voz opcional, pantalla
 oscura, tamaño de letra, contraste y movimiento reducido), las pruebas
 humanas y de navegador y la publicación en Pages. Las pistas 2 y 3 esperan
 el JSON real de MERRA-2; no se han inventado datos para sustituirlo.
+
+## Comportamiento y límites del temporizador
+
+- Hay un solo temporizador pendiente. Cada callback emite un paso y espera
+  el intervalo completo siguiente; una demora no provoca una ráfaga de notas
+  para recuperar tiempo. En un dispositivo ocupado el recorrido puede durar
+  más de los 15 segundos nominales. No se omiten muestras.
+- Ocultar la pestaña pausa el barrido y cancela un arranque pendiente. No se
+  reanuda automáticamente al volver: el usuario pulsa P.
+- La exploración manual pausa el barrido antes de tocar la celda, para que
+  dos fuentes no compitan por la misma voz de polvo.
+- Pausar conserva el próximo paso y la fracción de intervalo pendiente;
+  reanudar no repite la última nota. Repetir reinicia en el primer paso.
+- En los extremos del modo mundial, la columna se recorta a los píxeles
+  disponibles del PNG, igual que en el script del equipo: 4 píxeles en el
+  borde este y 5 en el oeste. No se añaden píxeles del extremo opuesto.
+- El resultado final tropical sigue siendo un promedio de la franja, no una
+  lectura puntual de RD. No se cambia automáticamente el aerosol seleccionado.
+- El entorno declara escritorio disponible pero no ofrece herramienta de
+  control del navegador en esta sesión. No se han ejecutado pruebas reales
+  de navegador ni de audio; siguen pendientes y se describen en PRUEBAS.md.

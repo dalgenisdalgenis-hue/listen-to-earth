@@ -27,7 +27,9 @@ def main():
         x, y = m.px(lat, lon)
         add(name, m.leer_punto(a, x, y), point=[x, y])
     for i, lon in enumerate(np.linspace(20, -69.9, 30)):
-        add(f'scan-{i+1}', m.leer_paso_barrido(a, lon, 12, 22), lon=float(lon))
+        add(f'scan-{i+1}', m.leer_paso_barrido(a, lon, 12, 22), lon=float(lon), mode='journey')
+    for i, lon in enumerate(np.linspace(180, -180, 30)):
+        add(f'world-{i+1}', m.leer_paso_barrido(a, lon, -90, 90), lon=float(lon), mode='world')
     for i, name in enumerate(m.TIPOS):
         add('pure-' + name, m.M[:, i])
     add('dust-salt-half', (m.M[:, 1] + m.M[:, 2]) / 2)

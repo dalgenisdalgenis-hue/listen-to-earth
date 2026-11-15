@@ -13,6 +13,7 @@
   <script defer src="vendor/tone.js"></script>
   <script defer src="js/audio.js"></script>
   <script defer src="js/grid.js"></script>
+  <script defer src="js/scan.js"></script>
   <script defer src="js/app.js"></script>
 </head>
 <body>
@@ -23,6 +24,29 @@
     <p class="intro" data-text="introduction"></p>
     <p id="status" role="status" aria-live="polite" aria-atomic="true"></p>
     <button id="retry" type="button" data-text="retry"></button>
+
+    <section aria-labelledby="scan-title">
+      <h2 id="scan-title" data-text="scanTitle"></h2>
+      <p data-text="scanHelp"></p>
+      <fieldset id="scan-controls" disabled>
+        <legend data-text="scanControls"></legend>
+        <label for="scan-mode" data-text="scanModeLabel"></label>
+        <select id="scan-mode">
+          <option value="journey" data-text="journey"></option>
+          <option value="world" data-text="world"></option>
+        </select>
+        <button id="scan-play" type="button" data-text="scanPlay"></button>
+        <button id="scan-repeat" type="button" data-text="scanRepeat"></button>
+        <button id="scan-stop" type="button" data-text="stop"></button>
+        <label for="tempo" data-text="tempoLabel"></label>
+        <input id="tempo" type="range" min="50" max="150" step="10" value="100">
+        <output id="tempo-value" for="tempo"></output>
+      </fieldset>
+      <p id="scan-info" data-text="journeyInfo"></p>
+      <label for="scan-progress" data-text="scanProgress"></label>
+      <progress id="scan-progress" max="30" value="0"></progress>
+      <p id="scan-readout" data-text="scanIdle"></p>
+    </section>
 
     <section aria-labelledby="grid-title">
       <h2 id="grid-title" data-text="gridTitle"></h2>
@@ -44,6 +68,8 @@
             aria-describedby="map-description" hidden><span data-text="canvasFallback"></span></canvas>
           <div id="grid" role="grid" aria-labelledby="grid-title"
             aria-describedby="grid-help" aria-rowcount="8" aria-colcount="12" hidden></div>
+          <div id="scan-band" aria-hidden="true" hidden></div>
+          <div id="scan-line" aria-hidden="true" hidden></div>
         </div>
         <figcaption id="map-description" data-text="description"></figcaption>
       </figure>
@@ -83,6 +109,26 @@
         </div>
       </details>
     </section>
+
+    <details id="scan-table" hidden>
+      <summary data-text="scanTableSummary"></summary>
+      <div class="table-scroll" role="region" aria-labelledby="scan-caption" tabindex="0">
+        <table>
+          <caption id="scan-caption" data-text="scanCaption"></caption>
+          <thead><tr>
+            <th scope="col" data-text="scanStep"></th>
+            <th scope="col" data-text="longitude"></th>
+            <th scope="col" data-text="blackCarbon"></th>
+            <th scope="col" data-text="dust"></th>
+            <th scope="col" data-text="seaSalt"></th>
+            <th scope="col" data-text="sulfate"></th>
+            <th scope="col" data-text="residual"></th>
+            <th scope="col" data-text="soundHeading"></th>
+          </tr></thead>
+          <tbody id="scan-rows"></tbody>
+        </table>
+      </div>
+    </details>
 
     <details id="diagnostics">
       <summary data-text="diagnostics"></summary>
