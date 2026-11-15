@@ -29,7 +29,7 @@
   let loading = false, activating = false, controller, currentCell, announcement;
   let scanner, profiles, previousScanState = 'idle', audioRequest = 0;
   let lastSource = null, lastScanStep = null, rdPoint = null;
-  let mixEnabled = false;
+  let mixEnabled = false, manuallyStopped = false;
   const localizedHref = href => app.language === 'en' ? `${href}?lang=en` : href;
 
   const pageCopy = pageMode === 'planeta' ? {
@@ -69,6 +69,43 @@
     byId('audio-state').textContent = audio.ready ?
       (audio.muted ? app.text.muted : app.text.audioReady) : app.text.audioOff;
   }
+  function accessibilityPosition() {
+    if (lastSource?.kind === 'point') return app.text.helpPointStatus;
+    const cell = lastSource?.kind === 'grid' ? lastSource.item : currentCell;
+    if (cell) return app.format('helpCellStatus', { row: cell.row + 1, col: cell.col + 1 });
+    const step = lastSource?.kind === 'scan' ? lastSource.item : null;
+    if (step) return app.format('helpStepStatus', {
+      step: step.index + 1,
+      steps: profiles?.[step.mode]?.length || scanner?.snapshot.steps || 0
+    });
+    return '';
+  }
+  function accessibilityPlayback() {
+    if (!audio.ready) return 'off';
+    if (audio.muted) return 'muted';
+    const state = scanner?.snapshot.state;
+    if (state === 'playing' || state === 'starting') return 'playing';
+    if (state === 'paused') return 'paused';
+    if (state === 'ended') return 'ended';
+    if (manuallyStopped) return 'stopped';
+    return 'active';
+  }
+  function currentAccessibilityStatus() {
+    let sample = '';
+    if (lastSource?.item?.result) {
+      const view = app.describeResult(lastSource.item.result);
+      sample = `${view.quantities}. ${view.outcome}`;
+    }
+    return app.buildAccessibilityStatus({
+      experience: pageCopy.title,
+      image: loading ? 'loading' : app.pixels && profiles && controller ? 'ready' : 'notReady',
+      position: accessibilityPosition(),
+      selection: app.selection.types.map(type => app.text[type]).join(', '),
+      playback: accessibilityPlayback(),
+      sample
+    });
+  }
+  app.currentAccessibilityStatus = currentAccessibilityStatus;
   function addRow(parent, values) {
     const row = document.createElement('tr');
     values.forEach((value, i) => {
@@ -188,6 +225,7 @@
   }
   function scanState(snapshot) {
     const { state, tempo, steps, mode } = snapshot;
+    if (['playing', 'starting', 'paused', 'ended'].includes(state)) manuallyStopped = false;
     byId('scan-play').textContent = app.text[
       state === 'starting' ? 'scanStarting' : state === 'playing' ? 'scanPause' :
         state === 'paused' ? 'scanResume' : 'scanPlay'];
@@ -262,6 +300,7 @@
     });
   }
   function scanStep(step) {
+    manuallyStopped = false;
     audio.play(step.result);
     lastScanStep = step;
     lastSource = { kind: 'scan', item: step };
@@ -302,6 +341,7 @@
     currentCell = cell;
     byId('readout').textContent = cell.description;
     if (play) {
+      manuallyStopped = false;
       scanner?.pause();
       lastSource = { kind: 'grid', item: cell };
       renderSource();
@@ -321,6 +361,7 @@
     controller.selectIndex(row * app.config.cols + col);
     currentCell = null;
     lastSource = { kind: 'point', item: rdPoint };
+    manuallyStopped = false;
     const marker = byId('rd-marker');
     marker.style.left = rdPoint.x / app.config.width * 100 + '%';
     marker.style.top = rdPoint.y / app.config.height * 100 + '%';
@@ -334,6 +375,7 @@
   async function load() {
     if (loading) return;
     loading = true;
+    manuallyStopped = false;
     byId('retry').hidden = true;
     ++audioRequest;
     byId('retry').setAttribute('aria-disabled', 'true');
@@ -406,6 +448,7 @@
     try {
       await audio.start();
       if (token !== audioRequest || document.hidden) return;
+      manuallyStopped = false;
       byId('activate').textContent = app.text.reactivate;
       if (lastSource && !['playing', 'starting'].includes(scanner?.snapshot.state)) audio.play(lastSource.item.result);
       announce(app.text.audioReady + (audio.muted ? ' ' + app.text.muted : '') +
@@ -425,6 +468,7 @@
   }
   function stop() {
     ++audioRequest;
+    manuallyStopped = true;
     if (scanner) scanner.stop(); else audio.stop();
     byId('scan-readout').textContent = app.text.scanStopped;
     announce(app.text.stopped);
@@ -510,6 +554,17 @@
     changeSelection(changes);
   });
   byId('go-rd').addEventListener('click', goToDominicanRepublic);
+  byId('announce-current-status').addEventListener('click', () => {
+    announce(currentAccessibilityStatus());
+  });
+  app.setupAudioKeyboardHelp({
+    dialog: byId('audio-keyboard-dialog'),
+    openButton: byId('audio-keyboard-help'),
+    closeButton: byId('audio-keyboard-close'),
+    title: byId('audio-keyboard-title'),
+    experienceNode: byId('audio-keyboard-experience'),
+    experienceName: pageCopy.title
+  });
   const guide = byId('guide-dialog');
   if (guide) {
     document.querySelectorAll('[data-guide-open]').forEach(button => {
@@ -527,6 +582,7 @@
     });
   }
   document.addEventListener('keydown', event => {
+    if (app.shouldIgnoreGlobalShortcut?.(event)) return;
     if (event.ctrlKey || event.altKey || event.metaKey || event.repeat) return;
     if (event.key === 'Escape') { event.preventDefault(); stop(); return; }
     const editing = event.target.closest('textarea, select, [contenteditable="true"], input:not([type="checkbox"]):not([type="range"])');

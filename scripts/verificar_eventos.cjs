@@ -113,7 +113,7 @@ const context = { window: { Tone, setTimeout: setTimer, clearTimeout: id => time
   document, setTimeout: setTimer, clearTimeout: id => timers.delete(id), performance: { now: () => now },
   Image: class { naturalWidth = 1920; naturalHeight = 1080; set src(value) { queueMicrotask(() => this.onload()); } } };
 vm.createContext(context);
-for (const file of ['strings.es.js', 'config.js', 'image-data.js', 'decomposition.js', 'selection.js', 'audio.js', 'grid.js', 'scan.js', 'app.js']) {
+for (const file of ['strings.es.js', 'config.js', 'image-data.js', 'decomposition.js', 'selection.js', 'audio.js', 'grid.js', 'scan.js', 'accessibility.js', 'app.js']) {
   vm.runInContext(fs.readFileSync(path.join(__dirname, '../docs/js', file), 'utf8'), context);
 }
 const app = context.window.ListenToEarth;

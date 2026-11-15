@@ -12,8 +12,21 @@
         <a href="experiencias.html" data-text="navExperiences"></a>
         <a href="guia.html" data-text="navGuide"></a>
         <a href="creditos.html" data-text="creditsNav"></a>
+        <button id="audio-keyboard-help" class="nav-guide" type="button" aria-haspopup="dialog" data-text="audioKeyboardHelp"></button>
       </nav>
     </header>
+
+    <dialog id="audio-keyboard-dialog" class="guide-dialog" aria-labelledby="audio-keyboard-title">
+      <div class="guide-header"><div><p class="eyebrow">Listen to Earth</p><h2 id="audio-keyboard-title" tabindex="-1" data-text="helpTitle"></h2></div><button id="audio-keyboard-close" class="icon-button" type="button" data-text="helpClose"></button></div>
+      <p id="audio-keyboard-experience"></p>
+      <p data-text="helpGesture"></p>
+      <ul class="guide-steps">
+        <li data-text="helpPlaybackKeys"></li>
+        <li data-text="helpExploreKeys"></li>
+        <li data-text="helpAerosolKeys"></li>
+        <li data-text="helpNavigationKeys"></li>
+      </ul>
+    </dialog>
 
     <main id="content" tabindex="-1">
       <div class="page-shell">
@@ -71,6 +84,7 @@
               <figcaption id="map-description" data-text="description"></figcaption>
             </figure>
             <p id="scan-readout" class="data-readout map-readout" data-text="scanIdle"></p>
+            <div class="status-actions"><button id="announce-current-status" class="button secondary" type="button" data-text="announceCurrentStatus"></button></div>
             <div class="explore-grid"><section id="current" class="current-card" aria-labelledby="current-title" hidden><p class="eyebrow" data-text="currentEyebrow"></p><h3 id="current-title" data-text="currentTitle"></h3><p id="readout"></p><p id="sound-source" class="source-info" data-text="sourceEmpty"></p></section><fieldset id="direction-controls" class="direction-card" disabled><legend data-text="directions"></legend><div class="directions"><button id="up" type="button" aria-controls="grid" data-text="upShort"></button><button id="left" type="button" aria-controls="grid" data-text="leftShort"></button><button id="replay" type="button" aria-controls="grid" data-text="replayShort"></button><button id="right" type="button" aria-controls="grid" data-text="rightShort"></button><button id="down" type="button" aria-controls="grid" data-text="downShort"></button></div><button id="go-rd" class="rd-button" type="button" aria-controls="grid current" aria-keyshortcuts="R" data-text="goDominicanRepublic"></button></fieldset></div>
             <p class="shortcut-line" data-text="shortcuts"></p>
           </section>
