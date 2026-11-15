@@ -32,6 +32,9 @@ for (const fixture of fixtures) {
     assert.ok(result.weights[key] >= 0);
   });
   assert.ok(Math.abs(result.residual - fixture.residual) < 1e-10, fixture.name + ' residuo');
+  const imageLayer = app.imageLayerFor(result);
+  assert.ok(imageLayer.intensity >= 0 && imageLayer.intensity <= 1, fixture.name + ' capa total');
+  if (result.residual > app.config.maxResidual) assert.equal(imageLayer.intensity, 0);
   const check = app.config.checks.find(check => check.id === fixture.name);
   if (check) assert.equal(result.dominant, check.expected);
 }
@@ -44,6 +47,21 @@ assert.equal(app.noteFromIntensity(1), 14);
 assert.equal(app.noteFromIntensity(2), 14);
 assert.equal(app.soundFor({ weights: { dust: .8 }, residual: .2 }).hz, null);
 assert.equal(app.soundFor({ weights: { dust: 1 }, residual: 0 }).hz, 1318.53);
+const emptyLayer = app.imageLayerFor({
+  weights: { dust: .04, blackCarbon: .04, seaSalt: .04, sulfate: .04 }, residual: .01
+});
+assert.equal(emptyLayer.intensity, 0);
+assert.equal(emptyLayer.volumeDb, -60);
+assert.equal(emptyLayer.cutoff, 280);
+assert.equal(app.imageLayerFor({
+  weights: { dust: .2, blackCarbon: 0, seaSalt: 0, sulfate: 0 }, residual: .01
+}).intensity, .2);
+assert.equal(app.imageLayerFor({
+  weights: { dust: .8, blackCarbon: .8, seaSalt: .8, sulfate: .8 }, residual: .01
+}).intensity, 1);
+assert.equal(app.imageLayerFor({
+  weights: { dust: .8, blackCarbon: .8, seaSalt: .8, sulfate: .8 }, residual: .2
+}).intensity, 0);
 const cells = app.createGridCells(image);
 assert.equal(cells.length, 96);
 for (const cell of cells) {

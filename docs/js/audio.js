@@ -33,6 +33,24 @@
     return { quantities, outcome };
   };
 
+  // Capa de la imagen completa, inspirada en las sonificaciones por capas.
+  // No depende del selector: resume los cuatro pesos que pasan las mismas
+  // guardas científicas de las notas. La suma se limita a 1 y controla solo
+  // volumen y brillo; no introduce una segunda regla de altura musical.
+  app.imageLayerFor = function (result) {
+    if (!result || result.residual > app.config.maxResidual) {
+      return { intensity: 0, volumeDb: -60, cutoff: 280 };
+    }
+    const total = app.config.instrumentOrder.reduce((sum, type) =>
+      sum + (app.canPlay(result.weights[type], result.residual) ? result.weights[type] : 0), 0);
+    const intensity = Math.min(1, Math.max(0, total));
+    return {
+      intensity,
+      volumeDb: intensity === 0 ? -60 : -26 + 10 * intensity,
+      cutoff: 280 + 1520 * intensity
+    };
+  };
+
   // Los cuatro pesos se calculan una sola vez sobre la matriz completa.
   // Seleccionar cambia qué pesos se oyen; no se vuelve a ajustar RGB ni se
   // normalizan los pesos seleccionados para que sumen uno.
@@ -41,6 +59,9 @@
     const volumes = Object.fromEntries(order.map(type => [type, 50]));
     const active = Object.fromEntries(order.map(type => [type, false]));
     let instruments, gains, master, waveNoise, waveFilter;
+    let imageBed, imageBedGain, imageBedFilter, imageBedActive = false;
+    let currentImageLayer = { intensity: 0, volumeDb: -60, cutoff: 280 };
+    let imageLayerEnabled = true, imageLayerVolume = 35;
     let ready = false, muted = false;
     function gain(type) {
       if (!gains) return;
@@ -58,10 +79,39 @@
       instruments[type].triggerRelease(time);
       if (type === 'seaSalt') waveNoise.triggerRelease(time);
     }
+    function stopImageLayer(time = window.Tone?.now?.() ?? 0) {
+      if (!imageBedGain || !imageBed) return;
+      imageBedGain.volume.rampTo(-60, 0.28);
+      if (imageBedActive) imageBed.releaseAll(time);
+      imageBedActive = false;
+    }
+    function updateImageLayer(result, now) {
+      if (!imageLayerEnabled || imageLayerVolume === 0) {
+        stopImageLayer(now);
+        return;
+      }
+      const layer = app.imageLayerFor(result);
+      currentImageLayer = layer;
+      if (layer.intensity === 0) {
+        // Conservamos el acorde preparado para que una zona breve en silencio
+        // no produzca un nuevo ataque, pero lo ocultamos con una rampa suave.
+        imageBedGain.volume.rampTo(-60, 0.28);
+        return;
+      }
+      if (!imageBedActive) {
+        imageBed.triggerAttack(['G2', 'D3', 'A3'], now, 0.42);
+        imageBedActive = true;
+      }
+      const volumeOffset = window.Tone.gainToDb(imageLayerVolume / 50);
+      imageBedGain.volume.rampTo(Math.max(-60, layer.volumeDb + volumeOffset), 0.35);
+      imageBedFilter.frequency.rampTo(layer.cutoff, 0.35);
+    }
     return {
       get ready() { return ready; },
       get muted() { return muted; },
+      get imageLayerEnabled() { return imageLayerEnabled; },
       getVolume: type => volumes[type],
+      getImageLayerVolume: () => imageLayerVolume,
       async start() {
         if (!window.Tone) throw new Error('audioError');
         const Tone = window.Tone;
@@ -97,6 +147,13 @@
             noise: { type: 'pink' },
             envelope: { attack: 0.05, decay: 0.10, sustain: 0.05, release: 0.12 }, volume: -30
           }).connect(waveFilter);
+          imageBedGain = new Tone.Volume(-60).connect(master);
+          imageBedFilter = new Tone.Filter({ type: 'lowpass', frequency: 280, Q: 0.45 }).connect(imageBedGain);
+          imageBed = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: 'fatsine', count: 2, spread: 12 },
+            envelope: { attack: 0.75, decay: 0.3, sustain: 0.9, release: 0.8 },
+            volume: -12
+          }).connect(imageBedFilter);
         }
         ready = true;
         master.mute = muted;
@@ -107,6 +164,7 @@
         const Tone = window.Tone;
         if (Tone.getContext().state !== 'running') throw new Error('audioError');
         const now = Tone.now();
+        updateImageLayer(result, now);
         const notes = app.soundPlan(result, selection.types).filter(note => note.hz !== null);
         for (const type of order) { release(type, now); active[type] = false; }
         // Por decisión del equipo, una muestra sin notas queda en silencio.
@@ -139,6 +197,7 @@
         for (const type of order) {
           release(type, window.Tone.now()); active[type] = false; gain(type);
         }
+        stopImageLayer();
       },
       toggleMute() {
         muted = !muted;
@@ -150,6 +209,20 @@
         volumes[type] = Math.min(100, Math.max(0, Number(value)));
         if (ready && volumes[type] === 0) { active[type] = false; release(type, window.Tone.now()); }
         gain(type);
+      },
+      setImageLayerEnabled(enabled) {
+        imageLayerEnabled = Boolean(enabled);
+        if (ready && !imageLayerEnabled) stopImageLayer();
+        return imageLayerEnabled;
+      },
+      setImageLayerVolume(value) {
+        if (!Number.isFinite(Number(value))) return;
+        imageLayerVolume = Math.min(100, Math.max(0, Number(value)));
+        if (ready && imageLayerVolume === 0) stopImageLayer();
+        else if (ready && imageBedActive && currentImageLayer.intensity > 0) {
+          const offset = window.Tone.gainToDb(imageLayerVolume / 50);
+          imageBedGain.volume.rampTo(Math.max(-60, currentImageLayer.volumeDb + offset), 0.12);
+        }
       }
     };
   };

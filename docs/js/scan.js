@@ -44,7 +44,11 @@
     function tick() {
       timer = null;
       if (state !== 'playing') return;
-      if (nextIndex === profile.length) { notify('ended'); return; }
+      if (nextIndex === profile.length) {
+        hooks.onSilence();
+        notify('ended');
+        return;
+      }
       try {
         hooks.onStep(profile[nextIndex]);
         index = nextIndex++;

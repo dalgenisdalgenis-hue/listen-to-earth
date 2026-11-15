@@ -14,6 +14,9 @@ alternativos y tabla textual. El barrido automático ofrece viaje del polvo y
 mundo entero, con 30 pasos, pausa, repetición y tempo. El selector permite
 escuchar polvo, carbono negro, sulfatos y sal marina, con volumen por capa.
 De entrada solo suena el polvo; el audio se activa con un botón o P por acción explícita del usuario.
+Una textura sostenida representa la intensidad total válida de la muestra y
+suena debajo de los instrumentos. Tiene interruptor y volumen independientes;
+no cambia los pesos ni las notas de cada aerosol.
 La tecla R consulta el punto exacto de República Dominicana y el final del
 recorrido explica por separado el promedio de la franja. Tone.js 15.1.22 está dentro del repo.
 La portada presenta la idea y enlaza a una página de elección con tres
@@ -131,6 +134,13 @@ Cada aerosol usa la misma regla de nota y su propio timbre: cuerda sintetizada
 para polvo, tambor para carbono negro, campanas para sulfatos y oleaje con
 una componente afinada para sal marina. Los pesos se calculan sobre la matriz
 completa de cuatro colores y se conservan al encender o apagar capas.
+
+La capa de imagen completa suma únicamente los pesos que cumplen peso mínimo
+0,05 y residuo máximo 0,10, limita el total al intervalo 0–1 y lo convierte
+en volumen y frecuencia de corte de un acorde sostenido. No asigna otra nota
+ni depende del contaminante seleccionado. Se inspira metodológicamente en la
+sonificación de Caldwell 73 de SYSTEM Sounds (M. Russo y A. Santaguida), sin
+reutilizar su audio.
 
 ## Estructura y publicación prevista
 

@@ -83,6 +83,14 @@ equipo está en [SPEC.md](SPEC.md); no se ha modificado su contenido.
     mueve debajo del mapa para que los cambios de longitud no desplacen la
     imagen. En la portada se reduce el tamaño del título y la segunda frase,
     “Y todos merecemos escucharla”, pasa a una jerarquía tipográfica menor.
+11. **Sonificación por capas:** siguiendo la referencia Caldwell 73 aportada
+    por el equipo, las experiencias añaden una textura sostenida para la
+    imagen completa. Su intensidad es la suma, limitada a 1, de los cuatro
+    pesos que superan 0,05 cuando el residuo es como máximo 0,10. Esa cifra
+    controla volumen y frecuencia de corte; no crea otra nota ni depende del
+    selector. La capa tiene interruptor y volumen propios, y se detiene con
+    pausa, Stop, pestaña oculta o salida de la página. Se acredita a SYSTEM
+    Sounds (M. Russo y A. Santaguida) como inspiración; no se usa su audio.
 
 ## Decisiones y correcciones documentadas
 

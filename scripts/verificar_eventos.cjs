@@ -83,28 +83,33 @@ document.querySelectorAll = selector => nodes.filter(node => Object.hasOwn(node.
 document.hidden = false;
 const byId = id => ids.get(id), body = nodes.find(node => node.tag === 'body');
 document.body = body;
-const audioNodes = [], plays = [];
+const audioNodes = [], plays = [], attacks = [];
 class AudioNode {
   constructor(options) {
-    this.options = options; this.volume = { rampTo() {} }; this.frequency = { setValueAtTime() {} };
+    this.options = options; this.volume = { rampTo() {} };
+    this.frequency = { setValueAtTime() {}, rampTo() {} };
     audioNodes.push(this);
   }
   connect(target) { this.target = target; return this; }
   toDestination() { return this; }
   triggerRelease() {}
+  releaseAll() {}
+  triggerAttack(...args) { attacks.push({ node: this, args }); }
   triggerAttackRelease(...args) { plays.push({ node: this, args }); }
 }
 class Synth extends AudioNode {}
+class PolySynth extends AudioNode { constructor(Voice, options) { super(options); this.Voice = Voice; } }
 class MembraneSynth extends AudioNode {}
 class FMSynth extends AudioNode {}
 class NoiseSynth extends AudioNode {}
 class Volume extends AudioNode {}
 class Limiter extends AudioNode {}
 class Filter extends AudioNode {}
-const Tone = { Synth, MembraneSynth, FMSynth, NoiseSynth, Volume, Limiter, Filter,
+const Tone = { Synth, PolySynth, MembraneSynth, FMSynth, NoiseSynth, Volume, Limiter, Filter,
   gainToDb: v => 20 * Math.log10(v), now: () => now / 1000,
   getContext: () => ({ state: 'running' }), start: async () => {} };
-const context = { window: { Tone, setTimeout: setTimer, clearTimeout: id => timers.delete(id), location: { search: '', href: '' } },
+const context = { window: { Tone, setTimeout: setTimer, clearTimeout: id => timers.delete(id),
+    location: { search: '', href: '' }, addEventListener() {}, innerHeight: 800 },
   document, setTimeout: setTimer, clearTimeout: id => timers.delete(id), performance: { now: () => now },
   Image: class { naturalWidth = 1920; naturalHeight = 1080; set src(value) { queueMicrotask(() => this.onload()); } } };
 vm.createContext(context);
@@ -137,6 +142,14 @@ const key = (key, target = body) => target.dispatch('keydown', { key });
   key('4'); key('5'); key('7'); assert.equal(app.selection.types.length, 4);
   key('8'); assert.deepEqual(Array.from(app.selection.types), ['dust']); assert.equal(byId('mix-mode').checked, false);
   byId('activate').dispatch('click'); await flush(); assert.equal(app.audio.ready, true);
+  assert.equal(app.audio.imageLayerEnabled, true);
+  assert.equal(app.audio.getImageLayerVolume(), 35);
+  byId('image-layer').checked = false; byId('image-layer').dispatch('change');
+  assert.equal(app.audio.imageLayerEnabled, false);
+  byId('image-layer').checked = true; byId('image-layer').dispatch('change');
+  assert.equal(app.audio.imageLayerEnabled, true);
+  byId('volume-image-layer').value = 42; byId('volume-image-layer').dispatch('input');
+  assert.equal(app.audio.getImageLayerVolume(), 42);
   assert.equal(plays.length, 0); // Cambiar recorrido borra la muestra de preescucha anterior.
   const created = audioNodes.length;
   const beforeRd = plays.length; key('r'); advance(30);
@@ -174,7 +187,7 @@ const key = (key, target = body) => target.dispatch('keydown', { key });
   const beforeSilentEnd = plays.length;
   advance(1500);
   assert.equal(app.scanner.snapshot.state, 'ended');
-  assert.equal(plays.length, beforeSilentEnd); // Los dos pasos finales sin polvo quedan en silencio.
+  assert.equal(plays.length, beforeSilentEnd); // Sin nota de polvo; la textura se comprueba aparte.
   assert.equal(byId('journey-ending').hidden, false);
   assert.ok(byId('journey-ending-text').textContent.includes('polvo'));
   assert.ok(byId('journey-ending-text').textContent.includes('sal marina'));

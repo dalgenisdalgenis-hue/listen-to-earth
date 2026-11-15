@@ -82,6 +82,12 @@ pulsación explícita y está rotulada como artística, no como dato NASA. Se
 añadieron pruebas simuladas de consentimiento y pausa; no sustituyen una
 evaluación acústica humana.
 
+Actualización de sonificación por capas: a partir del ejemplo Caldwell 73
+aportado por el equipo, Codex añadió una textura sostenida calculada con la
+suma limitada de los cuatro pesos que pasan las guardas. La textura modifica
+volumen y filtro, no la altura de las notas existentes. Se acredita a SYSTEM
+Sounds como inspiración y no se copia su audio.
+
 - Una etapa por solicitud; cada entrega incluye qué cambió, cómo comprobarlo y qué limitaciones quedan.
 - **No se afirma que una prueba pasó si no se ejecutó.**
 - Datos sintéticos de desarrollo siempre identificados y separados de la demo.

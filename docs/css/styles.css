@@ -132,6 +132,9 @@ figcaption { padding: .75rem 1rem 1rem; color: var(--muted); font-size: .92rem; 
 .aerosol-controls { padding: 1rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
 .listening-mode { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .2rem .2rem 1rem; margin-bottom: 1rem; border-bottom: 1px solid var(--line); }
 .listening-mode p { margin: .2rem 0 0; color: var(--muted); }
+.image-layer-control { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(12rem, .55fr); gap: 1rem; align-items: center; padding: 1rem; margin-bottom: 1rem; border: 1px solid rgb(131 230 239 / 35%); border-radius: .8rem; background: rgb(131 230 239 / 6%); }
+.image-layer-control p { margin: .2rem 0 0; color: var(--muted); }
+.image-layer-volume > label { color: var(--muted); font-size: .9rem; }
 .mix-switch { display: flex; align-items: center; gap: .55rem; min-height: 44px; padding: .5rem .8rem; border: 1px solid var(--line); border-radius: 999px; cursor: pointer; white-space: nowrap; }
 .mix-switch input { width: 1.3rem; height: 1.3rem; accent-color: var(--yellow); }
 .aerosol-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem; }
@@ -215,6 +218,7 @@ footer p { margin: .2rem 0; }
   .credits-grid { grid-template-columns: 1fr; }
   .experience-card { min-height: 17rem; }
   .listening-mode { align-items: flex-start; flex-direction: column; }
+  .image-layer-control { grid-template-columns: 1fr; align-items: start; }
   .mode-card { min-height: 8rem; }
   .progress-row { grid-template-columns: 1fr; gap: .3rem; }
   .audio-toolbar p { flex-basis: 100%; margin-left: 0; }

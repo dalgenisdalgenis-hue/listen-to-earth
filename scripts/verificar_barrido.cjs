@@ -63,6 +63,7 @@ function setup(startAudio = async () => {}, customStep) {
   assert.equal(s.notes.length, 30); assert.equal(s.scanner.snapshot.state, 'playing');
   s.clock.advance(1);
   assert.equal(s.scanner.snapshot.state, 'ended');
+  assert.equal(s.silences(), 1); // La textura sostenida recibe orden de apagarse al final.
   assert.deepEqual(s.notes.map(x => x[0]), Array.from({ length: 30 }, (_, i) => i));
   assert.equal(s.notes.at(-1)[1], 14500); assert.equal(s.clock.time, 15000);
   await s.scanner.play(); assert.equal(s.notes.at(-1)[0], 0);

@@ -10,15 +10,21 @@ class Node {
   constructor(options) {
     this.options = options; this.mute = false; nodes.push(this);
     this.volume = { rampTo: (...args) => events.push({ event: 'volume', node: this, args }) };
-    this.frequency = { setValueAtTime: (...args) => events.push({ event: 'frequency', node: this, args }) };
+    this.frequency = {
+      setValueAtTime: (...args) => events.push({ event: 'frequency', node: this, args }),
+      rampTo: (...args) => events.push({ event: 'filter-ramp', node: this, args })
+    };
     events.push({ event: 'new', node: this });
   }
   connect(target) { this.target = target; return this; }
   toDestination() { return this; }
   triggerRelease(...args) { events.push({ event: 'release', node: this, args }); }
+  releaseAll(...args) { events.push({ event: 'release-all', node: this, args }); }
+  triggerAttack(...args) { events.push({ event: 'attack', node: this, args }); }
   triggerAttackRelease(...args) { events.push({ event: 'play', node: this, args }); }
 }
 class Synth extends Node {}
+class PolySynth extends Node { constructor(Voice, options) { super(options); this.Voice = Voice; } }
 class MembraneSynth extends Node {}
 class FMSynth extends Node {}
 class NoiseSynth extends Node {}
@@ -26,7 +32,7 @@ class Filter extends Node {}
 class Volume extends Node {}
 class Limiter extends Node {}
 let state = 'running';
-const Tone = { Synth, MembraneSynth, FMSynth, NoiseSynth, Filter, Volume, Limiter,
+const Tone = { Synth, PolySynth, MembraneSynth, FMSynth, NoiseSynth, Filter, Volume, Limiter,
   gainToDb: value => 20 * Math.log10(value), now: () => 42,
   getContext: () => ({ state }), start: async () => events.push({ event: 'start' }) };
 const context = { window: { Tone } };
@@ -49,11 +55,15 @@ const plays = () => events.filter(event => event.event === 'play');
   const carbon = nodes.find(node => node instanceof MembraneSynth);
   const sulfate = nodes.find(node => node instanceof FMSynth);
   const wave = nodes.find(node => node instanceof NoiseSynth && node.options.noise.type === 'pink');
+  const imageBed = nodes.find(node => node instanceof PolySynth);
   assert.equal(nodes.some(node => node instanceof NoiseSynth && node.options.noise.type === 'white'), false);
   const filter = nodes.find(node => node instanceof Filter);
   const master = nodes.find(node => node instanceof Volume && node.target instanceof Limiter);
   const voices = { dust, blackCarbon: carbon, sulfate, seaSalt: sea };
   audio.play(result); assert.equal(plays().length, 1); assert.equal(plays()[0].node, dust);
+  assert.ok(events.some(event => event.event === 'attack' && event.node === imageBed));
+  assert.ok(events.some(event => event.event === 'filter-ramp' && event.args[0] === 1800));
+  assert.equal(audio.imageLayerEnabled, true); assert.equal(audio.getImageLayerVolume(), 35);
   assert.equal(plays()[0].args[0], 880.01);
   assert.equal(dust.options.volume, -12); assert.equal(audio.getVolume('dust'), 50);
   selection.toggleAll();
@@ -69,6 +79,12 @@ const plays = () => events.filter(event => event.event === 'play');
   assert.ok(chord.some(event => event.node === wave));
   assert.equal(filter.target, sea.target); assert.equal(wave.target, filter);
   assert.ok(events.some(event => event.event === 'frequency' && event.args[0] === 880.01 && event.args[1] === 42));
+  audio.setImageLayerEnabled(false); assert.equal(audio.imageLayerEnabled, false);
+  const bedAttacks = events.filter(event => event.event === 'attack' && event.node === imageBed).length;
+  audio.play(result); assert.equal(events.filter(event => event.event === 'attack' && event.node === imageBed).length, bedAttacks);
+  audio.setImageLayerEnabled(true); audio.setImageLayerVolume(40); audio.play(result);
+  assert.equal(audio.getImageLayerVolume(), 40);
+  assert.equal(events.filter(event => event.event === 'attack' && event.node === imageBed).length, bedAttacks + 1);
   selection.set('blackCarbon', false); audio.selectionChanged();
   assert.equal(carbon.target.mute, true);
   assert.ok(events.some(event => event.event === 'release' && event.node === carbon));
@@ -98,5 +114,5 @@ const plays = () => events.filter(event => event.event === 'play');
   audio.setVolume('dust', NaN); assert.equal(audio.getVolume('dust'), clamped);
   audio.setVolume('dust', 999); assert.equal(audio.getVolume('dust'), 100);
   state = 'suspended'; assert.throws(() => audio.play(result), /audioError/);
-  console.log('PASS: audio simulado: cuatro instrumentos, frecuencias comunes, oleaje con altura, ausencia sin clic, selección en marcha, volumen por capa, silencio y detener.');
+  console.log('PASS: audio simulado: cuatro instrumentos, textura total independiente, frecuencias comunes, oleaje con altura, ausencia sin clic, volúmenes, silencio y detener.');
 })().catch(error => { console.error(error); process.exitCode = 1; });

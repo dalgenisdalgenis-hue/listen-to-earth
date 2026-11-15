@@ -32,6 +32,7 @@ con MERRA-2 permanecen detenidas hasta nueva instrucción del equipo.
 ## Cómo suena
 
 - **Un instrumento por tipo de aerosol**, para distinguirlos sin mirar. Por defecto solo suena el **polvo**; con una tecla se añaden los demás.
+- **Una textura para la imagen completa** suena debajo de los instrumentos. Resume la suma válida de los cuatro aerosoles mediante volumen y brillo, no mediante otra nota. Se puede apagar o ajustar sin cambiar los datos.
 - **Más cantidad → nota más aguda**, siempre dentro de una **escala pentatónica mayor** de tres octavas desde Sol3 (196 Hz), para que nunca desafine. *(Mayor es provisional: se escucha con datos reales antes de darla por buena.)*
 - En las pistas 2 y 3, el valor se convierte en altura con una **escala logarítmica de 0,02 a 13 µg/m³**, porque entre el mes más limpio y el más cargado hay más de 600 veces de diferencia. **La misma regla para todos los años:** al comparar solo cambia el timbre.
 - **Zonas sin partículas: silencio.** El clic de posición se retiró por

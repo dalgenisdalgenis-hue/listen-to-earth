@@ -27,6 +27,11 @@ Tone **simulados**. Comprueban las decisiones
 de los controladores; no comprueban el navegador, la salida de sonido, la
 política de activación ni un lector de pantalla.
 
+La prueba de audio también comprueba que la textura de imagen no crea sonido
+antes de activar Tone, usa los cuatro pesos independientemente del selector,
+limita la intensidad a 1, respeta umbral y residuo, suaviza volumen/filtro y
+responde a su interruptor y volumen. No acredita que la mezcla sea clara al oído.
+
 El segundo comando ejecuta además el selector sobre 16 combinaciones × 376
 resultados (371 muestras reales y cinco casos sintéticos). Comprueba que
 elegir capas no cambia pesos ni notas de las otras capas. También ejecuta
@@ -149,6 +154,10 @@ puede impedir leer el canvas.
 9. Escuchar cada instrumento por separado y juntos en altavoz mono. Evaluar
    si se reconocen cuerda, tambor, campanas y oleaje y si la mezcla tapa alguno.
    Esta evaluación musical y acústica no la acreditan los objetos simulados.
+10. Con una muestra fija, activar y desactivar **Capa sonora de la imagen
+    completa**: las notas y cantidades no deben cambiar. Ajustar su volumen y
+    comprobar que no tapa los cuatro instrumentos. Pausar, detener y ocultar
+    la pestaña debe apagar la textura sin dejar un acorde sostenido.
 
 ## Etapa final: modo de uso sin mirar y lectores de pantalla
 

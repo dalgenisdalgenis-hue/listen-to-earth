@@ -34,6 +34,11 @@
           <fieldset id="aerosol-controls" class="aerosol-controls" aria-describedby="selection-help">
             <legend class="visually-hidden" data-text="selectionTitle"></legend>
             <div class="listening-mode"><div><strong data-text="soloModeTitle"></strong><p data-text="soloModeDescription"></p></div><label class="mix-switch" for="mix-mode"><input id="mix-mode" type="checkbox"><span data-text="mixModeLabel"></span></label></div>
+            <div class="image-layer-control">
+              <div><strong data-text="imageLayerTitle"></strong><p data-text="imageLayerDescription"></p></div>
+              <label class="mix-switch" for="image-layer"><input id="image-layer" type="checkbox" checked><span data-text="imageLayerLabel"></span></label>
+              <div class="image-layer-volume"><label for="volume-image-layer" data-text="imageLayerVolume"></label><div class="volume-row"><input id="volume-image-layer" type="range" min="0" max="100" step="1" value="35"><output id="volume-value-image-layer" for="volume-image-layer"></output></div></div>
+            </div>
             <div class="aerosol-grid">
               <div class="aerosol-card aerosol-dust"><div class="instrument-choice"><input id="aerosol-dust" type="checkbox" checked aria-keyshortcuts="4"><label for="aerosol-dust" data-text="toggleDust"></label></div><label for="volume-dust" data-text="volumeDust"></label><div class="volume-row"><input id="volume-dust" type="range" min="0" max="100" step="1" value="50"><output id="volume-value-dust" for="volume-dust"></output></div></div>
               <div class="aerosol-card aerosol-carbon"><div class="instrument-choice"><input id="aerosol-blackCarbon" type="checkbox" aria-keyshortcuts="5"><label for="aerosol-blackCarbon" data-text="toggleBlackCarbon"></label></div><label for="volume-blackCarbon" data-text="volumeBlackCarbon"></label><div class="volume-row"><input id="volume-blackCarbon" type="range" min="0" max="100" step="1" value="50"><output id="volume-value-blackCarbon" for="volume-blackCarbon"></output></div></div>

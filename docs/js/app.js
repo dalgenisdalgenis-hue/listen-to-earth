@@ -115,6 +115,12 @@
     byId('mix-mode').checked = mixEnabled;
     byId('toggle-all').hidden = !mixEnabled;
     byId('toggle-all').textContent = app.selection.types.length === 4 ? app.text.onlyDust : app.text.allAerosols;
+    byId('image-layer').checked = audio.imageLayerEnabled;
+    const layerVolume = audio.getImageLayerVolume();
+    byId('volume-image-layer').value = layerVolume;
+    const layerLabel = app.format('volumeValue', { value: layerVolume });
+    byId('volume-value-image-layer').textContent = layerLabel;
+    byId('volume-image-layer').setAttribute('aria-valuetext', layerLabel);
   }
   function soloSelection(type) {
     return app.config.instrumentOrder.flatMap(key => app.selection.set(key, key === type));
@@ -435,7 +441,9 @@
     if (!document.hidden) return;
     ++audioRequest;
     if (scanner?.pause()) announce(app.text.scanHidden);
+    else audio.stop();
   });
+  window.addEventListener('pagehide', () => audio.stop());
   for (const type of app.config.instrumentOrder) {
     byId('aerosol-' + type).addEventListener('change', event => {
       if (!mixEnabled && !event.target.checked) { event.target.checked = true; return; }
@@ -455,6 +463,23 @@
       const keep = app.selection.types[0] || 'dust';
       changeSelection(soloSelection(keep));
       announce(app.text.soloModeOn + ' ' + app.format('selectionSummary', { types: app.text[keep] }));
+    }
+  });
+  byId('image-layer').addEventListener('change', event => {
+    const enabled = audio.setImageLayerEnabled(event.target.checked);
+    renderSelector();
+    if (enabled && pageMode === 'explorar' && audio.ready && lastSource) {
+      try { audio.play(lastSource.item.result); }
+      catch { announce(app.text.audioError); return; }
+    }
+    announce(enabled ? app.text.imageLayerOn : app.text.imageLayerOff);
+  });
+  byId('volume-image-layer').addEventListener('input', event => {
+    audio.setImageLayerVolume(event.target.value);
+    renderSelector();
+    if (pageMode === 'explorar' && Number(event.target.value) > 0 && audio.ready && lastSource) {
+      try { audio.play(lastSource.item.result); }
+      catch { announce(app.text.audioError); }
     }
   });
   byId('toggle-all').addEventListener('click', () => {

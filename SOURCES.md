@@ -60,7 +60,7 @@ Referencias del conjunto de datos:
 ## Recursos del reto usados solo como contexto o referencia
 
 - **SVS 5533 — Air Quality Model Runs** (GEOS-CF, jul–sep 2024: CO, PM2.5, O3, NOx). Está en la lista del reto y lleva la etiqueta «Earth Information Center». Justifica por qué hablamos de PM2.5. **No sirve como dato base**: no separa polvo, sal marina y sulfatos, y el mapa está en franjas por contaminante.
-- **Data Sonification: Caldwell 73.** En la lista del reto. Precedente de método de la propia NASA: brillo y posición → volumen y altura. https://svs.gsfc.nasa.gov/13786/
+- **Data Sonification: Caldwell 73.** En la lista del reto. Precedente de método de la propia NASA: brillo y posición → volumen y altura. La combinación de una textura para la imagen completa con instrumentos para elementos específicos inspira la nueva capa de imagen de Listen to Earth. Crédito: SYSTEM Sounds (M. Russo, A. Santaguida). No se reutiliza su audio. https://svs.gsfc.nasa.gov/13786/
 
 ## Recursos descartados
 
