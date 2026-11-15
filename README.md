@@ -31,6 +31,9 @@ sintetizada localmente y separada de los sonidos de los datos.
 Toda la interfaz está disponible en español e inglés mediante el selector
 **ES / EN** del encabezado. La elección se conserva al cambiar de página y
 la versión inglesa también puede abrirse directamente con `?lang=en`.
+Las tres experiencias incluyen una ayuda de audio y teclado en un diálogo
+nativo y un botón que anuncia el estado actual mediante la región viva ya
+existente. Consultar ese estado no activa sonido ni modifica los datos.
 
 Ejecutados: 311 muestras puntuales y **870 bandas de recorrido** comparadas
 entre JavaScript y SciPy, además de pruebas de controladores con DOM,
@@ -48,10 +51,10 @@ en aerosoles. La decisión,
 sus mediciones y las referencias de NASA están en
 [METODOLOGIA_SONIFICACION.md](METODOLOGIA_SONIFICACION.md).
 
-La configuración del modo sin mirar la pantalla y las pruebas
-con lectores de pantalla se reservan para la última etapa, según la nueva
-instrucción del usuario registrada en REGISTRO_CAMBIOS.md. Se mantienen las
-etiquetas y el teclado existentes. Por decisión del usuario, esta primera
+Esta entrega añade la ayuda mínima acordada para usar la experiencia con
+teclado y consultar su estado sin activar audio. La validación humana con
+NVDA/VoiceOver y otras preferencias de un modo ampliado siguen pendientes,
+como se registra en PRUEBAS.md. Por decisión del usuario, esta primera
 versión se publica solo con la pista 1; no se trabaja todavía con MERRA-2 ni
 con las pistas 2 y 3.
 
@@ -126,6 +129,7 @@ node scripts/verificar_audio.cjs
 node scripts/verificar_barrido.cjs
 node scripts/verificar_ambientacion.cjs
 node scripts/verificar_idiomas.cjs
+node scripts/verificar_ayuda.cjs
 python scripts/verificar_archivos.py
 ```
 

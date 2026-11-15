@@ -151,6 +151,24 @@ conservan en [historial/](historial/).
     Se verificó la igualdad de claves y marcadores, el orden de carga y las
     referencias del HTML. En Chromium se comprobó el cambio de idioma, los
     enlaces internos, la carga del mapa y la vista de 390 px sin desbordamiento.
+18. **Ayuda mínima de audio y teclado:** las tres experiencias incorporan un
+    botón bilingüe en el encabezado que abre un diálogo nativo. El diálogo
+    identifica la experiencia, resume los atajos, mueve el foco al título y
+    lo devuelve al botón al cerrar. Mientras permanece abierto, los atajos
+    globales Escape/P/S/M/R/4–8 no llegan a la aplicación; Escape conserva el
+    cierre nativo del diálogo.
+
+    Un segundo botón anuncia mediante la única región `aria-live` ya existente
+    la imagen, posición o paso, selección, reproducción y el último resultado
+    disponible con intensidad, cobertura o evidencia de silencio. Funciona
+    antes de cargar la imagen y antes de activar Tone. Consume únicamente el
+    estado ya calculado: no lee píxeles de nuevo, no modifica pesos, notas,
+    selección, volumen ni recorrido, y no usa síntesis de voz.
+
+    Se añadió `verificar_ayuda.cjs` y se amplió la simulación integral para
+    cubrir ES/EN, foco, bloqueo de teclas, estados y ausencia de activación de
+    audio. La comprobación humana con NVDA/VoiceOver continúa pendiente y está
+    detallada en `PRUEBAS.md`.
 
 ## Decisiones y correcciones documentadas
 

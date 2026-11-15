@@ -4,7 +4,7 @@
 
 > **Estado del 15-nov-2026:** la revisión por 12/5 bandas está implementada.
 > Pasan las comparaciones JavaScript/SciPy, las pruebas simuladas y la paridad
-> de 384 textos ES/EN. El equipo probó controles y sonidos en teléfono y
+> de 410 textos ES/EN. El equipo probó controles y sonidos en teléfono y
 > computadora; la validación específica con lectores de pantalla sigue pendiente.
 
 Python y Node se usan únicamente para comprobar el código. El navegador del
@@ -20,6 +20,7 @@ node scripts/verificar_audio.cjs
 node scripts/verificar_barrido.cjs
 node scripts/verificar_ambientacion.cjs
 node scripts/verificar_idiomas.cjs
+node scripts/verificar_ayuda.cjs
 python scripts/verificar_archivos.py
 ```
 
@@ -58,9 +59,18 @@ crea audio al cargar, que la primera pulsación inicia la composición y que
 puede pausarse. No acredita el timbre ni el volumen percibido.
 
 `verificar_idiomas.cjs` comprueba que los diccionarios español e inglés tienen
-las mismas 384 claves y los mismos marcadores dinámicos, que todas las claves
+las mismas 410 claves y los mismos marcadores dinámicos, que todas las claves
 usadas por el HTML existen y que las siete páginas visibles cargan los dos
 diccionarios antes del traductor.
+
+`verificar_ayuda.cjs` comprueba el diálogo de ayuda en español e inglés, el
+foco al abrir y cerrar, el bloqueo de Escape/P/S/M/R/4–8 dentro del diálogo,
+una sola región `aria-live` y los estados antes de cargar, durante la carga,
+listo, reproduciendo, en pausa, terminado, detenido y silenciado. También
+verifica que construir el anuncio no modifique la selección ni los datos. La
+simulación completa ejecutada por `verificar_imagen.py` repite las pruebas
+principales con la plantilla real y confirma que consultar el estado no crea
+ningún nodo de audio.
 
 ## Lista de regresión manual en navegador
 
@@ -200,22 +210,39 @@ puede impedir leer el canvas.
     comprobar que no tapa los cuatro instrumentos. Pausar, detener y ocultar
     la pestaña debe apagar la textura sin dejar un acorde sostenido.
 
-## Etapa final: modo de uso sin mirar y lectores de pantalla
+## Revisión humana de la ayuda de audio y teclado
 
-Por instrucción del usuario del 14-nov-2026, esta configuración y su validación
-se realizan al final. Se conservan durante el desarrollo las etiquetas HTML,
-el foco y los controles de teclado ya implementados.
+Esta lista debe completarse en las tres experiencias, primero en español y
+luego con `?lang=en`:
 
-Repetir las acciones anteriores con NVDA/Firefox, NVDA/Chrome y
-VoiceOver/Safari según los equipos disponibles. Verificar anuncios de
-posición, ausencia de duplicados, foco visible, zoom de 200–400 %, tamaño
-móvil y contraste forzado. Comprobar también las preferencias del modo sin
-mirar la pantalla cuando se implementen.
+1. Confirmar que el encabezado muestra **Ayuda de audio y teclado** y que se
+   alcanza con Tab.
+2. Abrir la ayuda con Enter. El foco debe pasar al título y el texto debe
+   indicar la experiencia actual.
+3. Recorrer el contenido con Tab y cerrar con el botón. El foco debe regresar
+   al botón que abrió la ayuda.
+4. Abrir de nuevo y cerrar con Escape. El foco también debe regresar al botón.
+5. Con el diálogo abierto, pulsar P, S, M, R y 4–8: no debe comenzar audio,
+   cambiar la selección, mover el mapa ni iniciar/detener un recorrido.
+6. Antes de activar sonido, pulsar **Anunciar estado actual**. Debe describir
+   imagen, posición, aerosol seleccionado y audio apagado sin producir sonido.
+7. Durante un recorrido, comprobar los anuncios de reproduciendo, pausa,
+   detenido y terminado, incluido el número de paso.
+8. En una celda, punto de RD o paso ya leído, confirmar que el estado incluye
+   la intensidad/cobertura disponibles o la evidencia que justifica silencio.
+9. Confirmar que solo hay un anuncio por pulsación y que el texto del estado
+   aparece debajo del mapa sin desplazarlo.
+10. Repetir en escritorio y a 390 px: el diálogo debe caber, permitir cerrar y
+    no crear desplazamiento horizontal. Al cargar la página no debe sonar nada.
 
-NVDA/VoiceOver son programas externos. La voz propia de la página es otra
-opción y debe seguir apagada por defecto para evitar dos narraciones.
+## Validación pendiente con lectores de pantalla
 
-Anotar navegador, dispositivo, lector de pantalla, fecha, resultado e incidencias.
-No marcar estas pruebas como aprobadas hasta realizarlas. La red lenta, los
-lectores de pantalla y las pruebas estructuradas con voluntarios continúan
-pendientes.
+Repetir la lista anterior con NVDA/Firefox, NVDA/Chrome y VoiceOver/Safari
+según los equipos disponibles. Verificar nombre y función de botones, anuncio
+del diálogo, orden de foco, anuncios de posición, ausencia de duplicados, foco
+visible, zoom de 200–400 %, tamaño móvil y contraste forzado.
+
+NVDA y VoiceOver son programas externos; la página no los enciende ni usa
+`SpeechSynthesis`. Anotar navegador, dispositivo, lector, fecha, resultado e
+incidencias. No marcar estas pruebas como aprobadas hasta realizarlas. La red
+lenta y las pruebas estructuradas con voluntarios también siguen pendientes.

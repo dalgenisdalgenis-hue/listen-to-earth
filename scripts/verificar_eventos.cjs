@@ -51,6 +51,7 @@ class Element {
   removeEventListener(type, callback) { this.listeners[type] = this.listeners[type].filter(fn => fn !== callback); }
   contains(node) { return this === node || this.children.some(child => child.contains(node)); }
   matches(selector) {
+    if (selector === 'dialog[open]') return this.tag === 'dialog' && Object.hasOwn(this.attributes, 'open');
     if (selector === '[role="gridcell"]') return this.attributes.role === 'gridcell';
     if (selector === '[contenteditable="true"]') return this.attributes.contenteditable === 'true';
     if (selector.startsWith('input:not(')) return this.tag === 'input' && !['checkbox', 'range'].includes(this.attributes.type);
@@ -63,6 +64,8 @@ class Element {
     return null;
   }
   focus() { document.activeElement = this; this.dispatch('focusin'); }
+  showModal() { this.setAttribute('open', ''); }
+  close() { this.removeAttribute('open'); this.dispatch('close'); }
   dispatch(type, input = {}) {
     const event = { target: this, prevented: false, preventDefault() { this.prevented = true; }, ...input };
     for (let node = this; node; node = node.parent) for (const callback of node.listeners[type] || []) callback(event);
@@ -119,6 +122,12 @@ for (const file of ['strings.es.js', 'config.js', 'image-data.js', 'decompositio
 const app = context.window.ListenToEarth;
 const flush = async () => { for (let i = 0; i < 12; i++) await Promise.resolve(); };
 const key = (key, target = body) => target.dispatch('keydown', { key });
+
+// El botón debe poder describir el estado durante la carga sin iniciar Tone.
+byId('announce-current-status').dispatch('click'); advance(30);
+assert.ok(byId('status').textContent.includes('imagen se está cargando'));
+assert.equal(audioNodes.length, 0);
+
 (async () => {
   await flush();
   assert.equal(app.checkResults.length, 4); assert.ok(app.checkResults.every(check => check.passed));
@@ -126,6 +135,27 @@ const key = (key, target = body) => target.dispatch('keydown', { key });
   const cells = byId('grid').children.flatMap(row => row.children);
   assert.equal(cells.filter(cell => cell.tabIndex === 0).length, 1);
   assert.equal(byId('aerosol-dust').checked, true); assert.equal(byId('aerosol-seaSalt').checked, false);
+  const helpDialog = byId('audio-keyboard-dialog');
+  const helpButton = byId('audio-keyboard-help');
+  helpButton.dispatch('click');
+  assert.ok(Object.hasOwn(helpDialog.attributes, 'open'));
+  assert.equal(document.activeElement, byId('audio-keyboard-title'));
+  assert.ok(byId('audio-keyboard-experience').textContent.includes('Viaje del polvo'));
+  const beforeHelpSelection = JSON.stringify(app.selection.types);
+  for (const shortcut of ['Escape', 'p', 's', 'm', 'r', '4', '5', '6', '7', '8']) {
+    key(shortcut, byId('audio-keyboard-close'));
+  }
+  assert.ok(Object.hasOwn(helpDialog.attributes, 'open'));
+  assert.equal(JSON.stringify(app.selection.types), beforeHelpSelection);
+  assert.equal(app.audio.ready, false);
+  helpDialog.close(); // Equivale al cierre nativo que provoca Escape.
+  assert.equal(document.activeElement, helpButton);
+  helpButton.dispatch('click'); byId('audio-keyboard-close').dispatch('click');
+  assert.equal(document.activeElement, helpButton);
+  byId('announce-current-status').dispatch('click'); advance(30);
+  assert.ok(byId('status').textContent.includes('imagen está preparada'));
+  assert.ok(byId('status').textContent.includes('audio está apagado'));
+  assert.equal(audioNodes.length, 0);
   assert.equal(byId('mode-journey').attributes['aria-pressed'], 'true');
   byId('mode-world').dispatch('click');
   assert.equal(byId('scan-mode').value, 'world');
@@ -224,5 +254,5 @@ const key = (key, target = body) => target.dispatch('keydown', { key });
   byId('retry').dispatch('click'); await flush();
   assert.equal(JSON.stringify(app.selection.types), state); assert.equal(app.audio.getVolume('seaSalt'), 80);
   assert.equal(audioNodes.length, created); assert.equal(app.scanner.snapshot.state, 'idle');
-  console.log('PASS: app con DOM/Tone/reloj simulados: casillas, 4–8, volúmenes, foco, barrido sin reinicio, muestra de franja al terminar, edición de texto y recarga.');
+  console.log('PASS: app con DOM/Tone/reloj simulados: ayuda y estado sin audio, casillas, 4–8, volúmenes, foco, barrido sin reinicio, muestra de franja al terminar, edición de texto y recarga.');
 })().catch(error => { console.error(error); process.exitCode = 1; });
