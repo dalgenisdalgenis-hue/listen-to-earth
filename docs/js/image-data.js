@@ -78,4 +78,27 @@
     const rgb = app.readRegion(image, bounds.x0, bounds.y0, bounds.x1, bounds.y1);
     return { rgb, bounds };
   };
+
+  app.readScanStepZones = function (image, lon, south, north, zoneCount) {
+    if (!Number.isInteger(zoneCount) || zoneCount < 1) throw new Error('sampleError');
+    const { rgb, bounds } = app.readScanStep(image, lon, south, north);
+    const height = bounds.y1 - bounds.y0;
+    if (height < zoneCount) throw new Error('sampleError');
+    const latitudeHeight = north - south;
+    const zones = Array.from({ length: zoneCount }, (_, index) => {
+      // Las fronteras se calculan sobre la altura real de la franja. Así cada
+      // fila pertenece a una sola zona, sin huecos ni solapamientos.
+      const y0 = bounds.y0 + Math.round(height * index / zoneCount);
+      const y1 = bounds.y0 + Math.round(height * (index + 1) / zoneCount);
+      const zoneBounds = { x0: bounds.x0, x1: bounds.x1, y0, y1 };
+      return {
+        index,
+        north: north - latitudeHeight * index / zoneCount,
+        south: north - latitudeHeight * (index + 1) / zoneCount,
+        bounds: zoneBounds,
+        rgb: app.readRegion(image, zoneBounds.x0, y0, zoneBounds.x1, y1)
+      };
+    });
+    return { rgb, bounds, zones };
+  };
 })();

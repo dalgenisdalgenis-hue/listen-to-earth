@@ -22,7 +22,7 @@ conservan en [historial/](historial/).
    Tone.js local 15.1.22; activación explícita, volumen del polvo, silencio
    y detener. Solo está seleccionado el polvo. El timbre sintetizado es
    provisional y debe escucharlo el equipo antes de darlo por bueno.
-4. **Barrido automático:** 30 pasos de este a oeste, nominalmente 15 segundos
+4. **Primera versión del barrido automático:** 30 pasos de este a oeste, nominalmente 15 segundos
    al tempo 100 %. Recorrido tropical de 20°E a 69,9°O, franja 12–22°N, y
    recorrido mundial de 180°E a 180°O, de polo a polo. Los perfiles se calculan
    desde RGB promedio de columnas de 9 píxeles al cargar la imagen; no se
@@ -42,12 +42,12 @@ conservan en [historial/](historial/).
    en el próximo paso, sin reiniciar ni cambiar el reloj. Fuera del barrido,
    si el audio ya está activo, cambiar la selección vuelve a tocar la misma
    última muestra. Se muestra si esa muestra es una celda o una columna.
-6. **Consulta de RD y final de la pista 1:** R y un botón consultan el píxel
+6. **Consulta de RD y primer aviso final:** R y un botón consultan el píxel
    (587,429) con ventana 3×3, muestran un marcador pequeño y preparan la celda
    que lo contiene para continuar con flechas. El resultado se identifica
    siempre como punto: polvo 0,000 y sal marina aproximadamente 0,608.
 
-   Al terminar el viaje del polvo aparece un aviso distinto para el promedio
+   En esa versión, al terminar aparecía un aviso para el promedio
    de la franja: polvo 0,000 y sal marina aproximadamente 0,300. La selección
    no cambia automáticamente. La persona puede pulsar 7 o un botón para añadir
    sal marina y repetir la columna por decisión propia.
@@ -92,25 +92,37 @@ conservan en [historial/](historial/).
     selector. La capa tiene interruptor y volumen propios, y se detiene con
     pausa, Stop, pestaña oculta o salida de la página. Se acredita a SYSTEM
     Sounds (M. Russo y A. Santaguida) como inspiración; no se usa su audio.
-12. **Revisión científica del barrido, aprobada y pendiente:** después de que
+12. **Revisión científica del barrido:** después de que
     el equipo notara que el carbono negro sonaba un solo instante, se comparó
     el promedio completo con una lectura por bandas. En el modo mundial, el
     método publicado habilita carbono negro en 1 de 30 pasos; con 12 bandas
     aparece en 15 longitudes y 31 de 360 zonas. El equipo aprobó 12 bandas de
     15° para el mundo y 5 de 2° para el viaje tropical. Intensidad media válida
     controlará altura, cobertura controlará volumen y cada nota durará cerca de
-    0,45 s. Esta entrada registra una decisión, no una función implementada.
+    0,45 s. La decisión se documentó antes de programarla.
 
     La decisión se apoya en el principio de traducción explícita descrito por
     NASA Ciencia y en el precedente de capas de Caldwell 73. NASA no eligió
     esas cantidades de bandas: son una decisión del equipo basada en el PNG.
+13. **Implementación del barrido zonal:** cada franja de 9 píxeles se divide
+    sin huecos ni solapamientos. NNLS y las guardas se aplican a cada banda;
+    después se calculan intensidad media válida y cobertura. La altura usa la
+    intensidad y el nivel usa `√cobertura`, antes del volumen de la persona.
+    Las notas automáticas duran 0,45 s dentro de pasos de 0,50 s.
+
+    JavaScript coincide con SciPy en 510 bandas. En Planeta completo, carbono
+    negro aparece en 15 longitudes y 31 de 360 zonas. En el final tropical:
+    carbono negro 0 en 0/5, polvo 0 en 0/5, sal marina 0,291 en 2/5 y sulfatos
+    0,073 en 1/5. El penúltimo paso conserva polvo 0,061 en 2/5, que el promedio
+    anterior borraba. La interfaz muestra intensidad y zonas activas.
 
 ## Decisiones y correcciones documentadas
 
 - La diferencia en RD se debía a ventanas distintas: un píxel da sal marina
   0,714; 3×3 da 0,608; 5×5 da 0,478. El procedimiento vigente es 3×3.
 - En el barrido, el último paso representa una franja, no el dato puntual de
-  RD. El script reproduce polvo 0 y sal marina 0,300 al terminar.
+  RD. El resumen vigente da polvo 0 en 0/5 zonas, sal marina 0,291 en 2/5 y
+  sulfatos 0,073 en 1/5. El promedio histórico daba sal marina 0,300.
 - La tecla R usa (587,429) con ventana 3×3 y sal marina 0,608.
 - Se usa el mapeo lineal exacto del SPEC para la pista 1 y las 15 frecuencias
   indicadas. La escala mayor queda en una constante, provisional.
@@ -150,6 +162,17 @@ Las pruebas normales de cálculo, navegador y sonido continúan durante el
 desarrollo. La validación específica con lectores de pantalla queda al final.
 
 ## Pruebas ejecutadas
+
+**Actualización zonal vigente:** JavaScript coincide con SciPy en 311 muestras
+puntuales y 510 bandas (360 mundiales y 150 tropicales). Se verifican límites
+sin huecos ni solapamientos, intensidad, cobertura, residuos y carbono negro
+mundial en 15 longitudes y 31 zonas. El selector pasa 16 combinaciones sobre
+316 resultados. Tone simulado comprueba `√cobertura` y notas automáticas de
+0,45 s. La prueba de eventos comprueba el penúltimo paso con polvo y el resumen
+final con cuatro aerosoles. Estas pruebas no acreditan percepción acústica.
+
+Los bloques siguientes conservan resultados de etapas anteriores para mostrar
+la evolución y no deben confundirse con el algoritmo zonal vigente.
 
 **Actualización del selector:** pasan las 16 combinaciones sobre 376
 resultados (371 muestras del PNG y cinco casos sintéticos de prueba),
@@ -249,9 +272,10 @@ La primera versión de la pista 1 quedó publicada mediante GitHub Pages desde
 `main` → `/docs` en `https://dalgenisdalgenis-hue.github.io/listen-to-earth/`.
 El despliegue y los recursos públicos esenciales respondieron correctamente.
 
-El siguiente paso es implementar y probar la revisión por bandas descrita en
-`METODOLOGIA_SONIFICACION.md`. Después se ejecutará la lista manual en
-navegadores y altavoz reales.
+El siguiente paso es ejecutar la lista manual en navegadores y altavoz reales,
+con especial atención a la audibilidad de carbono negro y a la claridad de la
+mezcla. La regla está implementada, pero no se presenta como validada
+acústicamente hasta completar esa escucha.
 Quedan también las preferencias de accesibilidad (voz opcional, pantalla
 oscura, tamaño de letra, contraste y movimiento reducido), las pruebas
 humanas y de navegador. Por instrucción del usuario, no se inicia MERRA-2 ni

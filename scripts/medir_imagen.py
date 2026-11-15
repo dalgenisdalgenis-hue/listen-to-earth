@@ -35,6 +35,8 @@ UMBRAL = 0.05
 # ============================================================================
 VENTANA_PUNTO = 3   # consulta puntual (tecla R, cursor): promedio de 3x3
 ANCHO_BARRIDO = 9   # cada paso del barrido: columna de 9 px de ancho
+ZONAS_VIAJE = 5     # bandas de 2 grados dentro de 12N--22N
+ZONAS_MUNDO = 12    # bandas de 15 grados entre los polos
 
 # Dos guardas para que suene. Hacen falta LAS DOS:
 #   1. peso >= UMBRAL          -> hay suficiente aerosol
@@ -88,6 +90,45 @@ def leer_paso_barrido(a, lon, lat_sur, lat_norte, ancho=ANCHO_BARRIDO):
     return col.reshape(-1, 3).mean(axis=0)
 
 
+def leer_paso_barrido_zonas(a, lon, lat_sur, lat_norte, zonas,
+                            ancho=ANCHO_BARRIDO):
+    """Divide la franja en zonas sin perder ni duplicar filas de píxeles."""
+    x = int(round(x_de_lon(lon)))
+    y_n, y_s = int(round(y_de_lat(lat_norte))), int(round(y_de_lat(lat_sur)))
+    h = ancho // 2
+    x0, x1 = max(0, x - h), min(a.shape[1], x + h + 1)
+    alto = y_s - y_n
+    salida = []
+    for i in range(zonas):
+        y0 = y_n + round(alto * i / zonas)
+        y1 = y_n + round(alto * (i + 1) / zonas)
+        salida.append(a[y0:y1, x0:x1].reshape(-1, 3).mean(axis=0))
+    return salida
+
+
+def resumir_zonas(colores):
+    """Resume intensidad y cobertura después de validar cada zona."""
+    resultados = []
+    for rgb in colores:
+        w = descomponer(rgb)
+        resultados.append((w, residuo(rgb, w)))
+    pesos, coberturas, activas = [], [], []
+    for indice in range(len(TIPOS)):
+        validos = [w[indice] for w, r in resultados
+                   if w[indice] >= UMBRAL and r <= MAX_RESIDUO]
+        activas.append(len(validos))
+        coberturas.append(len(validos) / len(resultados))
+        pesos.append(float(np.mean(validos)) if validos else 0.0)
+    return {
+        "weights": pesos,
+        "coverage": coberturas,
+        "active_zones": activas,
+        "zone_count": len(resultados),
+        "residual": float(np.mean([r for _, r in resultados])),
+        "zones": resultados,
+    }
+
+
 def main():
     ruta = sys.argv[1] if len(sys.argv) > 1 else "docs/assets/aerosols_5669_1920x1080.png"
     im = Image.open(ruta).convert("RGB")
@@ -119,26 +160,28 @@ def main():
     LAT_S, LAT_N = 12.0, 22.0
     LON_E, LON_O = 20.0, -69.9
     PASOS = 30
-    print(f"\n=== BARRIDO «El viaje del polvo» ===")
+    print(f"\n=== BARRIDO ZONAL «El viaje del polvo» ===")
     print(f"  franja {LAT_S}N a {LAT_N}N, de {LON_E}E a {abs(LON_O)}O, {PASOS} pasos,"
-          f" columnas de {ANCHO_BARRIDO} px")
+          f" franjas de {ANCHO_BARRIDO} px, {ZONAS_VIAJE} zonas por paso")
     lons = np.linspace(LON_E, LON_O, PASOS)
     perfil = []
     for lon in lons:
-        v = leer_paso_barrido(a, lon, LAT_S, LAT_N)
-        perfil.append(descomponer(v))
+        colores = leer_paso_barrido_zonas(a, lon, LAT_S, LAT_N, ZONAS_VIAJE)
+        perfil.append(resumir_zonas(colores))
     for nombre in ("polvo", "sal_marina"):
         i = TIPOS.index(nombre)
-        vals = [p[i] for p in perfil]
+        vals = [p["weights"][i] for p in perfil]
         print(f"\n  {nombre}:")
         for r in range(0, PASOS, 10):
             print("    " + " ".join(f"{v:.3f}" for v in vals[r:r + 10]))
     ip = TIPOS.index("polvo")
-    dust = [p[ip] for p in perfil]
+    dust = [p["weights"][ip] for p in perfil]
     print(f"\n  maximo {max(dust):.3f} en lon {lons[int(np.argmax(dust))]:.1f}")
     print(f"  ultimo paso (lon {lons[-1]:.1f}): polvo {dust[-1]:.3f}, "
-          f"sal marina {perfil[-1][TIPOS.index('sal_marina')]:.3f}")
-    print("\n  OJO: el ultimo paso es un PROMEDIO DE LA FRANJA (10 grados de alto).")
+          f"sal marina {perfil[-1]['weights'][TIPOS.index('sal_marina')]:.3f}")
+    print(f"  zonas activas al final: polvo {perfil[-1]['active_zones'][ip]}/{ZONAS_VIAJE}, "
+          f"sal marina {perfil[-1]['active_zones'][TIPOS.index('sal_marina')]}/{ZONAS_VIAJE}")
+    print("\n  OJO: el ultimo paso es un RESUMEN ZONAL DE LA FRANJA (10 grados de alto).")
     print("       La tecla R da un VALOR PUNTUAL. Son numeros distintos y no deben")
     print("       presentarse como si fueran el mismo.")
 

@@ -19,10 +19,6 @@ let maxError = 0;
 for (const fixture of fixtures) {
   let rgb = fixture.rgb;
   if (fixture.point) rgb = app.readPoint(image, ...fixture.point);
-  else if (fixture.lon !== undefined) {
-    const region = app.config.scan.modes[fixture.mode];
-    rgb = app.readScanStep(image, fixture.lon, region.south, region.north).rgb;
-  }
   rgb.forEach((value, i) => assert.ok(Math.abs(value - fixture.rgb[i]) < 1e-12, fixture.name + ' RGB'));
   const result = app.decompose(rgb);
   keys.forEach((key, i) => {
@@ -62,6 +58,14 @@ assert.equal(app.imageLayerFor({
 assert.equal(app.imageLayerFor({
   weights: { dust: .8, blackCarbon: .8, seaSalt: .8, sulfate: .8 }, residual: .2
 }).intensity, 0);
+const spatialResult = {
+  weights: { dust: .8, blackCarbon: .8, seaSalt: .8, sulfate: .8 }, residual: .9,
+  spatial: true, zoneCount: 4,
+  coverage: { dust: .25, blackCarbon: .25, seaSalt: .25, sulfate: .25 },
+  activeZones: { dust: 1, blackCarbon: 1, seaSalt: 1, sulfate: 1 }
+};
+assert.equal(app.imageLayerFor(spatialResult).intensity, .8);
+assert.equal(app.soundFor(spatialResult, 'blackCarbon').hz, 880.01);
 const cells = app.createGridCells(image);
 assert.equal(cells.length, 96);
 for (const cell of cells) {
@@ -79,24 +83,50 @@ for (const [row, col, dr, dc, expected] of [
 }
 console.log(`PASS: ${fixtures.length} muestras JS/SciPy; diferencia máxima de peso ${maxError}.`);
 console.log('PASS: 96 centros de celda, límites de movimiento, guardas y mapeo lineal a notas.');
+const scanFixtures = JSON.parse(fs.readFileSync(path.join(folder, 'scan-fixtures.json')));
+let zoneComparisons = 0;
 for (const mode of ['journey', 'world']) {
   const profile = app.createScanProfile(image, mode);
   assert.equal(profile.length, 30);
   assert.equal(profile[0].lon, app.config.scan.modes[mode].east);
   assert.equal(profile.at(-1).lon, app.config.scan.modes[mode].west);
   profile.forEach((step, index) => {
-    const fixture = fixtures.find(f => f.name === `${mode === 'journey' ? 'scan' : 'world'}-${index+1}`);
-    keys.forEach((key, i) => assert.ok(Math.abs(step.result.weights[key] - fixture.weights[i]) < 1e-7));
+    const fixture = scanFixtures.find(f => f.name === `${mode}-${index+1}`);
+    assert.equal(step.zones.length, fixture.zoneCount);
+    step.zones.forEach((zone, zoneIndex) => {
+      const expected = fixture.zones[zoneIndex];
+      zone.rgb.forEach((value, channel) =>
+        assert.ok(Math.abs(value - expected.rgb[channel]) < 1e-12));
+      keys.forEach((key, keyIndex) =>
+        assert.ok(Math.abs(zone.result.weights[key] - expected.weights[keyIndex]) < 1e-7));
+      assert.ok(Math.abs(zone.result.residual - expected.residual) < 1e-10);
+      zoneComparisons++;
+    });
+    keys.forEach((key, i) => {
+      assert.ok(Math.abs(step.result.weights[key] - fixture.weights[i]) < 1e-7);
+      assert.ok(Math.abs(step.result.coverage[key] - fixture.coverage[i]) < 1e-12);
+      assert.equal(step.result.activeZones[key], fixture.activeZones[i]);
+    });
+    assert.ok(Math.abs(step.result.residual - fixture.residual) < 1e-10);
     assert.equal(step.bounds.y1 - step.bounds.y0, mode === 'journey' ? 60 : 1080);
+    assert.equal(step.zones.reduce((sum, zone) => sum + zone.bounds.y1 - zone.bounds.y0, 0),
+      step.bounds.y1 - step.bounds.y0);
+    step.zones.slice(1).forEach((zone, i) => assert.equal(zone.bounds.y0, step.zones[i].bounds.y1));
   });
   if (mode === 'journey') {
-    assert.equal(profile[28].result.weights.dust, 0);
+    assert.ok(profile[28].result.weights.dust > .06);
+    assert.equal(profile[28].result.activeZones.dust, 2);
     assert.equal(profile[29].result.weights.dust, 0);
     assert.equal(app.soundFor(profile[29].result, 'dust').hz, null);
-    assert.ok(Math.abs(profile[29].result.weights.seaSalt - .300) < .0005);
+    assert.equal(profile[29].result.activeZones.dust, 0);
+    assert.ok(profile[29].result.activeZones.seaSalt > 0);
   } else {
     assert.equal(profile[0].bounds.x1 - profile[0].bounds.x0, 4);
     assert.equal(profile[29].bounds.x1 - profile[29].bounds.x0, 5);
   }
 }
-console.log('PASS: perfiles tropical y mundial, extremos, recorte en bordes y dos pasos finales sin nota de polvo.');
+const world = app.createScanProfile(image, 'world');
+assert.equal(world.filter(step => step.result.activeZones.blackCarbon > 0).length, 15);
+assert.equal(world.reduce((sum, step) => sum + step.result.activeZones.blackCarbon, 0), 31);
+console.log(`PASS: ${zoneComparisons} bandas JS/SciPy; perfiles zonales, cobertura, extremos y recorte.`);
+console.log('PASS: carbono negro mundial en 15 de 30 longitudes y 31 de 360 zonas.');

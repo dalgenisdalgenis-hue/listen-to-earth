@@ -37,6 +37,7 @@ def main():
     im = Image.open(ROOT / 'docs/assets/aerosols_5669_1920x1080.png')
     a = np.asarray(im.convert('RGB'), dtype=float)
     fixtures = []
+    scan_fixtures = []
 
     def add(name, rgb, **more):
         w = m.descomponer(rgb)
@@ -48,10 +49,26 @@ def main():
                            ('RD', 18.47, -69.90)]:
         x, y = m.px(lat, lon)
         add(name, m.leer_punto(a, x, y), point=[x, y])
-    for i, lon in enumerate(np.linspace(20, -69.9, 30)):
-        add(f'scan-{i+1}', m.leer_paso_barrido(a, lon, 12, 22), lon=float(lon), mode='journey')
-    for i, lon in enumerate(np.linspace(180, -180, 30)):
-        add(f'world-{i+1}', m.leer_paso_barrido(a, lon, -90, 90), lon=float(lon), mode='world')
+    for mode, east, west, south, north, count in [
+        ('journey', 20, -69.9, 12, 22, m.ZONAS_VIAJE),
+        ('world', 180, -180, -90, 90, m.ZONAS_MUNDO),
+    ]:
+        for i, lon in enumerate(np.linspace(east, west, 30)):
+            colors = m.leer_paso_barrido_zonas(a, lon, south, north, count)
+            summary = m.resumir_zonas(colors)
+            scan_fixtures.append({
+                'name': f'{mode}-{i+1}', 'mode': mode, 'lon': float(lon),
+                'zones': [
+                    {'rgb': np.asarray(rgb).tolist(),
+                     'weights': weights.tolist(), 'residual': residual}
+                    for rgb, (weights, residual) in zip(colors, summary['zones'])
+                ],
+                'weights': summary['weights'],
+                'coverage': summary['coverage'],
+                'activeZones': summary['active_zones'],
+                'zoneCount': summary['zone_count'],
+                'residual': summary['residual'],
+            })
     for i, name in enumerate(m.TIPOS):
         add('pure-' + name, m.M[:, i])
     add('dust-salt-half', (m.M[:, 1] + m.M[:, 2]) / 2)
@@ -72,6 +89,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix='listen-to-earth-') as tmp:
         folder = Path(tmp)
         (folder / 'fixtures.json').write_text(json.dumps(fixtures))
+        (folder / 'scan-fixtures.json').write_text(json.dumps(scan_fixtures))
         (folder / 'image.rgba').write_bytes(im.convert('RGBA').tobytes())
         # Las tres experiencias tienen URL propia y comparten este marcado.
         # Extraemos la plantilla tal como la recibe el navegador antes de app.js.

@@ -25,16 +25,17 @@ Cada experiencia tiene una URL propia. Guía y créditos también son páginas
 independientes. La portada ofrece una ambientación artística opcional,
 sintetizada localmente y separada de los sonidos de los datos.
 
-Ejecutados sobre la versión publicada: 371 comparaciones JS/SciPy y pruebas de controladores con DOM,
+Ejecutados: 311 muestras puntuales y **510 bandas de recorrido** comparadas
+entre JavaScript y SciPy, además de pruebas de controladores con DOM,
 Tone y reloj simulados. **Pendientes: navegador, audio real, NVDA/VoiceOver y pruebas
 con voluntarios.** No se afirma validación con usuarios.
 
-**Revisión científica aprobada, todavía no implementada:** el promedio de una
-columna completa oculta plumas localizadas. El siguiente cambio dividirá cada
-paso en bandas de latitud antes de descomponer el color: 12 para Planeta
-completo y 5 para Viaje del polvo. La intensidad controlará la altura y la
-cobertura espacial controlará el volumen. La decisión, sus mediciones y las
-referencias de NASA están en [METODOLOGIA_SONIFICACION.md](METODOLOGIA_SONIFICACION.md).
+**Revisión científica implementada:** cada paso se divide antes de descomponer
+el color: 12 bandas en Planeta completo y 5 en Viaje del polvo. La intensidad
+controla la altura y la cobertura espacial controla el volumen. Esta revisión
+evita que el promedio de polo a polo oculte plumas localizadas. La decisión,
+sus mediciones y las referencias de NASA están en
+[METODOLOGIA_SONIFICACION.md](METODOLOGIA_SONIFICACION.md).
 
 La configuración del modo sin mirar la pantalla y las pruebas
 con lectores de pantalla se reservan para la última etapa, según la nueva
@@ -83,8 +84,9 @@ canvas mediante `file://`.
    hay casillas. 8 activa todos; desde todos, vuelve a solo polvo. Los cuatro
    controles de volumen mantienen sus ajustes al cambiar la selección.
 9. R o el botón correspondiente consulta el píxel de RD con ventana 3×3.
-   Al terminar el viaje del polvo, leer el aviso: la columna final tiene
-   polvo 0,000 y sal marina aproximadamente 0,300. R muestra el punto del
+   Al terminar el viaje del polvo, leer el aviso: el resumen final tiene
+   polvo 0,000 en 0/5 zonas, sal marina 0,291 en 2/5 y sulfatos 0,073 en 1/5.
+   R muestra el punto del
    país por separado, donde la sal marina es aproximadamente 0,608.
 
 La página **Guía de uso** reúne estos pasos y los atajos. La página
@@ -127,17 +129,17 @@ reparte ese color entre los cuatro colores oficiales sin pesos negativos.
 Solo se habilita una nota si el peso seleccionado es al menos 0,05 y el
 residuo de reconstrucción es como máximo 0,10. En otro caso hay silencio.
 
-La versión publicada todavía promedia columnas de 9 píxeles, con altura de 12–22°N en el viaje
-del polvo y de polo a polo en el mundo entero. El muestreo y el recorrido se
-calculan en el navegador. En los bordes del PNG se recorta la columna como
-en Python. El último paso tropical llega a 69,9°O aunque el polvo sea cero;
-su promedio de la franja no se presenta como el dato puntual de RD.
+El barrido lee franjas de 9 píxeles de ancho y las divide antes de NNLS: cinco
+bandas dentro de 12–22°N para el viaje y doce bandas de polo a polo para el
+mundo. Para cada aerosol conserva dos datos: intensidad media en las bandas
+válidas y cobertura o fracción de bandas donde aparece. En el recorrido mundial
+el carbono negro aparece en 15 de 30 longitudes y 31 de 360 zonas; con el
+promedio anterior solo superaba las guardas en un paso.
 
-Ese promedio global se sustituirá por el método aprobado por zonas porque en
-el recorrido mundial deja audible el carbono negro en solo 1 de 30 pasos,
-mientras el análisis en 12 bandas lo encuentra en 15 longitudes y 31 de 360
-zonas. El nuevo resumen mantendrá dos datos distintos: intensidad media de las
-bandas válidas y cobertura o fracción del mapa donde aparece el aerosol.
+La altura representa intensidad. El nivel del instrumento se multiplica por
+la raíz cuadrada de la cobertura para que una pluma real en 1/12 bandas siga
+siendo audible sin sonar como si cubriera todo el planeta. Las notas automáticas
+duran 0,45 s dentro de cada paso de 0,50 s.
 
 La intensidad relativa se convierte linealmente en una de las 15 notas
 pentatónicas del SPEC. La escala mayor y el timbre son provisionales para que

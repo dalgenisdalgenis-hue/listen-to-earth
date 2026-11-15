@@ -3,6 +3,35 @@
 (() => {
   const app = window.ListenToEarth;
 
+  app.aggregateScanZones = function (zones) {
+    if (!Array.isArray(zones) || zones.length === 0) throw new Error('sampleError');
+    const keys = Object.keys(app.config.aerosols);
+    const weights = {}, coverage = {}, activeZones = {};
+    for (const type of keys) {
+      const active = zones.filter(zone =>
+        app.canPlay(zone.result.weights[type], zone.result.residual));
+      activeZones[type] = active.length;
+      coverage[type] = active.length / zones.length;
+      weights[type] = active.length ? active.reduce((sum, zone) =>
+        sum + zone.result.weights[type], 0) / active.length : 0;
+    }
+    const eligible = keys.filter(type => activeZones[type] > 0);
+    const dominant = eligible.reduce((best, type) =>
+      best === null || weights[type] > weights[best] ? type : best, null);
+    return {
+      weights,
+      coverage,
+      activeZones,
+      zoneCount: zones.length,
+      // Este promedio se informa como diagnóstico. Las guardas ya se aplicaron
+      // a cada banda por separado; no invalida de nuevo el resumen completo.
+      residual: zones.reduce((sum, zone) => sum + zone.result.residual, 0) / zones.length,
+      eligible,
+      dominant,
+      spatial: true
+    };
+  };
+
   app.createScanProfile = function (image, mode) {
     const region = app.config.scan.modes[mode];
     if (!region) throw new Error('sampleError');
@@ -10,9 +39,11 @@
       // Incluye ambos extremos: el último paso tropical llega a 69,9°O.
       const lon = index === app.config.scan.steps - 1 ? region.west :
         region.east + (region.west - region.east) * index / (app.config.scan.steps - 1);
-      const { rgb, bounds } = app.readScanStep(image, lon, region.south, region.north);
-      const result = app.decompose(rgb);
-      return { index, mode, lon, rgb, bounds, result };
+      const { rgb, bounds, zones } = app.readScanStepZones(
+        image, lon, region.south, region.north, region.zones);
+      for (const zone of zones) zone.result = app.decompose(zone.rgb);
+      const result = app.aggregateScanZones(zones);
+      return { index, mode, lon, rgb, bounds, zones, result };
     });
   };
 

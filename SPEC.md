@@ -4,9 +4,8 @@
 sin consultar nada más. Revisión del equipo: 15-nov-2026.*
 
 > **Estado de la revisión:** la sonificación por bandas de latitud descrita en
-> este documento fue aprobada después de revisar referencias de NASA y medir
-> el problema del promedio de polo a polo. Todavía no está implementada en la
-> versión publicada. Las pruebas existentes corresponden al método anterior.
+> este documento está implementada. Se compararon 510 bandas entre JavaScript
+> y SciPy. La escucha en navegador real y altavoz mono sigue pendiente.
 
 ---
 
@@ -215,11 +214,10 @@ en 12 bandas lo encuentran en 15 longitudes y 31 de 360 zonas. El promedio
 vertical estaba ocultando plumas localizadas.
 
 ⚠️ **El final del barrido y la tecla R son dos lugares distintos, y hay que decirlo.**
-- El valor **histórico de la primera versión** para el último paso fue el
-  promedio completo de la franja 12°N–22°N: polvo **0,000**, sal marina
-  **0,300**. Tras implementar las cinco bandas, el aviso final debe mostrar la
-  nueva intensidad y cobertura y conservar el resultado anterior solo como
-  referencia de pruebas, no como salida vigente.
+- El **último resumen zonal** de la franja 12°N–22°N tiene polvo **0,000 en
+  0/5 zonas**, sal marina **0,291 en 2/5** y sulfatos **0,073 en 1/5**. Carbono
+  negro queda en 0/5. El promedio completo histórico daba sal marina 0,300,
+  pero ya no es la salida vigente.
 - La **tecla R** da el **valor puntual** del píxel de RD (587, 429), a 18,47°N, con ventana 3×3. Allí: polvo **0,000**, sal marina **0,608**.
 
 Los dos análisis dicen que ese día no hubo polvo, pero son números distintos
@@ -238,12 +236,14 @@ Medido sobre la imagen real, el perfil del polvo en la franja tropical:
 
 | Punto | Longitud | Polvo |
 |---|---|---|
-| Máximo, saliendo de África | 16,9°E | **0,879** |
-| Valle en el Atlántico medio | ~43°O | 0,052 |
-| Repuntes cerca del Caribe | 36°O y 25°O | 0,556 y 0,570 |
-| Últimos dos pasos | 66°O y 69,9°O | **0,000** |
+| Máximo, saliendo de África | 16,9°E | **0,871** |
+| Descenso en el Atlántico | ~38,9°O | 0,117 |
+| Repuntes posteriores | ~45,1°O y ~54,4°O | 0,555 y 0,570 |
+| Penúltimo paso | ~66,8°O | **0,061 en 2/5 zonas** |
+| Último paso | 69,9°O | **0,000 en 0/5 zonas** |
 
-**Ese día el polvo no llegó al país.** Ni en el promedio de la franja (0,000) ni en el punto de RD (0,000, con sal marina 0,608 en ventana 3×3).
+**Ese día el polvo no llegó al país.** Ni en el resumen zonal final (0,000 en
+0/5 zonas) ni en el punto de RD (0,000, con sal marina 0,608 en ventana 3×3).
 
 El barrido **llega igual hasta RD y el polvo se apaga de verdad**. Una zona sin
 partículas queda en silencio y el texto dice «polvo: nada».
@@ -252,19 +252,21 @@ partículas queda en silencio y el texto dice «polvo: nada».
 
 **No acortar el barrido para que termine en un pico.** Elegir una franja de la imagen es una cosa; elegir el final para que los datos digan otra cosa es distinto, y el reto premia la fidelidad.
 
-**Perfil completo medido, 30 pasos de 20°E a 69,9°O**, franja 12°N–22°N. Sirve para verificar que tu lectura de la imagen da lo mismo.
+**Perfil zonal completo medido, 30 pasos de 20°E a 69,9°O**, franja
+12°N–22°N. Cada valor es la intensidad media en las zonas que pasan las dos
+guardas. Sirve para verificar la implementación.
 
 Polvo:
 ```
-0.846 0.879 0.848 0.867 0.823 0.740 0.703 0.714 0.666 0.602
-0.655 0.783 0.684 0.627 0.589 0.631 0.510 0.364 0.156 0.052
-0.127 0.556 0.302 0.297 0.570 0.510 0.298 0.105 0.000 0.000
+0.842 0.871 0.852 0.867 0.815 0.714 0.685 0.682 0.680 0.642
+0.661 0.736 0.638 0.754 0.710 0.743 0.499 0.451 0.219 0.117
+0.271 0.555 0.302 0.359 0.570 0.495 0.298 0.173 0.061 0.000
 ```
 Sal marina en los mismos pasos:
 ```
-0.012 0.001 0.019 0.006 0.000 0.000 0.019 0.000 0.072 0.156
-0.100 0.000 0.070 0.072 0.069 0.068 0.088 0.164 0.322 0.457
-0.427 0.069 0.133 0.088 0.000 0.000 0.074 0.224 0.291 0.300
+0.000 0.000 0.000 0.000 0.000 0.153 0.172 0.193 0.191 0.199
+0.182 0.135 0.295 0.228 0.225 0.276 0.229 0.164 0.296 0.436
+0.427 0.117 0.162 0.128 0.000 0.096 0.096 0.203 0.253 0.291
 ```
 
 ### Pista 2 — «Compara años»
@@ -284,8 +286,9 @@ Cada nota es un mes, de 1980 a 2024 (540 notas, unos 45 segundos). Golpe grave e
 - **Más intensidad relativa local → nota más aguda.**
 - **Más cobertura espacial → mayor volumen del instrumento.** La cobertura es
   la fracción de bandas válidas del paso; se aplica antes del volumen elegido
-  por la persona. La curva perceptual exacta debe calibrarse en navegador y
-  altavoz mono antes de declararla validada.
+  por la persona como `ganancia espacial = √cobertura`. La raíz mantiene
+  audible una pluma válida en 1/12 bandas sin hacerla sonar como cobertura total.
+  Su percepción debe calibrarse en navegador y altavoz mono.
 - **Cada nota automática dura aproximadamente 0,45 s** dentro del paso nominal
   de 0,50 s, para conservar continuidad sin superponer pasos diferentes.
 - **Zona sin partículas = silencio. Umbral 0,05.**

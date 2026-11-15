@@ -179,7 +179,7 @@ const key = (key, target = body) => target.dispatch('keydown', { key });
   assert.equal(plays.length, before); assert.equal(JSON.stringify(app.scanner.snapshot), snapshot);
   assert.ok(timers.has(tick[0])); assert.equal(JSON.stringify(app.gridCells.map(cell => cell.result)), weights);
   advance(500); assert.equal(app.scanner.snapshot.nextIndex, 2);
-  assert.ok(byId('sound-source').textContent.includes('columna 2'));
+  assert.ok(byId('sound-source').textContent.includes('paso 2'));
   key('4'); assert.ok(byId('sound-source').textContent.includes('Polvo:'));
   byId('volume-seaSalt').value = 80; byId('volume-seaSalt').dispatch('input');
   key('8'); key('8'); assert.equal(app.audio.getVolume('seaSalt'), 80);
@@ -187,24 +187,24 @@ const key = (key, target = body) => target.dispatch('keydown', { key });
   const beforeSilentEnd = plays.length;
   advance(1500);
   assert.equal(app.scanner.snapshot.state, 'ended');
-  assert.equal(plays.length, beforeSilentEnd); // Sin nota de polvo; la textura se comprueba aparte.
+  assert.equal(plays.length, beforeSilentEnd + 1); // El penúltimo paso conserva polvo en 2/5 zonas.
   assert.equal(byId('journey-ending').hidden, false);
-  assert.ok(byId('journey-ending-text').textContent.includes('polvo'));
-  assert.ok(byId('journey-ending-text').textContent.includes('sal marina'));
+  assert.ok(byId('journey-ending-text').textContent.toLowerCase().includes('polvo'));
+  assert.ok(byId('journey-ending-text').textContent.toLowerCase().includes('sal marina'));
   assert.ok(Math.abs(app.scanner.snapshot.index - 29) < 0.001);
   assert.deepEqual(Array.from(app.selection.types), ['dust']); // El final no cambia la selección.
   const endCount = plays.length; key('7');
   const preview = plays.slice(endCount);
   assert.equal(preview.length, 2);
   assert.equal(preview[0].args[0], 329.63); // Sal marina de la franja, no del punto de RD.
-  assert.ok(byId('sound-source').textContent.includes('columna 30'));
+  assert.ok(byId('sound-source').textContent.includes('paso 30'));
   key('r'); assert.ok(byId('sound-source').textContent.includes('punto de República Dominicana'));
   const replayCount = plays.length; byId('hear-ending-salt').dispatch('click'); advance(30);
   assert.equal(plays.length, replayCount + 2);
-  assert.ok(byId('sound-source').textContent.includes('columna 30'));
-  assert.ok(byId('status').textContent.includes('última columna'));
+  assert.ok(byId('sound-source').textContent.includes('paso 30'));
+  assert.ok(byId('status').textContent.includes('último resumen zonal'));
   byId('activate').dispatch('click'); await flush(); advance(30);
-  assert.ok(byId('status').textContent.includes('columna 30'));
+  assert.ok(byId('status').textContent.includes('paso 30'));
   assert.ok(!byId('status').textContent.includes('Fila 1 de'));
   key('m'); const muted = plays.length; key('5'); assert.equal(plays.length, muted); key('m');
   const text = new Element('input', { type: 'text' }); body.append(text);

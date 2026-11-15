@@ -43,4 +43,4 @@ La barra de colores oficial de la misma visualización. Define los cuatro tipos 
 La aplicación sonifica **esta visualización renderizada**, no los campos
 numéricos originales de GEOS. Por eso una lectura correcta debe conservar tanto
 la fuerza local del color como su extensión espacial. El método por zonas
-aprobado por el equipo está explicado en `../../METODOLOGIA_SONIFICACION.md`.
+implementado por el equipo está explicado en `../../METODOLOGIA_SONIFICACION.md`.

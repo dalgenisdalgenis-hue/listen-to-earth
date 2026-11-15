@@ -9,24 +9,39 @@
     const t = (intensity - app.config.minWeight) / (1 - app.config.minWeight);
     return Math.round(Math.min(Math.max(t, 0), 1) * 14);
   };
+  app.canPlayResult = function (result, type) {
+    if (result.spatial) {
+      return result.activeZones?.[type] > 0 && result.weights[type] >= app.config.minWeight;
+    }
+    return app.canPlay(result.weights[type], result.residual);
+  };
   app.soundFor = function (result, type = 'dust') {
     const weight = result.weights[type];
-    if (!app.canPlay(weight, result.residual)) return { index: null, hz: null };
+    if (!app.canPlayResult(result, type)) return { index: null, hz: null };
     const index = app.noteFromIntensity(weight);
     return { index, hz: app.config.scales[app.config.scaleMode][index] };
   };
   app.soundPlan = (result, types = app.selection.types) => types.map(type => ({
-    type, weight: result.weights[type], ...app.soundFor(result, type)
+    type,
+    weight: result.weights[type],
+    coverage: result.spatial ? result.coverage[type] : 1,
+    activeZones: result.spatial ? result.activeZones[type] : null,
+    zoneCount: result.spatial ? result.zoneCount : null,
+    ...app.soundFor(result, type)
   }));
   app.describeResult = function (result, types = app.selection.types) {
     const plan = app.soundPlan(result, types);
-    const quantities = plan.length ? plan.map(note => app.format(
-      note.weight === 0 ? 'aerosolZero' : note.weight < app.config.minWeight ? 'aerosolBelow' : 'aerosolAmount',
-      { type: app.text[note.type], weight: number.format(note.weight) }
-    )).join('; ') : app.text.noSelection;
+    const quantities = plan.length ? plan.map(note => result.spatial ? app.format(
+      'aerosolSpatialAmount', {
+        type: app.text[note.type], weight: number.format(note.weight),
+        active: note.activeZones, total: note.zoneCount
+      }) : app.format(
+        note.weight === 0 ? 'aerosolZero' : note.weight < app.config.minWeight ? 'aerosolBelow' : 'aerosolAmount',
+        { type: app.text[note.type], weight: number.format(note.weight) }
+      )).join('; ') : app.text.noSelection;
     const audible = plan.filter(note => note.hz !== null);
     const outcome = !plan.length ? app.text.noSelectionClick :
-      result.residual > app.config.maxResidual ? app.text.unreliable :
+      !result.spatial && result.residual > app.config.maxResidual ? app.text.unreliable :
       !audible.length ? app.text.belowThreshold : audible.map(note => app.format('instrumentNote', {
         type: app.text[note.type], index: note.index + 1, hz: number.format(note.hz)
       })).join('; ');
@@ -38,11 +53,15 @@
   // guardas científicas de las notas. La suma se limita a 1 y controla solo
   // volumen y brillo; no introduce una segunda regla de altura musical.
   app.imageLayerFor = function (result) {
-    if (!result || result.residual > app.config.maxResidual) {
+    if (!result || (!result.spatial && result.residual > app.config.maxResidual)) {
       return { intensity: 0, volumeDb: -60, cutoff: 280 };
     }
-    const total = app.config.instrumentOrder.reduce((sum, type) =>
-      sum + (app.canPlay(result.weights[type], result.residual) ? result.weights[type] : 0), 0);
+    const total = app.config.instrumentOrder.reduce((sum, type) => {
+      if (!app.canPlayResult(result, type)) return sum;
+      // En un resumen zonal, intensidad × cobertura equivale a promediar las
+      // bandas válidas y asignar cero al resto: conserva fuerza y extensión.
+      return sum + result.weights[type] * (result.spatial ? result.coverage[type] : 1);
+    }, 0);
     const intensity = Math.min(1, Math.max(0, total));
     return {
       intensity,
@@ -58,6 +77,7 @@
     const order = app.config.instrumentOrder;
     const volumes = Object.fromEntries(order.map(type => [type, 50]));
     const active = Object.fromEntries(order.map(type => [type, false]));
+    const spatialGain = Object.fromEntries(order.map(type => [type, 1]));
     let instruments, gains, master, waveNoise, waveFilter;
     let imageBed, imageBedGain, imageBedFilter, imageBedActive = false;
     let currentImageLayer = { intensity: 0, volumeDb: -60, cutoff: 280 };
@@ -73,7 +93,8 @@
       }
       // No programar una rampa positiva después de silenciar el canal.
       channel.mute = false;
-      channel.volume.rampTo(window.Tone.gainToDb(volumes[type] / 100), 0.03);
+      channel.volume.rampTo(window.Tone.gainToDb(
+        volumes[type] / 100 * spatialGain[type]), 0.03);
     }
     function release(type, time) {
       instruments[type].triggerRelease(time);
@@ -169,16 +190,22 @@
         for (const type of order) { release(type, now); active[type] = false; }
         // Por decisión del equipo, una muestra sin notas queda en silencio.
         // No añadimos un efecto de tecla: se confundía con los aerosoles.
-        for (const note of notes) active[note.type] = volumes[note.type] > 0;
+        for (const note of notes) {
+          active[note.type] = volumes[note.type] > 0;
+          // La raíz cuadrada conserva una relación monótona con la cobertura,
+          // pero evita que una pluma real en 1 de 12 bandas quede inaudible.
+          spatialGain[note.type] = Math.sqrt(note.coverage);
+        }
         order.forEach(gain);
+        const duration = result.spatial ? app.config.scan.noteDuration : 0.20;
         for (const note of notes) {
           if (!active[note.type]) continue;
-          instruments[note.type].triggerAttackRelease(note.hz, 0.20, now, 0.65);
+          instruments[note.type].triggerAttackRelease(note.hz, duration, now, 0.65);
           if (note.type === 'seaSalt') {
             // El oleaje conserva altura: seno en la nota y ruido rosa filtrado
             // alrededor de la misma frecuencia. No es ruido sin relación al dato.
             waveFilter.frequency.setValueAtTime(note.hz, now);
-            waveNoise.triggerAttackRelease(0.20, now, 0.4);
+            waveNoise.triggerAttackRelease(duration, now, 0.4);
           }
         }
       },

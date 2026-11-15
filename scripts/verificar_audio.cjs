@@ -65,7 +65,18 @@ const plays = () => events.filter(event => event.event === 'play');
   assert.ok(events.some(event => event.event === 'filter-ramp' && event.args[0] === 1800));
   assert.equal(audio.imageLayerEnabled, true); assert.equal(audio.getImageLayerVolume(), 35);
   assert.equal(plays()[0].args[0], 880.01);
+  assert.equal(plays()[0].args[1], 0.20); // Consulta puntual/manual.
   assert.equal(dust.options.volume, -12); assert.equal(audio.getVolume('dust'), 50);
+  const spatial = {
+    ...result, spatial: true, zoneCount: 4,
+    coverage: Object.fromEntries(order.map(type => [type, .25])),
+    activeZones: Object.fromEntries(order.map(type => [type, 1]))
+  };
+  audio.play(spatial);
+  const spatialDust = plays().at(-1);
+  assert.equal(spatialDust.node, dust); assert.equal(spatialDust.args[1], .45);
+  const dustVolumes = events.filter(event => event.event === 'volume' && event.node === dust.target);
+  assert.ok(Math.abs(dustVolumes.at(-1).args[0] - Tone.gainToDb(.5 * Math.sqrt(.25))) < 1e-12);
   selection.toggleAll();
   const oldCount = plays().length; audio.selectionChanged();
   assert.equal(plays().length, oldCount, 'Añadir capas disparó notas antes del siguiente paso');
@@ -114,5 +125,5 @@ const plays = () => events.filter(event => event.event === 'play');
   audio.setVolume('dust', NaN); assert.equal(audio.getVolume('dust'), clamped);
   audio.setVolume('dust', 999); assert.equal(audio.getVolume('dust'), 100);
   state = 'suspended'; assert.throws(() => audio.play(result), /audioError/);
-  console.log('PASS: audio simulado: cuatro instrumentos, textura total independiente, frecuencias comunes, oleaje con altura, ausencia sin clic, volúmenes, silencio y detener.');
+  console.log('PASS: audio simulado: cuatro instrumentos, cobertura en volumen, notas zonales de 0,45 s, textura independiente, oleaje, silencio y detener.');
 })().catch(error => { console.error(error); process.exitCode = 1; });

@@ -33,11 +33,10 @@ y = (90 - latitud)  / 180 * 1080
 
 Verificado contra Cabo Agulhas (34,8°S 20°E): predicho (1067, 749), observado (1063, 742). Un píxel ≈ 20 × 18 km a la latitud de RD, que cae en el píxel (587, 429). La Española ocupa unos 33 × 15 píxeles.
 
-El muestreo reproducible de la versión publicada se define en
-`scripts/medir_imagen.py`: promedio RGB 3×3 para consultas puntuales y columnas
-de 9 píxeles para el barrido. El equipo aprobó revisar los recorridos con 12
-bandas de latitud en el mundo y 5 en la ruta tropical; esa decisión todavía
-no está implementada y se documenta en `METODOLOGIA_SONIFICACION.md`.
+El muestreo reproducible se define en `scripts/medir_imagen.py`: promedio RGB
+3×3 para consultas puntuales y franjas de 9 píxeles divididas en 12 bandas de
+latitud en el mundo o 5 en la ruta tropical. La implementación y su fundamento
+se documentan en `METODOLOGIA_SONIFICACION.md`.
 
 **Qué miden estos colores, y qué no.** Son **intensidad relativa por tipo**, no concentración en µg/m³, y representan **toda la columna de aire**, no lo que se respira a nivel del suelo. La imagen lleva debajo un mapa base de la Tierra con luces de ciudad, así que sobre tierra y zonas urbanas la lectura del color está contaminada por ese fondo; sobre mar es limpia.
 

@@ -99,12 +99,12 @@ En la pista 1 el mapeo de intensidad relativa a las 15 notas es **lineal**, con 
 
 ## Validación
 
-**Estado de esta entrega:** implementada la primera versión de la pista 1 con
-canvas, descomposición, cuadrícula, barrido automático, selector, tecla R y
-aviso final. La corrección del barrido por zonas está aprobada y documentada,
-pero todavía no implementada ni probada. Las 371 comparaciones existentes
-corresponden al algoritmo anterior. Las pruebas en navegador y de audio real
-siguen pendientes; las pistas 2 y 3 quedan detenidas hasta nuevo aviso. Ver
+**Estado de esta entrega:** implementada la pista 1 con canvas, descomposición,
+cuadrícula, barrido zonal automático, selector, tecla R y aviso final. Se
+compararon con SciPy 311 muestras puntuales y 510 bandas; carbono negro aparece
+en 15 longitudes mundiales y 31 de 360 zonas. El audio simulado comprueba
+cobertura, duración de 0,45 s y silencio, pero las pruebas en navegador y de
+audio real siguen pendientes. Las pistas 2 y 3 quedan detenidas. Ver
 [REGISTRO_CAMBIOS.md](REGISTRO_CAMBIOS.md),
 [METODOLOGIA_SONIFICACION.md](METODOLOGIA_SONIFICACION.md) y
 [PRUEBAS.md](PRUEBAS.md).

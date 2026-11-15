@@ -1,8 +1,7 @@
 # Metodología de sonificación de la pista 1
 
-*Decisión aprobada por el equipo el 15 de noviembre de 2026. La revisión por
-zonas descrita aquí está documentada antes de implementarse para que el código,
-las pruebas y la explicación al jurado puedan contrastarse con una misma regla.*
+*Decisión aprobada e implementada el 15 de noviembre de 2026. El código, las
+pruebas y la explicación al jurado se contrastan con esta misma regla.*
 
 ## Qué se convierte en sonido
 
@@ -47,10 +46,11 @@ del equipo.
 
 ## Problema encontrado en el primer barrido
 
-La primera versión promedia cada franja antes de descomponer el color. En
+La primera versión promediaba cada franja antes de descomponer el color. En
 “Planeta completo”, una muestra mezcla hasta 9 × 1080 píxeles en un único RGB.
 Una pluma localizada puede desaparecer al combinarse con océano, continentes y
-otros aerosoles. Además, la nota actual dura 0,20 s dentro de un paso de 0,50 s.
+otros aerosoles. Además, la primera versión usaba notas de 0,20 s dentro de un
+paso de 0,50 s.
 
 El diagnóstico reproducible mostró:
 
@@ -85,9 +85,11 @@ Se conservan 30 pasos de este a oeste y franjas de 9 píxeles de ancho.
    - cobertura espacial = volumen;
    - presencia continua = nota de aproximadamente 0,45 s por paso.
 
-La cobertura se aplicará al nivel del instrumento antes del volumen elegido
-por la persona. La curva perceptual exacta debe calibrarse en navegador y en
-altavoz mono; hasta completar esa escucha no se documentará como validada.
+La cobertura se aplica al nivel del instrumento antes del volumen elegido por
+la persona mediante `ganancia espacial = √cobertura`. Es una regla monótona:
+una pluma más extensa siempre suena más fuerte. La raíz evita que una pluma
+real presente en solo 1 de 12 bandas resulte inaudible. Su percepción todavía
+debe calibrarse en navegador y altavoz mono.
 
 El texto de cada paso mostrará ambas dimensiones, por ejemplo: “carbono negro:
 intensidad 0,28; presente en 3 de 12 zonas”. Así el público puede comprobar qué
@@ -112,20 +114,18 @@ propiedad controla cada sonido.
 - Cálculo local en el navegador, sin API, backend ni datos descargados durante
   el uso.
 
-## Estado y criterio de aceptación
+## Estado y comprobación
 
-Esta metodología está **aprobada y pendiente de implementación**. La versión
-publicada todavía utiliza el promedio completo de cada franja.
+La metodología está **implementada**. Antes de declararla validada con personas
+se mantiene esta lista:
 
-Antes de publicar el cambio se debe:
-
-1. comparar JavaScript con una referencia Python para todas las bandas;
-2. comprobar que carbono negro mundial pasa de un único instante a las zonas
-   medidas, sin inventar sonido en el Pacífico limpio;
-3. verificar que intensidad y cobertura aparecen en texto y tablas;
+1. JavaScript ya se comparó con Python para las 510 bandas;
+2. carbono negro mundial aparece en 15 longitudes y 31 zonas, sin habilitar el
+   punto de control del Pacífico limpio;
+3. intensidad y cobertura ya aparecen en texto y tablas;
 4. escuchar cada aerosol aislado y todos juntos en un navegador real;
 5. probar volumen, duración y claridad en altavoz mono;
-6. actualizar la guía pública cuando el código ya use el nuevo método.
+6. la guía pública debe conservar la misma explicación cuando cambie el código.
 
 ## Fuentes
 

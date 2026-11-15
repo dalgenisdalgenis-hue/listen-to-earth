@@ -207,8 +207,15 @@
     if (state !== 'ended') byId('journey-ending').hidden = true;
     if (state === 'ended' && mode === 'journey' && lastScanStep) {
       const values = {
+        blackCarbon: number.format(lastScanStep.result.weights.blackCarbon),
+        blackCarbonActive: lastScanStep.result.activeZones.blackCarbon,
         dust: number.format(lastScanStep.result.weights.dust),
-        seaSalt: number.format(lastScanStep.result.weights.seaSalt)
+        dustActive: lastScanStep.result.activeZones.dust,
+        seaSalt: number.format(lastScanStep.result.weights.seaSalt),
+        seaSaltActive: lastScanStep.result.activeZones.seaSalt,
+        sulfate: number.format(lastScanStep.result.weights.sulfate),
+        sulfateActive: lastScanStep.result.activeZones.sulfate,
+        zones: lastScanStep.result.zoneCount
       };
       byId('journey-ending-text').textContent = app.format('journeyEnding', values);
       byId('journey-ending').hidden = false;
@@ -218,8 +225,15 @@
       if (state === 'paused') announce(app.text.scanPaused);
       if (state === 'ended') {
         const ending = mode === 'journey' && lastScanStep ? app.format('journeyEndingAnnouncement', {
+          blackCarbon: number.format(lastScanStep.result.weights.blackCarbon),
+          blackCarbonActive: lastScanStep.result.activeZones.blackCarbon,
           dust: number.format(lastScanStep.result.weights.dust),
-          seaSalt: number.format(lastScanStep.result.weights.seaSalt)
+          dustActive: lastScanStep.result.activeZones.dust,
+          seaSalt: number.format(lastScanStep.result.weights.seaSalt),
+          seaSaltActive: lastScanStep.result.activeZones.seaSalt,
+          sulfate: number.format(lastScanStep.result.weights.sulfate),
+          sulfateActive: lastScanStep.result.activeZones.sulfate,
+          zones: lastScanStep.result.zoneCount
         }) : app.text.scanEnded;
         announce(ending);
       }
@@ -229,6 +243,12 @@
   }
   function scanOutcome(step) {
     return app.describeResult(step.result).outcome;
+  }
+  function scanValue(result, type) {
+    return app.format('scanTableValue', {
+      weight: number.format(result.weights[type]),
+      active: result.activeZones[type], total: result.zoneCount
+    });
   }
   function renderScanReadout(step) {
     const longitude = number.format(Math.abs(step.lon));
@@ -259,7 +279,7 @@
     rows.replaceChildren();
     profiles[mode].forEach(step => addRow(rows, [step.index + 1,
       number.format(Math.abs(step.lon)) + ' ' + app.text[step.lon < 0 ? 'west' : 'east'],
-      ...Object.keys(app.config.aerosols).map(key => number.format(step.result.weights[key])),
+      ...Object.keys(app.config.aerosols).map(key => scanValue(step.result, key)),
       percent.format(step.result.residual), scanOutcome(step)]));
     const first = profiles[mode][0].bounds;
     const last = profiles[mode].at(-1).bounds;

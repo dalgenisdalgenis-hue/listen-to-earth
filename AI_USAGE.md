@@ -49,7 +49,10 @@ Con la imagen oficial del SVS 5669 y su barra de colores descargadas por el equi
   `medir_imagen.py`. Las versiones recibidas se conservan sin reescribir en
   `historial/`; el `SPEC.md` activo sí se actualiza cuando el equipo aprueba una
   decisión posterior.
-- Se implementó NNLS por conjunto activo y se comparó con SciPy en 371 muestras, incluidas las 96 posiciones de exploración y las 30 columnas de cada modo de barrido. Los perfiles se usan como comprobación, no como una melodía pregrabada que sustituya la imagen.
+- Se implementó NNLS por conjunto activo. La versión zonal se comparó con
+  SciPy en 311 muestras puntuales y 510 bandas de recorrido, incluidas las 96
+  posiciones de exploración. Los perfiles se calculan desde el PNG y no son
+  una melodía pregrabada.
 - La discrepancia de sal marina en RD se resolvió al explicitar la ventana de muestreo. También se registró la discrepancia pendiente de las longitudes de la tabla resumida del SPEC.
 - Se añadieron pruebas de navegación y audio con objetos simulados, identificadas como tales. No acreditan el sonido real ni la accesibilidad con NVDA/VoiceOver.
 - No se insertaron mediciones inventadas en la aplicación. La mezcla sintética 50/50 solo se usa en las pruebas.
@@ -64,16 +67,16 @@ Se probaron las 16 combinaciones, la mezcla 50/50 y los eventos de app.js con
 DOM/Tone/reloj simulados. Se documenta la distinción entre último promedio
 de columna y consulta puntual; la escucha real de timbres sigue pendiente.
 
-Actualización de implementación: Codex añadió el barrido automático en ambos
+Actualización de la primera implementación: Codex añadió el barrido automático en ambos
 modos, sus controles y una máquina de estados con reloj simulado para las
-pruebas. Se compararon 371 muestras JS/SciPy, incluidas las 30 columnas del
+pruebas. En esa etapa se compararon 371 muestras JS/SciPy, incluidas 30 columnas del
 modo mundial. Los perfiles se obtienen de la imagen y no se sustituyen por
 una lista de pesos escrita a mano. No se han ejecutado pruebas de navegador
 ni se presenta la validación de los controladores como prueba de audio real.
 
-Actualización de cierre de la pista 1: Codex añadió R sobre el píxel exacto
+Actualización del primer cierre de la pista 1: Codex añadió R sobre el píxel exacto
 (587,429) y el aviso final. Las pruebas simuladas verifican que el punto usa
-sal marina 0,608, que la franja final usa 0,300 y que la página nunca cambia
+sal marina 0,608, que el promedio histórico de la franja usaba 0,300 y que la página nunca cambia
 automáticamente el aerosol elegido. MERRA-2 y las pistas 2 y 3 no se trabajaron.
 
 Actualización de presentación: a partir del PDF enviado por el equipo, Codex
@@ -113,8 +116,16 @@ dividirla en 12 zonas: el carbono negro pasa de 1 de 30 pasos a presencia en
 15 longitudes y 31 de 360 zonas. A partir de esa evidencia, Codex recomendó
 bandas locales; el equipo aprobó 12 para el mundo, 5 para la ruta tropical,
 altura para intensidad, volumen para cobertura y notas de unos 0,45 s. En esta
-entrega solo se actualizó la documentación: el algoritmo y sus pruebas todavía
-no se cambiaron.
+primero se actualizó la documentación para fijar la decisión antes de cambiar
+el código.
+
+Implementación zonal (15-nov-2026): Codex dividió cada franja de 9 píxeles en
+12 bandas mundiales o 5 tropicales, ejecutó NNLS y las guardas por banda, y
+resumió intensidad media válida y cobertura. La altura usa intensidad; el
+nivel usa la raíz cuadrada de la cobertura; las notas automáticas duran 0,45 s.
+Se actualizaron tablas, lectura textual, aviso final, guía, fuentes y pruebas.
+JavaScript coincidió con SciPy en 510 bandas. Tone y el reloj simulados
+comprobaron la regla, pero no acreditan timbre ni volumen percibido.
 
 - Una etapa por solicitud; cada entrega incluye qué cambió, cómo comprobarlo y qué limitaciones quedan.
 - **No se afirma que una prueba pasó si no se ejecutó.**

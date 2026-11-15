@@ -2,10 +2,9 @@
 
 ## Pruebas automatizadas de desarrollo
 
-> **Estado del 15-nov-2026:** los resultados automatizados descritos abajo
-> corresponden al promedio completo de columnas. La revisión por 12/5 bandas
-> está aprobada, pero todavía no implementada. Después del cambio deberán
-> actualizarse los valores esperados y volver a ejecutarse todas las pruebas.
+> **Estado del 15-nov-2026:** la revisión por 12/5 bandas está implementada.
+> Pasan las comparaciones JavaScript/SciPy y las pruebas simuladas. La escucha
+> en navegador real y altavoz mono continúa pendiente.
 
 Python y Node se usan únicamente para comprobar el código. El navegador del
 jurado no los necesita y la web no tiene proceso de compilación.
@@ -22,29 +21,30 @@ node scripts/verificar_ambientacion.cjs
 python scripts/verificar_archivos.py
 ```
 
-El primer comando debe imprimir cuatro comprobaciones correctas. El segundo
-compara 371 muestras JS con SciPy, incluidos los centros de las 96 casillas
-y las 30 columnas de cada modo de barrido.
-También comprueba límites de movimiento, guardas y mapeo a notas.
+El primer comando imprime cuatro comprobaciones correctas. El segundo compara
+311 muestras puntuales y **510 bandas de recorrido** con SciPy: 360 del mundo
+y 150 del viaje. También comprueba intensidad, cobertura, límites de
+movimiento, guardas y mapeo a notas.
 
 Las pruebas `verificar_teclado.cjs` y `verificar_audio.cjs` usan un DOM y un
 Tone **simulados**. Comprueban las decisiones
 de los controladores; no comprueban el navegador, la salida de sonido, la
 política de activación ni un lector de pantalla.
 
-La prueba de audio también comprueba que la textura de imagen no crea sonido
+La prueba de audio también comprueba que las notas zonales duran 0,45 s y que
+la raíz de la cobertura modifica el nivel sin cambiar la nota. Además comprueba que la textura de imagen no crea sonido
 antes de activar Tone, usa los cuatro pesos independientemente del selector,
 limita la intensidad a 1, respeta umbral y residuo, suaviza volumen/filtro y
 responde a su interruptor y volumen. No acredita que la mezcla sea clara al oído.
 
-El segundo comando ejecuta además el selector sobre 16 combinaciones × 376
-resultados (371 muestras reales y cinco casos sintéticos). Comprueba que
+El segundo comando ejecuta además el selector sobre 16 combinaciones × 316
+resultados (311 muestras reales y cinco casos sintéticos). Comprueba que
 elegir capas no cambia pesos ni notas de las otras capas. También ejecuta
 app.js con la plantilla real de las experiencias y el PNG decodificado por Pillow sobre DOM/Tone/reloj
 simulados: casillas, 4–8, volúmenes, foco, recarga y cambios sin reinicio del
 barrido. También comprueba R en el píxel (587,429), sus valores y nota, el
 aviso final, la selección sin cambios automáticos y la repetición explícita
-de la última columna. Sigue sin ser una prueba de navegador o acústica.
+del último resumen zonal. Sigue sin ser una prueba de navegador o acústica.
 
 `verificar_barrido.cjs` usa reloj y activación de audio simulados: comprueba
 30 pasos/15 segundos ideales, pausas, repeticiones, tempo, cambios de modo,
@@ -97,10 +97,10 @@ puede impedir leer el canvas.
    Cambiar tempo durante reproducción y pausa, sin saltos de índice.
 7. Con V cambiar recorrido: queda preparado para empezar de nuevo. Comprobar
    los 30 valores en la tabla, la franja tropical y el recorrido de polo a polo.
-8. En el viaje del polvo, comprobar el final en 69,9°O y los últimos dos
-   pasos en silencio. La sal marina 0,300 es promedio de franja y no cambia
-   por sí sola el instrumento seleccionado. El aviso final debe aparecer sin
-   encender sal marina. Pulsar 7 o su botón debe repetir esa columna.
+8. En el viaje del polvo, comprobar el final en 69,9°O. El penúltimo paso
+   conserva polvo 0,061 en 2/5 zonas y el último tiene polvo 0 en 0/5. La sal
+   marina final es 0,291 en 2/5 zonas y no cambia por sí sola el instrumento
+   seleccionado. El aviso debe incluir también sulfatos 0,073 en 1/5.
 9. Moverse por la cuadrícula durante el barrido: debe pausarse y sonar la
    celda elegida. Ocultar la pestaña debe pausar; volver no debe reanudarla.
 10. Iniciar y detener rápidamente mientras se activa el audio: una promesa
@@ -109,32 +109,32 @@ puede impedir leer el canvas.
     Reintentar la carga y confirmar que no quedan temporizadores duplicados.
 12. Pulsar R durante y después del recorrido. Debe pausarlo si está en marcha,
     mostrar un marcador pequeño sobre RD y describir el punto 3×3: polvo 0,000,
-    sal marina aproximadamente 0,608. No debe presentarlo como la franja 0,300.
+    sal marina aproximadamente 0,608. No debe presentarlo como el resumen
+    zonal de sal marina 0,291 en 2/5 zonas.
 
-## Pruebas requeridas para la revisión por bandas
+## Comprobación de la revisión por bandas
 
-1. Comparar JavaScript con SciPy para las 360 bandas del recorrido mundial y
-   las 150 bandas del viaje tropical, además de bordes y casos sintéticos.
-2. Confirmar 12 bandas de 15° en el mundo y 5 bandas de 2° en 12–22°N, sin
+1. **Aprobado:** JavaScript y SciPy coinciden para las 360 bandas mundiales y
+   las 150 tropicales, además de bordes y casos sintéticos.
+2. **Aprobado:** 12 bandas de 15° y 5 de 2°, sin
    huecos, solapamientos ni pérdida de píxeles por redondeo.
-3. Para cada aerosol comprobar por separado intensidad media elegible,
+3. **Aprobado:** intensidad media elegible,
    cobertura y guardas. Una banda con residuo mayor de 0,10 no cuenta.
-4. Verificar el diagnóstico de referencia: carbono negro mundial en 15 de 30
-   longitudes y 31 de 360 zonas. Investigar cualquier diferencia antes de
-   cambiar el valor esperado.
-5. Confirmar que el Pacífico limpio no produce notas falsas y que el mapa base
+4. **Aprobado:** carbono negro mundial en 15 de 30 longitudes y 31 de 360 zonas.
+5. **Aprobado en el punto de control:** el Pacífico limpio no produce nota. En
+   la escucha manual se debe vigilar que el mapa base
    o las luces urbanas no activan mezclas espurias de forma sistemática.
-6. Comprobar que altura cambia con intensidad y volumen con cobertura sin que
+6. **Aprobado con Tone simulado:** altura cambia con intensidad y nivel con cobertura sin que
    el selector o el control de volumen alteren los datos calculados.
-7. Verificar una duración próxima a 0,45 s a tempo 100 %, liberación al pausar,
+7. **Aprobado con Tone/reloj simulados:** duración de 0,45 s, liberación al pausar,
    detener u ocultar la pestaña y ausencia de notas atascadas.
-8. Mostrar en texto y tablas intensidad y cobertura, incluido “zonas activas
+8. **Aprobado:** texto y tablas muestran intensidad y cobertura, incluido “zonas activas
    de zonas totales”, sin llamarlas concentraciones.
-9. Escuchar carbono negro, polvo, sulfato y sal marina por separado y juntos
+9. **Pendiente humano:** escuchar carbono negro, polvo, sulfato y sal marina por separado y juntos
    en un navegador real y altavoz mono. Ajustar la curva de volumen solo con
    resultados anotados; las pruebas simuladas no acreditan percepción.
-10. Volver a ejecutar la lista completa y publicar únicamente cuando la guía,
-    los créditos y el comportamiento describan la misma regla.
+10. **Aprobado documentalmente:** guía, créditos y comportamiento describen la
+    misma regla. La publicación no sustituye la prueba acústica pendiente.
 
 ## Prueba manual pendiente de presentación, guía y créditos
 
@@ -164,7 +164,7 @@ puede impedir leer el canvas.
    activar audio, usar casillas y teclas 4–8: no deben crearse sonidos.
 2. Activar audio y explorar una celda. Con 4–7 y las casillas, comparar la
    misma muestra con distintas capas; revisar el origen mostrado (celda o
-   columna). No debe presentarse un promedio de franja como dato puntual de RD.
+   resumen zonal). No debe presentarse una franja como dato puntual de RD.
 3. Pulsar 8 desde una selección parcial: activa todos. Pulsarlo otra vez:
    solo polvo. Comprobar que conserva los cuatro volúmenes elegidos.
 4. Poner una capa a volumen cero y repetir una muestra donde su peso supere
@@ -176,7 +176,7 @@ puede impedir leer el canvas.
 6. Iniciar el barrido. Añadir o quitar capas no debe reiniciar ni saltar el
    progreso. Una capa quitada deja de sonar; una nueva entra al próximo paso.
 7. Conservar solo polvo y terminar el viaje tropical. Pulsar 7: debe oírse
-   sal marina de la última columna, aproximadamente 0,300, sin iniciar de
+   sal marina del último resumen, aproximadamente 0,291 en 2/5 zonas, sin iniciar de
    nuevo el barrido ni presentar el valor puntual de RD (0,608).
 8. Cambiar de recorrido y recargar la imagen; comprobar selección, volumen,
    foco y ausencia de listeners o notas duplicados. La recarga de imagen
