@@ -11,6 +11,10 @@ for (const file of ['strings.es.js', 'config.js', 'selection.js', 'image-data.js
   vm.runInContext(fs.readFileSync(path.join(__dirname, '../docs/js', file), 'utf8'), context);
 }
 const app = context.window.ListenToEarth;
+assert.equal(app.pageModeFromSearch('?modo=viaje'), 'viaje');
+assert.equal(app.pageModeFromSearch('?modo=planeta'), 'planeta');
+assert.equal(app.pageModeFromSearch('?x=1&modo=explorar'), 'explorar');
+assert.equal(app.pageModeFromSearch('?modo=otro'), null);
 const order = Array.from(app.config.instrumentOrder);
 const basis = Object.keys(app.config.aerosols);
 const selection = app.selection;

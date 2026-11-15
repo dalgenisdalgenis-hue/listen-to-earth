@@ -79,6 +79,7 @@ document.createElement = tag => new Element(tag);
 document.querySelectorAll = selector => nodes.filter(node => Object.hasOwn(node.attributes, selector.slice(1, -1)));
 document.hidden = false;
 const byId = id => ids.get(id), body = nodes.find(node => node.tag === 'body');
+document.body = body;
 const audioNodes = [], plays = [];
 class AudioNode {
   constructor(options) {
@@ -127,11 +128,14 @@ const key = (key, target = body) => target.dispatch('keydown', { key });
   const guideOpener = nodes.find(node => Object.hasOwn(node.attributes, 'data-guide-open'));
   guideOpener.dispatch('click'); assert.equal(byId('guide-dialog').attributes.open, '');
   byId('guide-close').dispatch('click'); assert.ok(!Object.hasOwn(byId('guide-dialog').attributes, 'open'));
-  key('7'); assert.equal(byId('aerosol-seaSalt').checked, true); assert.equal(audioNodes.length, 0);
+  key('7'); assert.deepEqual(Array.from(app.selection.types), ['seaSalt']); assert.equal(audioNodes.length, 0);
   byId('aerosol-dust').focus(); key('5', byId('aerosol-dust'));
-  assert.equal(byId('aerosol-blackCarbon').checked, true);
+  assert.deepEqual(Array.from(app.selection.types), ['blackCarbon']);
   byId('aerosol-sulfate').checked = true; byId('aerosol-sulfate').dispatch('change');
-  assert.equal(app.selection.types.length, 4); key('8'); assert.deepEqual(Array.from(app.selection.types), ['dust']);
+  assert.deepEqual(Array.from(app.selection.types), ['sulfate']);
+  byId('mix-mode').checked = true; byId('mix-mode').dispatch('change');
+  key('4'); key('5'); key('7'); assert.equal(app.selection.types.length, 4);
+  key('8'); assert.deepEqual(Array.from(app.selection.types), ['dust']); assert.equal(byId('mix-mode').checked, false);
   byId('activate').dispatch('click'); await flush(); assert.equal(app.audio.ready, true);
   assert.equal(plays.length, 0); // Cambiar recorrido borra la muestra de preescucha anterior.
   const created = audioNodes.length;
@@ -142,11 +146,11 @@ const key = (key, target = body) => target.dispatch('keydown', { key });
   assert.ok(byId('sound-source').textContent.includes('punto de República Dominicana'));
   assert.equal(byId('rd-marker').hidden, false);
   assert.ok(byId('readout').textContent.includes('ventana de 3 × 3'));
-  assert.equal(plays.length, beforeRd + 1); // Solo polvo: clic en el punto de RD.
+  assert.equal(plays.length, beforeRd); // Solo polvo: el punto de RD queda en silencio.
   const beforeSalt = plays.length; key('7');
   assert.equal(plays.length, beforeSalt + 2); // Seno afinado + ruido rosa de sal marina.
   assert.equal(plays.at(-2).args[0], 587.34);
-  key('7'); // Volvemos a solo polvo para las comprobaciones siguientes.
+  key('4'); // Volvemos a solo polvo para las comprobaciones siguientes.
   cells[0].focus(); key('Enter', cells[0]); key('7', cells[0]);
   assert.equal(byId('rd-marker').hidden, true);
   assert.equal(document.activeElement, cells[0]); assert.equal(cells[0].tabIndex, 0);
@@ -162,13 +166,14 @@ const key = (key, target = body) => target.dispatch('keydown', { key });
   assert.ok(timers.has(tick[0])); assert.equal(JSON.stringify(app.gridCells.map(cell => cell.result)), weights);
   advance(500); assert.equal(app.scanner.snapshot.nextIndex, 2);
   assert.ok(byId('sound-source').textContent.includes('columna 2'));
-  key('4'); assert.ok(!byId('sound-source').textContent.includes('Polvo:'));
+  key('4'); assert.ok(byId('sound-source').textContent.includes('Polvo:'));
   byId('volume-seaSalt').value = 80; byId('volume-seaSalt').dispatch('input');
   key('8'); key('8'); assert.equal(app.audio.getVolume('seaSalt'), 80);
-  key('s'); key('p'); await flush(); advance(15000);
+  key('s'); key('p'); await flush(); advance(13500);
+  const beforeSilentEnd = plays.length;
+  advance(1500);
   assert.equal(app.scanner.snapshot.state, 'ended');
-  const last = plays.at(-1).node;
-  assert.ok(last instanceof NoiseSynth && last.options.noise.type === 'white');
+  assert.equal(plays.length, beforeSilentEnd); // Los dos pasos finales sin polvo quedan en silencio.
   assert.equal(byId('journey-ending').hidden, false);
   assert.ok(byId('journey-ending-text').textContent.includes('polvo'));
   assert.ok(byId('journey-ending-text').textContent.includes('sal marina'));

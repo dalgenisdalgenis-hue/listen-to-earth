@@ -2,6 +2,10 @@
 
 (() => {
   const app = window.ListenToEarth;
+  app.pageModeFromSearch = function (search = '') {
+    const match = /(?:\?|&)modo=(viaje|planeta|explorar)(?:&|$)/.exec(String(search));
+    return match ? match[1] : null;
+  };
   app.config = {
     width: 1920,
     height: 1080,

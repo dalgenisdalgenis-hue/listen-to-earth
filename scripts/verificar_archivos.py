@@ -39,10 +39,11 @@ def main():
         'console.log(JSON.stringify(window.ListenToEarth.text));'],
         cwd=ROOT, check=True, capture_output=True, text=True)
     strings = json.loads(result.stdout)
-    doc = Document()
-    doc.feed((ROOT / 'docs/index.html').read_text())
-    assert all(key in strings for key in doc.keys), 'Falta un texto en strings.es.js'
-    assert all(ref in doc.ids for ref in doc.references), 'Referencia ARIA/label sin destino'
+    for page in sorted((ROOT / 'docs').glob('*.html')):
+        doc = Document()
+        doc.feed(page.read_text())
+        assert all(key in strings for key in doc.keys), f'Falta un texto en strings.es.js: {page.name}'
+        assert all(ref in doc.ids for ref in doc.references), f'Referencia ARIA/label sin destino: {page.name}'
     print('PASS: sintaxis JS, recursos locales, IDs, referencias ARIA y claves de texto del HTML.')
 
 

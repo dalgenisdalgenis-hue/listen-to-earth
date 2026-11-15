@@ -49,7 +49,7 @@ const plays = () => events.filter(event => event.event === 'play');
   const carbon = nodes.find(node => node instanceof MembraneSynth);
   const sulfate = nodes.find(node => node instanceof FMSynth);
   const wave = nodes.find(node => node instanceof NoiseSynth && node.options.noise.type === 'pink');
-  const click = nodes.find(node => node instanceof NoiseSynth && node.options.noise.type === 'white');
+  assert.equal(nodes.some(node => node instanceof NoiseSynth && node.options.noise.type === 'white'), false);
   const filter = nodes.find(node => node instanceof Filter);
   const master = nodes.find(node => node instanceof Volume && node.target instanceof Limiter);
   const voices = { dust, blackCarbon: carbon, sulfate, seaSalt: sea };
@@ -66,13 +66,13 @@ const plays = () => events.filter(event => event.event === 'play');
     const played = chord.find(event => event.node === voice);
     assert.ok(played); assert.equal(played.args[0], 880.01); assert.equal(played.args[2], 42);
   }
-  assert.ok(chord.some(event => event.node === wave)); assert.ok(!chord.some(event => event.node === click));
+  assert.ok(chord.some(event => event.node === wave));
   assert.equal(filter.target, sea.target); assert.equal(wave.target, filter);
   assert.ok(events.some(event => event.event === 'frequency' && event.args[0] === 880.01 && event.args[1] === 42));
   selection.set('blackCarbon', false); audio.selectionChanged();
   assert.equal(carbon.target.mute, true);
   assert.ok(events.some(event => event.event === 'release' && event.node === carbon));
-  // Volumen cero no debe convertirse en un clic falso de ausencia de aerosol.
+  // Volumen cero y ausencia de datos deben permanecer en silencio.
   order.forEach(type => selection.set(type, type === 'seaSalt'));
   audio.selectionChanged(); audio.setVolume('seaSalt', 0);
   const zero = plays().length; audio.play(result); assert.equal(plays().length, zero);
@@ -82,10 +82,10 @@ const plays = () => events.filter(event => event.event === 'play');
   assert.equal(audio.getVolume('seaSalt'), 80); // 8 no borra volúmenes elegidos.
   order.forEach(type => selection.set(type, false)); audio.selectionChanged();
   const none = plays().length; audio.play(result);
-  assert.equal(plays().length, none + 1); assert.equal(plays().at(-1).node, click);
+  assert.equal(plays().length, none);
   selection.toggleAll(); audio.selectionChanged();
   const bad = plays().length; audio.play({ ...result, residual: .2 });
-  assert.equal(plays().length, bad + 1); assert.equal(plays().at(-1).node, click);
+  assert.equal(plays().length, bad);
   for (const voice of Object.values(voices)) assert.equal(voice.target.mute, true);
   const beforeMute = plays().length;
   audio.toggleMute(); assert.equal(master.mute, true);
@@ -98,5 +98,5 @@ const plays = () => events.filter(event => event.event === 'play');
   audio.setVolume('dust', NaN); assert.equal(audio.getVolume('dust'), clamped);
   audio.setVolume('dust', 999); assert.equal(audio.getVolume('dust'), 100);
   state = 'suspended'; assert.throws(() => audio.play(result), /audioError/);
-  console.log('PASS: audio simulado: cuatro instrumentos, frecuencias comunes, oleaje con altura, clic único, selección en marcha, volumen por capa, silencio y detener.');
+  console.log('PASS: audio simulado: cuatro instrumentos, frecuencias comunes, oleaje con altura, ausencia sin clic, selección en marcha, volumen por capa, silencio y detener.');
 })().catch(error => { console.error(error); process.exitCode = 1; });

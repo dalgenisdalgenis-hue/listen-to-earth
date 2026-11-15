@@ -81,4 +81,4 @@ for (const mode of ['journey', 'world']) {
     assert.equal(profile[29].bounds.x1 - profile[29].bounds.x0, 5);
   }
 }
-console.log('PASS: perfiles tropical y mundial, extremos, recorte en bordes y dos clics finales de polvo.');
+console.log('PASS: perfiles tropical y mundial, extremos, recorte en bordes y dos pasos finales sin nota de polvo.');

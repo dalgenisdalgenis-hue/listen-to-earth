@@ -16,8 +16,9 @@ escuchar polvo, carbono negro, sulfatos y sal marina, con volumen por capa.
 De entrada solo suena el polvo; el audio se activa con un botón o P por acción explícita del usuario.
 La tecla R consulta el punto exacto de República Dominicana y el final del
 recorrido explica por separado el promedio de la franja. Tone.js 15.1.22 está dentro del repo.
-La interfaz abre con una portada, ofrece una guía de uso y presenta los dos
-recorridos como opciones visibles: **Viaje del polvo** y **Planeta completo**.
+La portada separa tres experiencias: **Viaje del polvo**, **Planeta completo**
+y **Explorar por zonas**. Las dos primeras muestran solo la línea automática;
+la tercera muestra solo el cuadro amarillo controlado con flechas.
 
 Ejecutados: 371 comparaciones JS/SciPy y pruebas de controladores con DOM,
 Tone y reloj simulados. **Pendientes: navegador, audio real, NVDA/VoiceOver y pruebas
@@ -52,9 +53,10 @@ No hay compilación ni instalación de dependencias para abrir la web. Evitar
 abrir index.html con doble clic: algunos navegadores bloquean la lectura del
 canvas mediante `file://`.
 
-1. Esperar la imagen y la cuadrícula.
-2. Llegar con Tab a **Activar sonido** y pulsar Enter.
-3. Entrar en la cuadrícula y usar flechas; Enter repite y Tab sale.
+1. Abrir la portada y elegir una experiencia.
+2. En los recorridos, esperar la imagen y pulsar Reproducir. En Explorar por
+   zonas, esperar la cuadrícula y activar sonido.
+3. En Explorar por zonas, usar flechas; Enter repite y Tab sale.
 4. Si el lector captura las flechas, usar los botones de dirección.
 5. M silencia; S o Esc detiene. Cada instrumento tiene su rango de volumen.
 6. Elegir **Viaje del polvo** o **Planeta completo**. P inicia o pausa el barrido;
@@ -74,11 +76,10 @@ canvas mediante `file://`.
 El botón **Cómo usar** abre una guía rápida con estos pasos y los atajos,
 sin salir de la experiencia.
 
-Durante el barrido las capas nuevas entran en el siguiente paso. Fuera del
-barrido se vuelve a tocar la última muestra si el audio ya está activado;
-se indica si es celda o columna. No se inicia audio al marcar una casilla
-antes de la primera activación. Sin capas elegidas queda el clic de posición;
-M silencia también ese clic.
+De entrada se escucha un contaminante a la vez para distinguir los timbres.
+La opción **Mezclar varios** permite compararlos simultáneamente. Durante el
+barrido los cambios entran en el siguiente paso. Una muestra sin nota queda
+en silencio: no hay efectos de tecla ni clic de posición.
 
 No se captura ninguna voz ni se inicia narración automática.
 
@@ -108,7 +109,7 @@ en altavoz mono siguen pendientes de evaluación por el equipo.
 Se promedia RGB en una ventana de 3×3 en el centro de cada casilla. NNLS
 reparte ese color entre los cuatro colores oficiales sin pesos negativos.
 Solo se habilita una nota si el peso seleccionado es al menos 0,05 y el
-residuo de reconstrucción es como máximo 0,10. En otro caso hay un clic suave.
+residuo de reconstrucción es como máximo 0,10. En otro caso hay silencio.
 
 El barrido promedia columnas de 9 píxeles, con altura de 12–22°N en el viaje
 del polvo y de polo a polo en el mundo entero. El muestreo y el recorrido se
@@ -129,6 +130,8 @@ completa de cuatro colores y se conservan al encender o apagar capas.
 ## Estructura y publicación prevista
 
 - `docs/`: HTML, CSS, JavaScript, imágenes NASA y Tone.js local.
+- `docs/index.html`: portada y selector de experiencias.
+- `docs/escuchar.html`: experiencia individual elegida mediante `?modo=`.
 - `scripts/`: medición y pruebas de desarrollo reproducibles.
 - `SPEC.md`: especificación actual proporcionada por el equipo.
 - `historial/`: versiones de documentos recibidas durante el trabajo.

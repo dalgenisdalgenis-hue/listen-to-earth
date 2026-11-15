@@ -56,6 +56,16 @@ equipo está en [SPEC.md](SPEC.md); no se ha modificado su contenido.
    como tarjetas grandes, Viaje del polvo y Planeta completo, con estado
    `aria-pressed`. Después siguen mapa interactivo, mezclador de aerosoles y
    transparencia científica. Se conservan IDs, datos, teclas y audio.
+8. **Experiencias separadas, créditos y escucha individual:** la portada
+   enlaza a `escuchar.html?modo=viaje`, `?modo=planeta` y `?modo=explorar`.
+   Los recorridos ocultan la cuadrícula manual; la exploración manual oculta
+   la línea y los controles automáticos. Se añadieron créditos de NASA SVS
+   5669, NASA GMAO, Tone.js y el equipo estudiantil.
+
+   El modo principal deja un solo aerosol seleccionado. Elegir otro apaga el
+   anterior; Mezclar varios habilita las combinaciones como opción avanzada.
+   Por solicitud posterior del usuario, una muestra sin nota queda en silencio:
+   se retiró el clic porque se confundía con los sonidos de los aerosoles.
 
 ## Decisiones y correcciones documentadas
 
@@ -74,6 +84,9 @@ equipo está en [SPEC.md](SPEC.md); no se ha modificado su contenido.
   el botón y anuncian la nueva posición mediante aria-live.
 - La página no inicia síntesis de voz. La narración opcional aún no está
   implementada. No se usa ninguna API externa en tiempo de uso.
+- El SPEC original indicaba un clic suave para las zonas sin partículas. El
+  equipo lo retiró después de escuchar la plataforma: ahora esas muestras son
+  silencio. Se conserva el SPEC sin editar y este registro documenta el cambio.
 - Los documentos actuales de la rama `assets/imagen-5669` se conservaron como
   base; los originales del ZIP y las versiones de SPEC recibidas se guardan
   en [historial/](historial/).
@@ -101,7 +114,7 @@ Se comprueba que habilitar capas no cambia pesos, notas de las otras capas
 ni resultados de la cuadrícula. Se comprueban los atajos 4–8.
 
 El controlador de audio con Tone simulado comprueba las cuatro frecuencias
-base, las dos fuentes del oleaje, un solo clic de realimentación, volumen
+base, las dos fuentes del oleaje, la ausencia de un clic artificial, volumen
 por capa, silencio y detener. No se crean nodos antes de activar el audio.
 
 Una prueba adicional ejecuta app.js con el HTML real, el PNG decodificado por
@@ -120,6 +133,12 @@ franja final aparte y que 7 o el botón repiten la columna de sal marina 0,300.
 de recorrido actualizan el modo real del barrido y que la guía abre y cierra.
 El usuario informó que el sonido se escucha bien; se registra como observación,
 no como una prueba acústica formal en varios navegadores y dispositivos.
+
+**Actualización de experiencias:** las comprobaciones de archivos recorren
+ahora la portada y la página interactiva. La prueba de eventos verifica el
+modo exclusivo, la activación voluntaria de la mezcla y el silencio en RD
+cuando solo está seleccionado polvo. Las tres URLs y la separación visual
+requieren además la revisión manual indicada en PRUEBAS.md.
 
 **Actualización del barrido:** se comparan ahora **371 muestras** con SciPy,
 incluidas 30 columnas mundiales adicionales. Se verifican los perfiles
@@ -171,10 +190,9 @@ ataque. Se mantiene una voz por instrumento, con un limitador compartido.
 Son timbres provisionales; todavía no se ha comprobado su identidad auditiva
 en navegador, en altavoz mono ni con personas usuarias.
 
-Si ninguna capa seleccionada supera las guardas, se emite un único clic.
-Con todas las casillas apagadas también queda ese clic de posición; M
-silencia el conjunto, incluido el clic. Un instrumento con volumen cero no
-se sustituye por un clic falso de ausencia de aerosol.
+Si ninguna capa seleccionada supera las guardas, la muestra queda en silencio.
+Con todas las casillas apagadas también hay silencio. Un instrumento con
+volumen cero no se sustituye por ningún efecto de tecla.
 
 La selección actualiza etiquetas y tablas sin reconstruir la cuadrícula ni
 volver a leer píxeles. Los cuatro pesos siguen visibles en las tablas,

@@ -57,6 +57,25 @@ button:disabled, fieldset:disabled button { opacity: .58; cursor: wait; }
 button[aria-pressed="true"] { border-color: var(--yellow); }
 
 .page-shell { width: min(100% - 2rem, 78rem); margin-inline: auto; }
+.experience-page > main > .hero { display: none; }
+.experience-banner { padding: clamp(3rem, 7vw, 5.5rem) 0 1.5rem; border-bottom: 1px solid rgb(131 230 239 / 18%); }
+.experience-banner h1 { max-width: 15ch; font-size: clamp(2.6rem, 7vw, 5rem); }
+.experience-banner > p:last-of-type { max-width: 48rem; color: var(--muted); font-size: 1.12rem; }
+.back-link, .alternate-link { display: inline-flex; margin-bottom: 1.2rem; color: var(--cyan); font-weight: 750; }
+.alternate-link { margin: 1rem 0 0; padding: .55rem .8rem; border: 1px solid var(--line); border-radius: .55rem; text-decoration: none; }
+.experience-page .mode-picker { display: none; }
+body[data-experience="journey"] #grid,
+body[data-experience="world"] #grid,
+body[data-experience="journey"] .explore-grid,
+body[data-experience="world"] .explore-grid,
+body[data-experience="journey"] .shortcut-line,
+body[data-experience="world"] .shortcut-line,
+body[data-experience="journey"] #grid-table,
+body[data-experience="world"] #grid-table { display: none !important; }
+body[data-experience="explore"] #experience,
+body[data-experience="explore"] #scan-table,
+body[data-experience="explore"] #scan-band,
+body[data-experience="explore"] #scan-line { display: none !important; }
 .status { min-height: 1.8rem; margin: 1rem 0 0; color: var(--cyan); }
 .section-block { padding-block: clamp(4rem, 8vw, 7rem); border-bottom: 1px solid rgb(131 230 239 / 18%); scroll-margin-top: 4.5rem; }
 .section-heading { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: clamp(1rem, 4vw, 2.5rem); align-items: start; margin-bottom: 2rem; }
@@ -111,6 +130,10 @@ figcaption { padding: .75rem 1rem 1rem; color: var(--muted); font-size: .92rem; 
 .shortcut-line { padding: .7rem 1rem; color: var(--muted); font-size: .9rem; }
 
 .aerosol-controls { padding: 1rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.listening-mode { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .2rem .2rem 1rem; margin-bottom: 1rem; border-bottom: 1px solid var(--line); }
+.listening-mode p { margin: .2rem 0 0; color: var(--muted); }
+.mix-switch { display: flex; align-items: center; gap: .55rem; min-height: 44px; padding: .5rem .8rem; border: 1px solid var(--line); border-radius: 999px; cursor: pointer; white-space: nowrap; }
+.mix-switch input { width: 1.3rem; height: 1.3rem; accent-color: var(--yellow); }
 .aerosol-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem; }
 .aerosol-card { position: relative; padding: 1.1rem; border: 1px solid var(--line); border-top: 4px solid var(--cyan); border-radius: .8rem; background: rgb(5 19 28 / 65%); }
 .aerosol-dust { border-top-color: var(--purple); } .aerosol-carbon { border-top-color: var(--orange); } .aerosol-sulfate { border-top-color: var(--green); } .aerosol-salt { border-top-color: #91bec0; }
@@ -157,11 +180,41 @@ th, td { padding: .65rem; border: 1px solid var(--line); text-align: left; }
 footer { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 2rem clamp(1rem, 5vw, 4rem); border-top: 1px solid var(--line); background: #050e15; color: var(--muted); }
 footer p { margin: .2rem 0; }
 .footer-brand { color: var(--cyan); font-weight: 800; }
+.footer-actions { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.footer-actions a { color: var(--cyan); font-weight: 750; }
+
+.experience-chooser { width: min(100% - 2rem, 78rem); margin-inline: auto; padding: clamp(4rem, 8vw, 7rem) 0; }
+.chooser-heading { max-width: 48rem; margin-bottom: 2rem; }
+.chooser-heading > p:last-child { color: var(--muted); font-size: 1.08rem; }
+.experience-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.experience-card { min-height: 23rem; display: grid; grid-template-rows: auto auto auto 1fr auto; gap: .8rem; position: relative; overflow: hidden; padding: 1.4rem; border: 1px solid var(--line); border-radius: var(--radius); color: #fff; text-decoration: none; background: linear-gradient(155deg, #12303f, #081823); transition: transform .2s ease, border-color .2s ease; }
+.experience-card::before { content: ""; position: absolute; inset: auto -25% -25% 20%; height: 60%; background: radial-gradient(circle, rgb(131 230 239 / 16%), transparent 65%); }
+.experience-card:hover { transform: translateY(-4px); border-color: var(--cyan); }
+.experience-number { color: var(--yellow); font: 800 1rem/1 ui-monospace, monospace; }
+.experience-icon { display: grid; place-items: center; width: 3.2rem; height: 3.2rem; border-radius: 50%; background: var(--yellow); color: #172028; font-size: 1.5rem; font-weight: 900; }
+.experience-card strong { font-size: 1.45rem; }
+.experience-card > span:nth-of-type(3) { color: var(--muted); }
+.card-action { align-self: end; color: var(--cyan); font-weight: 800; }
+.world-card { background: linear-gradient(155deg, #182f43, #07131c); }
+.explore-card { background: linear-gradient(155deg, #26243d, #0b1622); }
+.landing-note { max-width: 50rem; margin: 2rem auto 0; padding: 1.2rem 1.4rem; border-left: 4px solid var(--yellow); background: var(--surface); }
+.landing-note h3 { margin-top: 0; }
+.credits-section { width: min(100% - 2rem, 78rem); margin-inline: auto; padding: 0 0 clamp(4rem, 8vw, 7rem); }
+.credits-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.credits-grid article { padding: 1.25rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.credits-grid h3 { margin-top: 0; }
+.credits-grid p { color: var(--muted); }
+.credits-grid a { color: var(--cyan); font-weight: 750; }
+.credits-disclaimer { max-width: none; margin-top: 1rem; padding: 1rem; border-left: 3px solid var(--yellow); color: var(--muted); }
 
 @media (max-width: 760px) {
   .site-header nav a { display: none; }
   .hero { min-height: 44rem; padding-top: 5rem; background-image: linear-gradient(0deg, var(--bg) 0%, rgb(4 13 20 / 60%) 60%, rgb(4 13 20 / 35%) 100%), url('../assets/aerosols_5669_1920x1080.png'); background-position: center, 58% center; }
   .mode-picker, .aerosol-grid, .explore-grid, .limitations { grid-template-columns: 1fr; }
+  .experience-cards { grid-template-columns: 1fr; }
+  .credits-grid { grid-template-columns: 1fr; }
+  .experience-card { min-height: 17rem; }
+  .listening-mode { align-items: flex-start; flex-direction: column; }
   .mode-card { min-height: 8rem; }
   .progress-row { grid-template-columns: 1fr; gap: .3rem; }
   .audio-toolbar p { flex-basis: 100%; margin-left: 0; }

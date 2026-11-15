@@ -73,7 +73,7 @@ def main():
         (folder / 'fixtures.json').write_text(json.dumps(fixtures))
         (folder / 'image.rgba').write_bytes(im.convert('RGBA').tobytes())
         markup = Markup()
-        markup.feed((ROOT / 'docs/index.html').read_text())
+        markup.feed((ROOT / 'docs/escuchar.html').read_text())
         (folder / 'dom.json').write_text(json.dumps(markup.root))
         subprocess.run(['node', str(ROOT / 'scripts/verificar_nucleo.cjs'), str(folder)],
                        cwd=ROOT, check=True)

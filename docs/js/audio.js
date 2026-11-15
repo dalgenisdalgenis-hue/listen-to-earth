@@ -40,7 +40,7 @@
     const order = app.config.instrumentOrder;
     const volumes = Object.fromEntries(order.map(type => [type, 50]));
     const active = Object.fromEntries(order.map(type => [type, false]));
-    let instruments, gains, click, master, waveNoise, waveFilter;
+    let instruments, gains, master, waveNoise, waveFilter;
     let ready = false, muted = false;
     function gain(type) {
       if (!gains) return;
@@ -97,10 +97,6 @@
             noise: { type: 'pink' },
             envelope: { attack: 0.05, decay: 0.10, sustain: 0.05, release: 0.12 }, volume: -30
           }).connect(waveFilter);
-          click = new Tone.NoiseSynth({
-            noise: { type: 'white' },
-            envelope: { attack: 0.001, decay: 0.018, sustain: 0, release: 0.012 }, volume: -30
-          }).connect(master);
         }
         ready = true;
         master.mute = muted;
@@ -113,13 +109,10 @@
         const now = Tone.now();
         const notes = app.soundPlan(result, selection.types).filter(note => note.hz !== null);
         for (const type of order) { release(type, now); active[type] = false; }
-        click.triggerRelease(now);
-        // Un solo clic si ninguna capa seleccionada supera ambas guardas.
-        // Volumen cero es una elección del usuario, no ausencia de partículas:
-        // no sustituimos por un clic una nota que el usuario dejó sin volumen.
+        // Por decisión del equipo, una muestra sin notas queda en silencio.
+        // No añadimos un efecto de tecla: se confundía con los aerosoles.
         for (const note of notes) active[note.type] = volumes[note.type] > 0;
         order.forEach(gain);
-        if (!notes.length) click.triggerAttackRelease(0.025, now, 0.5);
         for (const note of notes) {
           if (!active[note.type]) continue;
           instruments[note.type].triggerAttackRelease(note.hz, 0.20, now, 0.65);
@@ -146,7 +139,6 @@
         for (const type of order) {
           release(type, window.Tone.now()); active[type] = false; gain(type);
         }
-        click.triggerRelease(window.Tone.now());
       },
       toggleMute() {
         muted = !muted;

@@ -33,7 +33,8 @@ Viven en la misma página para que cambiar de pista **no corte el audio**: así 
 - **Un instrumento por tipo de aerosol**, para distinguirlos sin mirar. Por defecto solo suena el **polvo**; con una tecla se añaden los demás.
 - **Más cantidad → nota más aguda**, siempre dentro de una **escala pentatónica mayor** de tres octavas desde Sol3 (196 Hz), para que nunca desafine. *(Mayor es provisional: se escucha con datos reales antes de darla por buena.)*
 - En las pistas 2 y 3, el valor se convierte en altura con una **escala logarítmica de 0,02 a 13 µg/m³**, porque entre el mes más limpio y el más cargado hay más de 600 veces de diferencia. **La misma regla para todos los años:** al comparar solo cambia el timbre.
-- **Zonas sin partículas: un clic suave**, para saber que el cursor se movió.
+- **Zonas sin partículas: silencio.** El clic de posición se retiró por
+  decisión posterior del equipo porque se confundía con los sonidos de datos.
 
 ### El algoritmo central: de color a cantidad
 

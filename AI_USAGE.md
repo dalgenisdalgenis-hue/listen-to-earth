@@ -67,6 +67,13 @@ Actualización de presentación: a partir del PDF enviado por el equipo, Codex
 reorganizó la interfaz con portada, guía de uso, tarjetas para los dos recorridos,
 mapa, mezclador y sección científica. No se cambiaron el algoritmo ni el audio.
 
+Actualización de navegación y créditos: por solicitud del equipo, Codex separó
+la portada, los dos recorridos y la exploración manual mediante tres destinos,
+añadió créditos de NASA SVS/GMAO y Tone.js, hizo exclusivo el instrumento
+principal y dejó la mezcla como opción avanzada. También retiró el clic de
+ausencia; esta última decisión cambia la realimentación sonora del SPEC y
+queda registrada en los documentos del proyecto.
+
 - Una etapa por solicitud; cada entrega incluye qué cambió, cómo comprobarlo y qué limitaciones quedan.
 - **No se afirma que una prueba pasó si no se ejecutó.**
 - Datos sintéticos de desarrollo siempre identificados y separados de la demo.

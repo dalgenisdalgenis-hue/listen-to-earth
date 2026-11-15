@@ -2,6 +2,11 @@
 
 (() => {
   const app = window.ListenToEarth;
+  const requestedPageMode = app.pageModeFromSearch(window.location?.search || '');
+  const pageMode = requestedPageMode || 'viaje';
+  const fixedPageMode = Boolean(requestedPageMode);
+  const scanModeForPage = pageMode === 'planeta' ? 'world' : 'journey';
+  document.body.dataset.experience = pageMode === 'planeta' ? 'world' : pageMode === 'explorar' ? 'explore' : 'journey';
   document.querySelectorAll('[data-text]').forEach(node => {
     node.textContent = app.text[node.dataset.text];
   });
@@ -23,6 +28,34 @@
   let loading = false, activating = false, controller, currentCell, announcement;
   let scanner, profiles, previousScanState = 'idle', audioRequest = 0;
   let lastSource = null, lastScanStep = null, rdPoint = null;
+  let mixEnabled = false;
+
+  const pageCopy = pageMode === 'planeta' ? {
+    eyebrow: app.text.worldPageEyebrow, title: app.text.modeWorldTitle,
+    description: app.text.worldPageDescription,
+    alternate: app.text.goJourney, href: 'escuchar.html?modo=viaje'
+  } : pageMode === 'explorar' ? {
+    eyebrow: app.text.explorePageEyebrow, title: app.text.landingExploreTitle,
+    description: app.text.explorePageDescription,
+    alternate: app.text.chooseAnotherExperience, href: 'index.html#experiences'
+  } : {
+    eyebrow: app.text.journeyPageEyebrow, title: app.text.modeJourneyTitle,
+    description: app.text.journeyPageDescription,
+    alternate: app.text.goWorld, href: 'escuchar.html?modo=planeta'
+  };
+  byId('experience-page-eyebrow').textContent = pageCopy.eyebrow;
+  byId('experience-page-title').textContent = pageCopy.title;
+  byId('experience-page-description').textContent = pageCopy.description;
+  byId('alternate-experience').textContent = pageCopy.alternate;
+  byId('alternate-experience').href = pageCopy.href;
+  document.title = pageCopy.title + ' · ' + app.text.title;
+  byId('scan-mode').value = scanModeForPage;
+  if (pageMode !== 'explorar') {
+    byId('scan-title').textContent = pageMode === 'planeta' ? app.text.worldControlsTitle : app.text.journeyControlsTitle;
+    byId('scan-intro').textContent = pageMode === 'planeta' ? app.text.worldControlsIntro : app.text.journeyControlsIntro;
+    byId('grid-title').textContent = app.text.routeMapTitle;
+    byId('grid-help').textContent = pageMode === 'planeta' ? app.text.routeMapWorldHelp : app.text.routeMapJourneyHelp;
+  }
 
   function announce(message) {
     clearTimeout(announcement);
@@ -78,7 +111,15 @@
     byId('selection-summary').textContent = app.format('selectionSummary', {
       types: app.selection.types.map(type => app.text[type]).join(', ') || app.text.none
     });
+    byId('mix-mode').checked = mixEnabled;
+    byId('toggle-all').hidden = !mixEnabled;
     byId('toggle-all').textContent = app.selection.types.length === 4 ? app.text.onlyDust : app.text.allAerosols;
+  }
+  function soloSelection(type) {
+    return app.config.instrumentOrder.flatMap(key => app.selection.set(key, key === type));
+  }
+  function aerosolSelection(type) {
+    return mixEnabled ? app.selection.toggle(type) : soloSelection(type);
   }
   function renderGridTable() {
     const rows = byId('grid-rows');
@@ -238,7 +279,7 @@
       try { audio.play(cell.result); }
       catch { announce(app.text.audioError); return; }
     }
-    if (!lastSource) { lastSource = { kind: 'grid', item: cell }; renderSource(); }
+    if (!lastSource && pageMode === 'explorar') { lastSource = { kind: 'grid', item: cell }; renderSource(); }
     if (speak) announce(cell.description + (!audio.ready ? ' ' + app.text.audioOff : audio.muted ? ' ' + app.text.muted : ''));
   }
   function goToDominicanRepublic() {
@@ -304,7 +345,7 @@
       controller = app.mountGrid(app.gridCells, selectCell, announce);
       profiles = Object.fromEntries(Object.keys(app.config.scan.modes)
         .map(mode => [mode, app.createScanProfile(app.pixels, mode)]));
-      const mode = byId('scan-mode').value;
+      const mode = scanModeForPage;
       previousScanState = 'idle';
       scanner = app.createScanner(profiles[mode], {
         startAudio: () => audio.start(), onStep: scanStep, onState: scanState,
@@ -388,14 +429,30 @@
   });
   for (const type of app.config.instrumentOrder) {
     byId('aerosol-' + type).addEventListener('change', event => {
-      changeSelection(app.selection.set(type, event.target.checked));
+      if (!mixEnabled && !event.target.checked) { event.target.checked = true; return; }
+      changeSelection(mixEnabled ? app.selection.set(type, event.target.checked) : soloSelection(type));
     });
     byId('volume-' + type).addEventListener('input', event => {
       audio.setVolume(type, event.target.value);
       renderSelector();
     });
   }
-  byId('toggle-all').addEventListener('click', () => changeSelection(app.selection.toggleAll()));
+  byId('mix-mode').addEventListener('change', event => {
+    mixEnabled = event.target.checked;
+    if (mixEnabled) {
+      renderSelector();
+      announce(app.text.mixModeOn);
+    } else {
+      const keep = app.selection.types[0] || 'dust';
+      changeSelection(soloSelection(keep));
+      announce(app.text.soloModeOn + ' ' + app.format('selectionSummary', { types: app.text[keep] }));
+    }
+  });
+  byId('toggle-all').addEventListener('click', () => {
+    const changes = app.selection.toggleAll();
+    if (app.selection.types.length === 1 && app.selection.has('dust')) mixEnabled = false;
+    changeSelection(changes);
+  });
   byId('go-rd').addEventListener('click', goToDominicanRepublic);
   const guide = byId('guide-dialog');
   document.querySelectorAll('[data-guide-open]').forEach(button => {
@@ -417,14 +474,22 @@
     const editing = event.target.closest('textarea, select, [contenteditable="true"], input:not([type="checkbox"]):not([type="range"])');
     if (!editing && (app.config.aerosolShortcuts[event.key] || event.key === '8')) {
       event.preventDefault();
-      changeSelection(event.key === '8' ? app.selection.toggleAll() : app.selection.toggle(app.config.aerosolShortcuts[event.key]));
+      if (event.key === '8') {
+        if (!mixEnabled) mixEnabled = true;
+        const changes = app.selection.toggleAll();
+        if (app.selection.types.length === 1 && app.selection.has('dust')) mixEnabled = false;
+        changeSelection(changes);
+      } else changeSelection(aerosolSelection(app.config.aerosolShortcuts[event.key]));
       return;
     }
     if (event.target.closest('input, textarea, select, [contenteditable="true"]')) return;
     if (event.key.toLowerCase() === 'r') { event.preventDefault(); goToDominicanRepublic(); return; }
-    if (event.key.toLowerCase() === 'p' && scanner) { event.preventDefault(); scanner.toggle(); }
+    if (event.key.toLowerCase() === 'p' && scanner && pageMode !== 'explorar') { event.preventDefault(); scanner.toggle(); }
     if (event.key.toLowerCase() === 'v' && scanner) {
-      event.preventDefault(); changeMode(byId('scan-mode').value === 'journey' ? 'world' : 'journey');
+      event.preventDefault();
+      if (fixedPageMode && pageMode !== 'explorar') {
+        window.location.href = pageMode === 'planeta' ? 'escuchar.html?modo=viaje' : 'escuchar.html?modo=planeta';
+      } else if (pageMode !== 'explorar') changeMode(byId('scan-mode').value === 'journey' ? 'world' : 'journey');
     }
     if (['+', '-', '−'].includes(event.key) && scanner) {
       event.preventDefault();

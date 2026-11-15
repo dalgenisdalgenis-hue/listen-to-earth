@@ -62,7 +62,7 @@ puede impedir leer el canvas.
    pesos y residuo con SPEC. En Pacífico sur no debe habilitarse una nota.
 8. Reintentar la carga y comprobar que no se duplican listeners ni notas.
    Renombrar temporalmente la imagen para comprobar el mensaje de error.
-9. Escuchar en altavoz mono. Comparar claridad de nota y clic, volumen cómodo
+9. Escuchar en altavoz mono. Comparar claridad de las notas, volumen cómodo
    y escala mayor provisional con el equipo.
 
 ## Prueba manual pendiente del barrido
@@ -83,7 +83,7 @@ puede impedir leer el canvas.
 7. Con V cambiar recorrido: queda preparado para empezar de nuevo. Comprobar
    los 30 valores en la tabla, la franja tropical y el recorrido de polo a polo.
 8. En el viaje del polvo, comprobar el final en 69,9°O y los últimos dos
-   pasos con clic suave. La sal marina 0,300 es promedio de franja y no cambia
+   pasos en silencio. La sal marina 0,300 es promedio de franja y no cambia
    por sí sola el instrumento seleccionado. El aviso final debe aparecer sin
    encender sal marina. Pulsar 7 o su botón debe repetir esa columna.
 9. Moverse por la cuadrícula durante el barrido: debe pausarse y sonar la
@@ -105,6 +105,12 @@ puede impedir leer el canvas.
    tablas científicas permanezcan plegadas hasta pedirlas.
 4. Probar a 320 px, teléfono, tableta y escritorio; zoom 200 % y 400 %.
 5. Confirmar contraste, foco visible y que los controles no se superponen.
+6. Desde la portada abrir las tres opciones y confirmar URLs distintas:
+   `?modo=viaje`, `?modo=planeta` y `?modo=explorar`.
+7. En los recorridos no debe aparecer la cuadrícula amarilla. En Explorar por
+   zonas no debe aparecer la línea automática ni controles de barrido.
+8. Confirmar que inicialmente elegir un aerosol apaga el anterior. Activar
+   Mezclar varios y comprobar que entonces sí permite combinaciones.
 
 ## Prueba manual pendiente del selector
 
@@ -116,10 +122,10 @@ puede impedir leer el canvas.
 3. Pulsar 8 desde una selección parcial: activa todos. Pulsarlo otra vez:
    solo polvo. Comprobar que conserva los cuatro volúmenes elegidos.
 4. Poner una capa a volumen cero y repetir una muestra donde su peso supere
-   las guardas: no debe inventarse un clic en sustitución de esa nota.
-   Si ninguna capa supera las guardas, debe haber solo un clic, no uno por capa.
-5. Apagar las cuatro casillas: solo queda el clic de posición. M debe
-   silenciarlo también. Encender un instrumento con residuo alto no debe
+   las guardas: debe quedar en silencio, sin efecto de tecla sustituto.
+   Si ninguna capa supera las guardas, también debe haber silencio.
+5. En mezcla avanzada, apagar las cuatro casillas: debe quedar silencio.
+   Encender un instrumento con residuo alto no debe
    permitir una nota que las guardas habían rechazado.
 6. Iniciar el barrido. Añadir o quitar capas no debe reiniciar ni saltar el
    progreso. Una capa quitada deja de sonar; una nueva entra al próximo paso.
